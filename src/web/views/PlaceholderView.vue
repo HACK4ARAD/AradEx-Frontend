@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import PlaceholderScreen from '@/shared/components/PlaceholderScreen.vue'
+import PlaceholderScreen from '@/shared/components/ui/PlaceholderScreen.vue'
 const route = useRoute()
 </script>
 

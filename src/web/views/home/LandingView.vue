@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppChip, AppIcon, EmptyState } from '@/shared/components'
-import ApiStatus from '@/shared/components/ApiStatus.vue'
+import ApiStatus from '@/shared/components/ui/ApiStatus.vue'
 import { useFormat } from '@/shared/composables/useFormat'
 
 const { t } = useI18n()

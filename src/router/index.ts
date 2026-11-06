@@ -21,8 +21,8 @@ const mobile: RouteRecordRaw = {
   path: '/m',
   component: () => import('@/mobile/layouts/MobileLayout.vue'),
   children: [
-    { path: '', name: 'm-home', component: () => import('@/mobile/views/HomeView.vue'), meta: { title: 'Acasă', screen: 'S1/E6', task: 'T06' } },
-    { path: 'login', name: 'm-login', component: () => import('@/mobile/views/LoginView.vue'), meta: { title: 'Conectare', screen: 'S12', task: 'T03', hideTabs: true } },
+    { path: '', name: 'm-home', component: () => import('@/mobile/views/home/HomeView.vue'), meta: { title: 'Acasă', screen: 'S1/E6', task: 'T06' } },
+    { path: 'login', name: 'm-login', component: () => import('@/mobile/views/auth/LoginView.vue'), meta: { title: 'Conectare', screen: 'S12', task: 'T03', hideTabs: true } },
     { path: 'search', name: 'm-search', component: MobilePlaceholder, meta: { title: 'Caută', screen: 'S2', task: 'T06' } },
     { path: 'events/:id', name: 'm-event', component: MobilePlaceholder, meta: { title: 'Eveniment', screen: 'S3', task: 'T06' } },
     { path: 'events/:id/tickets', name: 'm-event-tickets', component: MobilePlaceholder, meta: { title: 'Alege biletele', screen: 'S4', task: 'T07', roles: ['VISITOR', 'LOCAL', 'BUSINESS', 'CITY_HALL'] } },
@@ -53,8 +53,8 @@ const web: RouteRecordRaw = {
   path: '/w',
   component: () => import('@/web/layouts/WebLayout.vue'),
   children: [
-    { path: '', name: 'w-landing', component: () => import('@/web/views/LandingView.vue'), meta: { title: 'Acasă', screen: 'W1', task: 'T06' } },
-    { path: 'login', name: 'w-login', component: () => import('@/web/views/LoginView.vue'), meta: { title: 'Conectare', screen: 'S12', task: 'T03' } },
+    { path: '', name: 'w-landing', component: () => import('@/web/views/home/LandingView.vue'), meta: { title: 'Acasă', screen: 'W1', task: 'T06' } },
+    { path: 'login', name: 'w-login', component: () => import('@/web/views/auth/LoginView.vue'), meta: { title: 'Conectare', screen: 'S12', task: 'T03' } },
     { path: 'events', name: 'w-events', component: WebPlaceholder, meta: { title: 'Evenimente', screen: 'W1', task: 'T06' } },
     { path: 'events/:id', name: 'w-event', component: WebPlaceholder, meta: { title: 'Eveniment', screen: 'S3', task: 'T06' } },
     { path: 'places', name: 'w-places', component: WebPlaceholder, meta: { title: 'Obiective', task: 'T05' } },

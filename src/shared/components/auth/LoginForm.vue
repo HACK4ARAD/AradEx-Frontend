@@ -1,8 +1,9 @@
 <script setup lang="ts">
+// Formularul de login/înregistrare, comun mobil + web (ecranul S12). View-urile adaugă doar „rama”.
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { AppButton, AppIcon, AppInput } from '@/shared/components'
+import { AppButton, AppInput } from '@/shared/components'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 
@@ -39,7 +40,6 @@ function useDemo(mail: string) { email.value = mail; password.value = 'demo1234'
 </script>
 
 <template>
-  <button class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center mb-3" @click="router.back()"><AppIcon name="arrow_back" /></button>
   <div class="flex items-center gap-2 text-[14px] font-semibold mb-6"><span class="w-2.5 h-2.5 rounded-full bg-accent" /> {{ t('app.name') }}</div>
   <h1 class="text-[28px] font-semibold tracking-[-0.025em] leading-tight m-0 mb-5">{{ t('auth.title') }}</h1>
 
