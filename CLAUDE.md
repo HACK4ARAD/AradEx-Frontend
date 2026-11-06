@@ -58,7 +58,7 @@ cp .env.example .env   # VITE_API_URL=http://localhost:8080/api/v1, VITE_DEMO=tr
 - Nu pune chei API în FE (OpenAI e doar în BE). Nu duplica un ecran în `web/` copiind codul din `mobile/`. Nu adăuga librării fără motiv notat în `../AradEx-Plan/docs/STATUS.md`. Designul se modifică doar în `../AradEx-Plan/design/`.
 
 ## Culoare (4 oameni în paralel)
-Fiecare culoar lucrează doar în fișierele lui (tabelul: `../AradEx-Plan/docs/TEAM.md`). După T02 (P1) fiecare rută are deja fișierul ei de view în `views/<feature>/`, iar textele, tipurile și clientul API sunt împărțite pe fișiere de modul (`shared/i18n/ro/<modul>.json`, `shared/types/<modul>.ts`, `shared/api/<modul>.ts`) — tu doar completezi fișierele tale; `router/index.ts`, layout-urile, navigația și `components/ui/` sunt ale lui P1. Poți importa componentele/composables altui culoar, dar nu le modifici.
+Fiecare story lucrează doar în fișierele feature-ului lui. După T02 fiecare rută are deja fișierul ei de view în `views/<feature>/`, iar textele, tipurile și clientul API sunt împărțite pe fișiere de modul (`shared/i18n/ro/<modul>.json`, `shared/types/<modul>.ts`, `shared/api/<modul>.ts`) — tu doar completezi fișierele tale; `router/index.ts`, layout-urile, navigația și `components/ui/` sunt ale lui P1. Poți importa componentele/composables altui culoar, dar nu le modifici.
 
 ## Commit-uri
 Mesaje scurte în engleză (`feat(events): list + filters`). **Fără `Co-Authored-By:` și fără „Generated with Claude Code”** — hook-ul din `.githooks` le scoate (`git config core.hooksPath .githooks`). Branch `feat/Txx-...` din `origin/main`, PR în acest repo; regulile complete: `../AradEx-Plan/CLAUDE.md`.
