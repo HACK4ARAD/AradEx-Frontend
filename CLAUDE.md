@@ -1,9 +1,9 @@
 # AradEx-Frontend — context pentru Claude Code
 
-Frontend-ul AradExperience (Hack4Arad 2026): o singură aplicație Vue cu două interfețe — **mobil** (`/m/*`, PWA, tab bar) și **web** (`/w/*`, bară sus + sidebar) — peste același client API. Repo în organizația HACK4ARAD, frate cu `AradEx-Plan` (planul comun), `AradEx-Backend`, `AradEx-Infrastructure` și `AradEx-Ops` (agenții Paperclip). **Citește întâi `../AradEx-Plan/CLAUDE.md`** (regulile echipei) și `../AradEx-Plan/docs/TEAM.md` §„Cine ce atinge” (ce fișiere sunt ale culoarului tău); `../AradEx-Plan/STRUCTURE.md` descrie toate repo-urile. Documentația e în `../AradEx-Plan/docs/`, designul în `../AradEx-Plan/design/`. Skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt într-un singur loc: `../AradEx-Plan/.claude/skills/`.
+Frontend-ul AradExperience (Hack4Arad 2026): o singură aplicație Vue cu două interfețe — **mobil** (`/m/*`, PWA, tab bar) și **web** (`/w/*`, bară sus + sidebar) — peste același client API. Repo în organizația HACK4ARAD, frate cu `AradEx-Plan` (planul comun), `AradEx-Backend`, `AradEx-Infrastructure` și `AradEx-Ops` (agenții Paperclip). **Citește întâi `../AradEx-Plan/CLAUDE.md`** (regulile echipei) ; `../AradEx-Plan/STRUCTURE.md` descrie toate repo-urile. Documentația e în `../AradEx-Plan/docs/`, designul în `../AradEx-Plan/design/`. Skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt într-un singur loc: `../AradEx-Plan/.claude/skills/`.
 
 ## Citește înainte de orice task
-1. `../AradEx-Plan/docs/PLAN.md` — task-ul curent (partea „FE”). 2. `../AradEx-Plan/docs/API.md` — contractul; `src/shared/types/api.ts` îl oglindește. 3. `../AradEx-Plan/docs/FEATURES.md` — regulile pe roluri și diferențele mobil vs web. 4. `../AradEx-Plan/docs/STATUS.md` — stare și decizii.
+1. `../AradEx-Plan/docs/PLAN.md` — task-ul curent (partea „FE”). 2. `../AradEx-Plan/docs/API.md` — contractul; `src/shared/types/api.ts` îl oglindește. 3. `../AradEx-Plan/docs/FEATURES.md` — regulile pe roluri și diferențele mobil vs web.
 Design: `../AradEx-Plan/design/AradExperience.html` (prototip original mobil, S0–S12), `AradExperience-extensii.html` (E1–E7 mobil, W1–W4 web), `AradExperience-web.html` (W5–W26) și `AradExperience-web-prototip.html` (web navigabil, date mock). Capturi în `../AradEx-Plan/design/screens/`, poze cu licență în `../AradEx-Plan/design/assets/` (vezi `../AradEx-Plan/design/README.md`). Stil „Clean Ink”: fundal `#F7F7F2`, ink `#111`, muted `#5C5C5C`, line `#D6D6D0`, accent `#FF5A36`, verde `#1F3A1A`, galben `#FFC43D`, piersică `#FFE8E2`; carduri albe radius 16, butoane negre radius 14; Inter + Material Symbols Outlined (fonturi locale în `public/fonts`).
 
 ## Stack aprobat
@@ -55,7 +55,7 @@ cp .env.example .env   # VITE_API_URL=http://localhost:8080/api/v1, VITE_DEMO=tr
 - Nu testăm layout-uri. Ecranele se verifică manual din checklist-ul task-ului, pe 390×844 și ≥1280 (+ telefon real pentru cameră/TTS).
 
 ## Nu
-- Nu pune chei API în FE (OpenAI e doar în BE). Nu duplica un ecran în `web/` copiind codul din `mobile/`. Nu adăuga librării fără motiv notat în `../AradEx-Plan/docs/STATUS.md`. Designul se modifică doar în `../AradEx-Plan/design/`.
+- Nu pune chei API în FE (OpenAI e doar în BE). Nu duplica un ecran în `web/` copiind codul din `mobile/`. Nu adăuga librării fără motiv notat în descrierea PR-ului. Designul se modifică doar în `../AradEx-Plan/design/`.
 
 ## Culoare (4 oameni în paralel)
 Fiecare story lucrează doar în fișierele feature-ului lui. După T02 fiecare rută are deja fișierul ei de view în `views/<feature>/`, iar textele, tipurile și clientul API sunt împărțite pe fișiere de modul (`shared/i18n/ro/<modul>.json`, `shared/types/<modul>.ts`, `shared/api/<modul>.ts`) — tu doar completezi fișierele tale; `router/index.ts`, layout-urile, navigația și `components/ui/` sunt ale lui P1. Poți importa componentele/composables altui culoar, dar nu le modifici.
