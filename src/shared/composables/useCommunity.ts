@@ -74,8 +74,6 @@ export function useActions() {
   const loading = ref(true)
   const error = ref<unknown>(null)
 
-  const savingId = ref<number | null>(null)
-
   async function load() {
     loading.value = true
     error.value = null
@@ -88,40 +86,7 @@ export function useActions() {
       loading.value = false
     }
   }
-
-  function patch(id: number, fn: (a: ActionSummary) => ActionSummary) {
-    actions.value = actions.value.map((a) => (a.id === id ? fn(a) : a))
-  }
-
-  /** Înscriere direct din listă (web): întoarce înscrierea sau null la eroare. */
-  async function register(id: number): Promise<RegistrationDto | null> {
-    savingId.value = id
-    try {
-      const r = await communityApi.register(id)
-      patch(id, (a) => ({ ...a, myRegistration: r, registeredCount: a.registeredCount + 1 }))
-      return r
-    } catch (e) {
-      ui.error(e)
-      return null
-    } finally {
-      savingId.value = null
-    }
-  }
-
-  async function cancel(id: number): Promise<boolean> {
-    savingId.value = id
-    try {
-      await communityApi.cancel(id)
-      patch(id, (a) => ({ ...a, myRegistration: undefined, registeredCount: Math.max(0, a.registeredCount - 1) }))
-      return true
-    } catch (e) {
-      ui.error(e)
-      return false
-    } finally {
-      savingId.value = null
-    }
-  }
-  return { actions, loading, error, savingId, load, register, cancel }
+  return { actions, loading, error, load }
 }
 
 export function useAction(id: Ref<number>) {

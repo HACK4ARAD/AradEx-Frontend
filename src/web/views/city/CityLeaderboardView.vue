@@ -1,13 +1,12 @@
 <script setup lang="ts">
-// T11 · Clasamentul voluntarilor (design/final web „Primărie · Clasament”): lună / an, căutare, tabel (#, voluntar, acțiuni,
-// puncte, ultima participare), export CSV, premiile anului și câteva statistici din clasament.
+// T11 · Clasamentul voluntarilor — design/final web `#/city/leaderboard`: lună / an (segmente), căutare, tabel (#, Voluntar,
+// Acțiuni, Puncte, Ultima participare), Export CSV; în dreapta „Premiile anului 2026” și statisticile clasamentului.
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AppButton, AppChip, AppIcon, EmptyState, Skeleton } from '@/shared/components'
-import PanelHeader from '@/shared/components/business/PanelHeader.vue'
-import PrizesCard from '@/shared/components/community/PrizesCard.vue'
+import { AppIcon, Skeleton } from '@/shared/components'
+import * as P from '@/web/components/community/panel'
 import { useFormat } from '@/shared/composables/useFormat'
-import { currentMonthLabel, useLeaderboard } from '@/shared/composables/useCommunity'
+import { currentMonthLabel, initials, useLeaderboard } from '@/shared/composables/useCommunity'
 import type { LeaderboardPeriod } from '@/shared/types/community'
 
 const { t } = useI18n()
@@ -19,7 +18,6 @@ onMounted(load)
 
 const now = new Date()
 const monthLabel = currentMonthLabel(now)
-const monthName = monthLabel.toLowerCase()
 const rows = computed(() => {
   const s = q.value.trim().toLowerCase()
   return (board.value?.entries ?? []).filter((r) => !s || r.displayName.toLowerCase().includes(s))
@@ -30,6 +28,7 @@ const stats = computed(() => {
 })
 const medal = (rank: number) => (rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : String(rank))
 const nf = (n: number) => new Intl.NumberFormat('ro-RO').format(n)
+const PRIZE_TONE = ['#FFE08A', '#E6E6E6', '#F0C9A8']
 
 /** CSV generat local din clasamentul afișat (fără server). */
 function exportCsv() {
@@ -39,48 +38,47 @@ function exportCsv() {
   const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }))
   const a = document.createElement('a')
   a.href = url
-  a.download = period.value === 'month' ? `clasament-${monthName}-${now.getFullYear()}.csv` : `clasament-${now.getFullYear()}.csv`
+  a.download = period.value === 'month' ? `clasament-${monthLabel.toLowerCase()}-${now.getFullYear()}.csv` : `clasament-${now.getFullYear()}.csv`
   a.click()
   URL.revokeObjectURL(url)
 }
 </script>
 
 <template>
-  <PanelHeader :title="t('community.cityBoard.title')" :subtitle="t('community.cityBoard.sub')">
-    <AppButton variant="ghost" size="sm" icon="download" :disabled="!board?.entries.length" @click="exportCsv">{{ t('community.cityBoard.export') }}</AppButton>
-  </PanelHeader>
+  <div :class="P.HEAD">
+    <div><h1 :class="P.H1">{{ t('community.cityBoard.title') }}</h1><div :class="P.SUB">{{ t('community.cityBoard.sub') }}</div></div>
+    <button type="button" :class="P.BTN_SEC" :disabled="!board?.entries.length" @click="exportCsv"><AppIcon name="download" :size="16" />{{ t('community.cityBoard.export') }}</button>
+  </div>
 
-  <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
-    <div class="bg-white rounded-[16px] border border-line min-w-0">
-      <div class="flex flex-wrap items-center gap-2 p-3 border-b border-line">
-        <AppChip :active="period === 'month'" @click="period = 'month'">{{ monthLabel }}</AppChip>
-        <AppChip :active="period === 'year'" @click="period = 'year'">{{ t('community.leaderboard.year', { y: now.getFullYear() }) }}</AppChip>
-        <label class="ml-auto flex items-center gap-2 h-9 px-3 rounded-full border border-line w-full sm:w-[240px]">
-          <AppIcon name="search" :size="18" class="text-muted" />
-          <input v-model="q" class="flex-1 min-w-0 outline-none text-[14px] bg-transparent" :placeholder="t('community.cityBoard.search')">
+  <div class="grid gap-3.5 grid-cols-1 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] items-start">
+    <div :class="P.CARD_FLUSH">
+      <div :class="P.TOOLBAR">
+        <div :class="P.SEG">
+          <button type="button" :class="P.segBtn(period === 'month')" @click="period = 'month'">{{ monthLabel }}</button>
+          <button type="button" :class="P.segBtn(period === 'year')" @click="period = 'year'">{{ t('community.leaderboard.year', { y: now.getFullYear() }) }}</button>
+        </div>
+        <label class="ml-auto flex items-center gap-2 h-[38px] px-3 rounded-[10px] bg-white border border-line text-muted w-full sm:max-w-[260px]">
+          <AppIcon name="search" :size="18" /><input v-model="q" class="flex-1 min-w-0 outline-none bg-transparent text-[14px] text-ink" :placeholder="t('community.cityBoard.search')">
         </label>
       </div>
-      <Skeleton v-if="loading" :rows="5" :height="44" class="p-3" />
-      <EmptyState v-else-if="!board" icon="cloud_off" :title="t('community.leaderboard.loadError')" :action="t('common.retry')" @action="load" />
-      <EmptyState v-else-if="!rows.length" icon="leaderboard" :title="t('community.leaderboard.empty')" />
+      <Skeleton v-if="loading" :rows="5" :height="44" class="p-3.5" />
+      <div v-else-if="!board" :class="P.EMPTY">
+        <AppIcon name="cloud_off" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.leaderboard.loadError') }}</b>
+        <div class="mt-3"><button type="button" :class="P.BTN_SM_SEC" @click="load">{{ t('common.retry') }}</button></div>
+      </div>
+      <div v-else-if="!rows.length" :class="P.EMPTY">
+        <AppIcon name="leaderboard" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.leaderboard.empty') }}</b>
+      </div>
       <div v-else class="overflow-x-auto">
-        <table class="w-full text-[14px] border-collapse min-w-[560px]">
-          <thead>
-            <tr class="text-left text-muted text-[12.5px]">
-              <th class="px-3 py-2.5 font-semibold w-12">#</th>
-              <th class="px-3 py-2.5 font-semibold">{{ t('community.cityBoard.colName') }}</th>
-              <th class="px-3 py-2.5 font-semibold">{{ t('community.cityBoard.colActions') }}</th>
-              <th class="px-3 py-2.5 font-semibold">{{ t('community.cityBoard.colPoints') }}</th>
-              <th class="px-3 py-2.5 font-semibold">{{ t('community.cityBoard.colLast') }}</th>
-            </tr>
-          </thead>
+        <table class="w-full border-collapse min-w-[560px]">
+          <thead><tr><th v-for="c in ['rank', 'name', 'actions', 'points', 'last']" :key="c" :class="P.TH">{{ t(`community.cityBoard.cols.${c}`) }}</th></tr></thead>
           <tbody>
-            <tr v-for="r in rows" :key="r.userId" class="border-t border-line">
-              <td class="px-3 py-2.5">{{ medal(r.rank) }}</td>
-              <td class="px-3 py-2.5 font-semibold">{{ r.displayName }}</td>
-              <td class="px-3 py-2.5">{{ r.actionsCount }}</td>
-              <td class="px-3 py-2.5 font-bold">{{ nf(r.points) }}</td>
-              <td class="px-3 py-2.5 text-muted">{{ r.lastAt ? `${r.lastActionTitle ?? ''} · ${f.dateTime(r.lastAt, false)}` : '—' }}</td>
+            <tr v-for="r in rows" :key="r.userId" :class="P.TR">
+              <td :class="[P.TD, 'w-12']">{{ medal(r.rank) }}</td>
+              <td :class="P.TD"><div class="flex items-center gap-3"><span :class="P.AVATAR">{{ initials(r.displayName) }}</span><b>{{ r.displayName }}</b></div></td>
+              <td :class="P.TD">{{ r.actionsCount }}</td>
+              <td :class="P.TD"><b>{{ nf(r.points) }}</b></td>
+              <td :class="[P.TD, 'text-muted']">{{ r.lastAt ? `${r.lastActionTitle ?? ''} · ${f.dateTime(r.lastAt, false)}` : '—' }}</td>
             </tr>
           </tbody>
         </table>
@@ -88,12 +86,19 @@ function exportCsv() {
     </div>
 
     <div class="flex flex-col gap-3.5">
-      <PrizesCard />
-      <div class="bg-white rounded-[16px] border border-line p-4">
-        <b class="block text-[14.5px] mb-2">{{ t('community.cityBoard.stats') }}</b>
-        <div class="flex items-center gap-2 py-1.5 text-[14px]"><AppIcon name="group" :size="18" />{{ t('community.cityBoard.statPeople', { n: stats.people }) }}</div>
-        <div class="flex items-center gap-2 py-1.5 text-[14px]"><AppIcon name="stars" :size="18" />{{ t('community.cityBoard.statPoints', { n: nf(stats.points) }) }}</div>
-        <div class="flex items-center gap-2 py-1.5 text-[14px]"><AppIcon name="event_available" :size="18" />{{ t('community.cityBoard.statActions', { n: stats.actions }) }}</div>
+      <div :class="P.CARD">
+        <div :class="[P.CH, 'items-center']"><h2 :class="P.CH_TITLE">{{ t('community.prizes.title') }}</h2></div>
+        <div v-for="n in 3" :key="n" :class="P.LROW">
+          <span :class="P.AVATAR" :style="{ background: PRIZE_TONE[n - 1] }">{{ n }}</span>
+          <div><div :class="P.TS">{{ t('community.prizes.place', { n }) }}</div><b class="text-[13.5px]">{{ t(`community.prizes.p${n}`) }}</b></div>
+        </div>
+        <div :class="[P.TS, 'mt-2.5']">{{ t('community.prizes.gala') }}</div>
+      </div>
+      <div :class="P.CARD">
+        <h2 :class="[P.CH_TITLE, 'mb-2']">{{ t('community.cityBoard.stats') }}</h2>
+        <div :class="P.LROW"><AppIcon name="group" :size="18" />{{ t('community.cityBoard.statPeople', { n: stats.people }) }}</div>
+        <div :class="P.LROW"><AppIcon name="stars" :size="18" />{{ t('community.cityBoard.statPoints', { n: nf(stats.points) }) }}</div>
+        <div :class="P.LROW"><AppIcon name="event_available" :size="18" />{{ t('community.cityBoard.statActions', { n: stats.actions }) }}</div>
       </div>
     </div>
   </div>

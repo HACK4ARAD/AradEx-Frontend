@@ -1,19 +1,17 @@
 <script setup lang="ts">
-// T11 · W2 Panoul Primăriei (design/final web „Primărie · Panou”): salut, KPI (agendă, înscriși, puncte, voluntari),
-// participarea la acțiunile care urmează (cu câți sunt de validat) și activitatea recentă.
+// T11 · W2 Panoul Primăriei — design/final web `#/city` (`cityDash()`): „Bună dimineața, Primăria Arad”, butoanele Eveniment /
+// Acțiune comunitară, 4 KPI, „Participare la acțiuni” (bare) și „Activitate” (feed).
 import { computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { AppButton, AppIcon, EmptyState, Skeleton } from '@/shared/components'
-import PanelHeader from '@/shared/components/business/PanelHeader.vue'
-import KpiCard from '@/shared/components/community/KpiCard.vue'
+import { AppIcon, Skeleton } from '@/shared/components'
+import PanelKpi from '@/web/components/community/PanelKpi.vue'
+import * as P from '@/web/components/community/panel'
 import { useFormat } from '@/shared/composables/useFormat'
 import { aradHour, useCityDashboard } from '@/shared/composables/useCommunity'
 import { useAuthStore } from '@/shared/stores/auth'
 
 const { t } = useI18n()
 const f = useFormat()
-const router = useRouter()
 const auth = useAuthStore()
 const { data, loading, load } = useCityDashboard()
 onMounted(load)
@@ -24,51 +22,67 @@ const greeting = computed(() => {
 })
 const nf = (n: number) => new Intl.NumberFormat('ro-RO').format(n)
 const icon: Record<string, string> = { CONFIRMED: 'qr_code_scanner', NO_SHOW: 'block', REGISTERED: 'how_to_reg', CANCELLED: 'close' }
+const pct = (a: { registeredCount: number; capacity: number }) => Math.min(100, Math.round((a.registeredCount / Math.max(1, a.capacity)) * 100))
 </script>
 
 <template>
-  <PanelHeader :title="`${greeting}, ${auth.user?.displayName ?? ''}`" :subtitle="f.longDate(new Date().toISOString())">
-    <AppButton variant="ghost" size="sm" icon="add" @click="router.push('/w/city/events/new')">{{ t('community.dashboard.newEvent') }}</AppButton>
-    <AppButton size="sm" icon="add" @click="router.push('/w/city/actions/new')">{{ t('community.dashboard.newAction') }}</AppButton>
-  </PanelHeader>
+  <div :class="P.HEAD">
+    <div>
+      <h1 :class="P.H1">{{ greeting }}, {{ auth.user?.displayName }}</h1>
+      <div :class="P.SUB">{{ f.longDate(new Date().toISOString()) }}</div>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <router-link to="/w/city/events/new" :class="P.BTN_SEC"><AppIcon name="add" :size="16" />{{ t('community.dashboard.newEvent') }}</router-link>
+      <router-link to="/w/city/actions/new" :class="P.BTN"><AppIcon name="add" :size="16" />{{ t('community.dashboard.newAction') }}</router-link>
+    </div>
+  </div>
 
   <Skeleton v-if="loading" :rows="3" :height="96" />
-  <EmptyState v-else-if="!data" icon="cloud_off" :title="t('community.loadError')" :action="t('common.retry')" @action="load" />
+  <div v-else-if="!data" :class="[P.CARD, P.EMPTY]">
+    <AppIcon name="cloud_off" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" />
+    <b class="text-ink">{{ t('community.loadError') }}</b>
+    <div class="mt-3"><button type="button" :class="P.BTN_SM_SEC" @click="load">{{ t('common.retry') }}</button></div>
+  </div>
   <template v-else>
-    <div class="grid gap-3 grid-cols-2 xl:grid-cols-4">
-      <KpiCard icon="calendar_month" :label="t('community.dashboard.kpiEvents')" :value="nf(data.upcomingEvents)" />
-      <KpiCard icon="group" :label="t('community.dashboard.kpiRegistered')" :value="nf(data.registrations)" :hint="t('community.dashboard.kpiPending', { n: data.pendingValidations })" />
-      <KpiCard icon="stars" tone="#FF5A36" :label="t('community.dashboard.kpiPoints')" :value="nf(data.pointsAwarded)" :hint="t('community.dashboard.thisMonth')" />
-      <KpiCard icon="badge" tone="#1D5FD1" :label="t('community.dashboard.kpiVolunteers')" :value="nf(data.activeVolunteers)" :hint="data.activeVolunteers ? undefined : t('community.dashboard.volunteersSoon')" />
+    <div class="grid gap-3.5 mb-4 grid-cols-2 xl:grid-cols-4">
+      <PanelKpi icon="calendar_month" :label="t('community.dashboard.kpiEvents')" :value="nf(data.upcomingEvents)" />
+      <PanelKpi icon="group" :label="t('community.dashboard.kpiRegistered')" :value="nf(data.registrations)" :hint="t('community.dashboard.kpiPending', { n: data.pendingValidations })" />
+      <PanelKpi icon="stars" tone="#FF5A36" :label="t('community.dashboard.kpiPoints')" :value="nf(data.pointsAwarded)" :hint="t('community.dashboard.thisMonth')" />
+      <PanelKpi icon="badge" tone="#1D5FD1" :label="t('community.dashboard.kpiVolunteers')" :value="nf(data.activeVolunteers)" :hint="data.activeVolunteers ? undefined : t('community.dashboard.volunteersSoon')" />
     </div>
 
-    <div class="grid gap-5 mt-5 lg:grid-cols-2">
-      <div class="bg-white rounded-[16px] border border-line p-4 min-w-0">
-        <div class="flex items-start justify-between gap-3 mb-3">
-          <div><b class="text-[15px]">{{ t('community.dashboard.participation') }}</b><div class="text-muted text-[12.5px]">{{ t('community.dashboard.participationHint') }}</div></div>
-          <router-link to="/w/city/validate" class="text-[13px] text-muted no-underline flex items-center shrink-0">{{ t('community.dashboard.all') }}<AppIcon name="chevron_right" :size="18" /></router-link>
+    <div class="grid gap-3.5 grid-cols-1 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      <div :class="P.CARD">
+        <div :class="P.CH">
+          <div><h2 :class="P.CH_TITLE">{{ t('community.dashboard.participation') }}</h2><div :class="P.HINT">{{ t('community.dashboard.participationHint') }}</div></div>
+          <router-link to="/w/city/validate" :class="P.BTN_SM_SEC">{{ t('community.dashboard.all') }}<AppIcon name="chevron_right" :size="16" /></router-link>
         </div>
-        <EmptyState v-if="!data.actions.length" icon="event_busy" :title="t('community.home.empty')" :action="t('community.dashboard.newAction')" @action="router.push('/w/city/actions/new')" />
-        <router-link v-for="a in data.actions" :key="a.id" :to="{ path: '/w/city/validate', query: { a: a.id } }"
-          class="grid grid-cols-[minmax(0,1fr)_90px_auto] sm:grid-cols-[minmax(0,1fr)_140px_auto] items-center gap-3 py-2.5 border-b border-line last:border-b-0 no-underline text-ink">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <span class="w-10 h-10 rounded-[10px] bg-green-deep bg-cover bg-center shrink-0" :style="a.imageUrl ? { backgroundImage: `url('${a.imageUrl}')` } : undefined" />
-            <div class="min-w-0"><b class="block text-[14px] truncate">{{ a.title }}</b><span class="text-muted text-[12.5px]">{{ f.dateTime(a.startAt, false) }} · {{ t('community.dashboard.toValidate', { n: a.pendingCount }) }}</span></div>
-          </div>
-          <div class="h-2 rounded bg-soft overflow-hidden"><i class="block h-full bg-green rounded" :style="{ width: `${Math.min(100, Math.round(a.registeredCount / a.capacity * 100))}%` }" /></div>
-          <span class="text-muted text-[12.5px] whitespace-nowrap">{{ a.registeredCount }}/{{ a.capacity }}</span>
-        </router-link>
+        <div v-if="!data.actions.length" :class="P.EMPTY">
+          <AppIcon name="event_busy" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.home.empty') }}</b>
+        </div>
+        <div v-else class="flex flex-col gap-3">
+          <router-link v-for="a in data.actions" :key="a.id" :to="{ path: '/w/city/validate', query: { a: a.id } }"
+            class="grid grid-cols-[minmax(0,1fr)_90px_46px] sm:grid-cols-[minmax(0,1fr)_140px_46px] gap-3 items-center text-[13px] no-underline text-ink">
+            <div class="flex items-center gap-3 min-w-0">
+              <span :class="P.THUMB" :style="a.imageUrl ? { backgroundImage: `url('${a.imageUrl}')` } : undefined"><AppIcon v-if="!a.imageUrl" name="volunteer_activism" :size="18" /></span>
+              <div class="min-w-0"><div :class="[P.TT, 'truncate']">{{ a.title }}</div><div :class="P.TS">{{ f.dateTime(a.startAt, false) }} · {{ t('community.dashboard.toValidate', { n: a.pendingCount }) }}</div></div>
+            </div>
+            <div :class="P.BAR"><i class="block h-full bg-ok rounded-[3px]" :style="{ width: `${pct(a)}%` }" /></div>
+            <span :class="P.TS">{{ a.registeredCount }}/{{ a.capacity }}</span>
+          </router-link>
+        </div>
       </div>
 
-      <div class="bg-white rounded-[16px] border border-line p-4 min-w-0">
-        <b class="text-[15px]">{{ t('community.dashboard.activity') }}</b>
-        <div class="text-muted text-[12.5px] mb-2">{{ t('community.dashboard.activityHint') }}</div>
-        <EmptyState v-if="!data.activity.length" icon="inbox" :title="t('community.dashboard.noActivity')" />
-        <div v-for="(x, i) in data.activity" :key="i" class="flex gap-3 py-2.5 border-b border-line last:border-b-0">
-          <span class="w-8 h-8 rounded-full bg-soft flex items-center justify-center shrink-0"><AppIcon :name="icon[x.type] ?? 'info'" :size="18" /></span>
-          <div class="min-w-0 text-[14px]">
-            <b>{{ x.userName }}</b> {{ t(`community.dashboard.act${x.type}`, { action: x.actionTitle, by: x.by ?? '', n: x.points }) }}
-            <div class="text-muted text-[12px]">{{ f.dateTime(x.at) }}</div>
+      <div :class="P.CARD">
+        <div :class="P.CH"><div><h2 :class="P.CH_TITLE">{{ t('community.dashboard.activity') }}</h2><div :class="P.HINT">{{ t('community.dashboard.activityHint') }}</div></div></div>
+        <div v-if="!data.activity.length" :class="P.EMPTY">
+          <AppIcon name="inbox" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.dashboard.noActivity') }}</b>
+        </div>
+        <div v-else class="flex flex-col">
+          <div v-for="(x, i) in data.activity" :key="i" :class="P.FEED_ROW">
+            <span :class="P.FEED_ICON"><AppIcon :name="icon[x.type] ?? 'info'" :size="16" /></span>
+            <div class="min-w-0"><b>{{ x.userName }}</b> {{ t(`community.dashboard.act${x.type}`, { action: x.actionTitle, by: x.by ?? '', n: x.points }) }}
+              <div :class="P.TS">{{ f.dateTime(x.at) }}</div></div>
           </div>
         </div>
       </div>

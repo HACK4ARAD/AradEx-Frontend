@@ -99,7 +99,8 @@
     "linkCopied": "Link copiat.",
     "notFound": "Acțiunea nu există sau nu mai e publicată.",
     "backToList": "Înapoi la acțiuni",
-    "shareUnavailable": "Trimiterea nu e disponibilă aici. Copiază linkul din bara de adrese."
+    "shareUnavailable": "Trimiterea nu e disponibilă aici. Copiază linkul din bara de adrese.",
+    "organizer": "Primăria Arad"
   },
   "ticket": {
     "title": "QR-ul tău",
@@ -112,7 +113,8 @@
     "p1": "Abonament anual la Teatrul Clasic",
     "p2": "Abonament la Filarmonica Arad, stagiunea 2027",
     "p3": "Cină pentru două persoane la un restaurant partener",
-    "note": "Primii 50 sunt invitați la Gala Voluntarilor, pe 19 decembrie. Clasamentul numără doar punctele câștigate, nu și cele cheltuite."
+    "note": "Primii 50 sunt invitați la Gala Voluntarilor, pe 19 decembrie. Clasamentul numără doar punctele câștigate, nu și cele cheltuite.",
+    "gala": "Primii 50 sunt invitați la Gala Voluntarilor, 19 decembrie."
   },
   "leaderboard": {
     "title": "Clasament",
@@ -163,10 +165,6 @@
     "confirmAll": "Confirmă toți",
     "confirmAllAsk": "Confirmi toți cei {n} participanți în așteptare? Fiecare primește punctele acțiunii.",
     "confirmedMany": "{n} participanți confirmați.",
-    "colWho": "Participant",
-    "colCode": "Cod",
-    "colAt": "Înscris",
-    "colStatus": "Stare",
     "confirmedPts": "Confirmat · +{n}",
     "by": "de {name}, la {at}",
     "reject": "Respinge",
@@ -175,31 +173,18 @@
     "scannersTitle": "Voluntarii care scanează",
     "scannersHint": "Confirmarea pe teren se face din aplicația de telefon, nu de aici.",
     "fieldApp": "Primăria scanează din aplicație, la Panou → Validare pe teren. Conturile de voluntar vin în curând.",
-    "manualLabel": "Confirmă manual după cod"
+    "manualLabel": "Confirmă manual după cod",
+    "cols": {
+      "who": "Participant",
+      "code": "Cod",
+      "at": "Înscris",
+      "status": "Stare"
+    },
+    "manualPh": "Confirmă manual după cod: AX-C1-…",
+    "all": "Tot"
   },
   "web": {
-    "sub": "Acțiuni organizate de Primăria Arad. Participi, un voluntar al Primăriei îți scanează codul, primești puncte pe care le folosești la firmele locale.",
-    "upcoming": "Urmează",
-    "spots": "{taken}/{total} locuri",
-    "register": "Mă înscriu",
-    "myQr": "QR-ul meu",
-    "confirmed": "Confirmat +{n}",
-    "details": "Detalii",
-    "loginLocal": "Conectează-te ca localnic",
-    "boardMonth": "Clasament · luna aceasta",
-    "boardYear": "Clasament · anul acesta",
-    "toYear": "Anul",
-    "toMonth": "Luna"
-  },
-  "account": {
-    "myRegs": "Înscrierile mele",
-    "noRegs": "Încă nu te-ai înscris la nicio acțiune",
-    "seeActions": "Vezi acțiunile",
-    "history": "Istoricul punctelor",
-    "noHistory": "Încă nu ai puncte. Prima acțiune la care participi îți aduce puncte.",
-    "when": "Data",
-    "what": "Pentru",
-    "points": "Puncte"
+    "boardMonth": "Clasament · luna aceasta"
   },
   "pointsType": {
     "EARN_ACTION": "Acțiune comunitară",
@@ -239,35 +224,42 @@
     "editTitle": "Editează acțiunea",
     "formSub": "Apare în Comunitate; localnicii se pot înscrie imediat după publicare.",
     "backToList": "Înapoi la acțiuni",
-    "upcoming": "Urmează",
-    "all": "Toate",
-    "drafts": "Ciorne",
     "count": "{n} acțiuni",
     "empty": "Nicio acțiune aici",
-    "colAction": "Acțiune",
-    "colWhen": "Când",
-    "colPoints": "Puncte",
-    "colSpots": "Locuri",
-    "colStatus": "Stare",
     "validate": "Validare",
     "edit": "Editează",
     "published": "Acțiune publicată în aplicație.",
     "draftSaved": "Salvată ca ciornă.",
-    "saved": "Modificările au fost salvate."
+    "saved": "Modificările au fost salvate.",
+    "filter": {
+      "up": "Urmează",
+      "all": "Toate",
+      "draft": "Ciorne"
+    },
+    "cols": {
+      "action": "Acțiune",
+      "when": "Când",
+      "points": "Puncte",
+      "spots": "Locuri",
+      "status": "Stare"
+    }
   },
   "cityBoard": {
     "title": "Clasamentul voluntarilor",
     "sub": "Puncte câștigate la acțiunile comunitare (nu cele cheltuite). Public pentru toți utilizatorii.",
     "export": "Export CSV",
     "search": "Caută după nume",
-    "colName": "Voluntar",
-    "colActions": "Acțiuni",
-    "colPoints": "Puncte",
-    "colLast": "Ultima participare",
     "stats": "Statistici",
     "statPeople": "{n} oameni cu puncte în perioada aleasă",
     "statPoints": "{n} puncte câștigate",
-    "statActions": "{n} participări confirmate"
+    "statActions": "{n} participări confirmate",
+    "cols": {
+      "rank": "#",
+      "name": "Voluntar",
+      "actions": "Acțiuni",
+      "points": "Puncte",
+      "last": "Ultima participare"
+    }
   },
   "form": {
     "details": "Detalii",
@@ -300,6 +292,8 @@
     "endAfterStart": "Ora de final trebuie să fie după ora de început",
     "pointsRange": "Între 10 și 200 de puncte",
     "capacityRange": "Între 1 și 1000 de locuri",
-    "capacityBelowRegistered": "Nu poate fi mai mic decât numărul de înscriși"
+    "capacityBelowRegistered": "Nu poate fi mai mic decât numărul de înscriși",
+    "photoHint": "Alege una dintre pozele cu licență ale acțiunilor sau lasă fără poză.",
+    "previewSpots": "{taken}/{total} locuri · {org}"
   }
 }
