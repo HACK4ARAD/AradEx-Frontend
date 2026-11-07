@@ -11,6 +11,8 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      // înregistrarea o face main.ts, doar pe web: în aplicația nativă (Capacitor) service worker-ul nu are rost și dă eroare
+      injectRegister: false,
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
       manifest: {
         name: 'AradExperience',
