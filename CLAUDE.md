@@ -27,7 +27,7 @@ src/
     styles/base.css           tokens + bază Tailwind
   mobile/  layouts/MobileLayout.vue (tab bar)   views/<feature>/XView.vue (câte unul per rută)   components/home/ (tab-urile din Acasă), components/panel/ (/panel)
   web/     layouts/WebLayout.vue (bară + sidebar) views/<feature>/XView.vue (câte unul per rută; business-panel/, city/, admin/ = câte unul pe secțiune;
-           legal/ = Confidențialitate)   components/home/ (secțiunile prezentării)   presentation.ts (linkuri de descărcare, contact)
+           legal/ = Confidențialitate)   components/site/ (secțiunile prezentării, T20)   presentation.ts (linkuri de descărcare, contact)
            web/views/{events,places,map,plan,offers,chat,account,business}/ nu mai sunt în router (T20): web-ul nu are paginile publice ale aplicației
   router/                     app.ts: ce aplicație rulează (nativ → mobile; `?app=mobile|web` forțează și se ține în localStorage `ax.app`;
                               `?preview=mobile` și linkurile vechi `/m/…` → mobil doar pentru tab-ul curent; implicit web) · mobile.ts / web.ts: rutele din API.md §Rute FE

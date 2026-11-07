@@ -25,7 +25,8 @@ const ui = uiOf(app)
 export const router = createRouter({
   history: createWebHistory(),
   routes: routesFor(app),
-  scrollBehavior: () => ({ top: 0 }),
+  // ancorele prezentării (`/#features`, `/#download`, `/#panels`) derulează la secțiune; restul pornește de sus
+  scrollBehavior: (to) => (to.hash ? { el: to.hash, top: 80, behavior: 'smooth' } : { top: 0 }),
 })
 
 /** `meta.roles` al unei căi, sau `null` dacă nu e o rută cu nume în aplicația curentă (catch-all, redirect vechi). */
