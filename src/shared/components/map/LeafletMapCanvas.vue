@@ -16,6 +16,7 @@ const emit = defineEmits<{ select: [id: string | null] }>()
 const el = ref<HTMLDivElement | null>(null)
 const map = shallowRef<L.Map | null>(null)
 let markerLayer: L.LayerGroup | null = null
+let lineLayer: L.LayerGroup | null = null
 let routeLayer: L.Polyline | null = null
 let meLayer: L.Marker | null = null
 
@@ -26,6 +27,17 @@ function icon(m: MapMarker, selected: boolean) {
     iconSize: [26, 26],
     iconAnchor: [13, 13],
   })
+}
+
+/** Liniile transportului, subțiri și sub traseul ales (care rămâne deasupra). */
+function drawLines() {
+  if (!map.value) return
+  lineLayer?.clearLayers()
+  lineLayer ??= L.layerGroup().addTo(map.value)
+  for (const l of props.lines ?? []) {
+    L.polyline(l.path, { color: l.color, weight: 3, opacity: 0.55, interactive: false }).addTo(lineLayer)
+  }
+  routeLayer?.bringToFront()
 }
 
 function drawMarkers() {
@@ -77,6 +89,7 @@ onMounted(() => {
   map.value.on('click', () => emit('select', null))
   // containerul își termină layout-ul după montare (ecran fix, tranziția rutei): Leaflet își recalculează dimensiunea
   setTimeout(() => map.value?.invalidateSize({ pan: false }), 0)
+  drawLines()
   drawMarkers()
   drawMe()
   drawRoute()
@@ -88,6 +101,7 @@ onBeforeUnmount(() => {
 })
 
 watch(() => [props.markers, props.selectedId], drawMarkers)
+watch(() => props.lines, drawLines)
 watch(() => [props.route, props.routeApproximate], drawRoute)
 watch(() => props.me, drawMe)
 
