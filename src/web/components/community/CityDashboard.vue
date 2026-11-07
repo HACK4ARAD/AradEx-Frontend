@@ -1,8 +1,7 @@
 <script setup lang="ts">
 // T11 · W2 Panoul Primăriei — design/final web `#/city` (`cityDash()`): „Bună dimineața, Primăria Arad”, butoanele Eveniment /
 // Acțiune comunitară, 4 KPI, „Participare la acțiuni” (bare) și „Activitate” (feed).
-// Componentă (nu view) pentru că o folosesc două rute: `/city` (CityDashboardView) și `/admin` (AdminDashboardView) — în design
-// Adminul are același panou (`route('/admin', () => cityDash(true))`). Cardul „De verificat / moderat” al Adminului vine cu T14.
+// Varianta Adminului (`/admin`, `cityDash(true)` în design) e `web/components/admin/AdminDashboard.vue` (T14).
 import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, Skeleton } from '@/shared/components'
