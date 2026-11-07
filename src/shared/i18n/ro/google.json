@@ -1,0 +1,39 @@
+{
+  "title": "Pe Google",
+  "ratings": {
+    "zero": "nicio părere",
+    "one": "o părere",
+    "few": "{n} păreri",
+    "many": "{n} de păreri"
+  },
+  "openMaps": "Vezi pe Google Maps",
+  "allReviews": "Toate recenziile pe Google",
+  "more": "Mai mult",
+  "less": "Mai puțin",
+  "stars": "{n} din 5 stele",
+  "noReviews": "Încă nu sunt recenzii scrise pe Google.",
+  "link": {
+    "title": "Pagina de pe Google",
+    "sub": "Ratingul și recenziile Google se afișează în aplicație, cu „Powered by Google”. Doar citire: nu se scrie nimic pe Google.",
+    "subPlace": "ID-ul se caută automat după nume și coordonate când cineva deschide obiectivul în aplicație; aici îl poți corecta.",
+    "label": "Google Place ID",
+    "placeholder": "ex. ChIJ7VFfQACZRUcRXFuEhkS_zss",
+    "help": "Unde găsesc ID-ul?",
+    "save": "Salvează",
+    "unlink": "Dezleagă",
+    "saved": "Legătura cu Google a fost salvată.",
+    "unlinked": "Legătura cu Google a fost scoasă.",
+    "invalid": "ID-ul Google are doar litere, cifre, „_” și „-”.",
+    "invalidId": "Google nu cunoaște acest Place ID: verifică-l (ratingul nu apare în aplicație până nu e corect).",
+    "notLinked": "Nelegat de Google",
+    "notConfigured": "Cheia Google nu e setată pe server: recenziile nu apar încă în aplicație.",
+    "unavailable": "Google nu răspunde acum; ratingul apare după ce revine.",
+    "inApp": "Așa apare în aplicație"
+  },
+  "panel": {
+    "title": "Recenzii",
+    "sub": "Ce spun clienții despre firma ta pe Google. Recenziile lăsate în aplicație vin odată cu recenziile la evenimente.",
+    "empty": "Leagă firma de pagina ei de pe Google ca să vezi aici ratingul și recenziile.",
+    "emptyTitle": "Nicio recenzie de afișat"
+  }
+}

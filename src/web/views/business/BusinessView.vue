@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import AnnouncementItem from '@/shared/components/business/AnnouncementItem.vue'
 import BusinessContact from '@/shared/components/business/BusinessContact.vue'
+import GoogleReviews from '@/shared/components/google/GoogleReviews.vue'
 import PublicEventRow from '@/shared/components/business/PublicEventRow.vue'
 import MapView from '@/shared/components/map/MapView.vue'
 import type { MapMarker } from '@/shared/components/map/types'
@@ -71,6 +72,9 @@ const inAppRoute = computed(() => !!pin.value && !!data.value?.offers.length && 
             <AnnouncementItem v-for="a in data.announcements" :key="a.id" :announcement="a" />
           </div>
         </template>
+
+        <!-- T17: ratingul și recenziile Google, doar dacă firma și-a legat pagina de pe Google -->
+        <GoogleReviews kind="business" :id="b.id" />
       </div>
       <aside class="flex flex-col gap-3 min-w-0">
         <div v-if="pin" class="bg-white rounded-[16px] overflow-hidden">
