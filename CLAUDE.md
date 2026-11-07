@@ -3,7 +3,7 @@
 Frontend-ul AradExperience (Hack4Arad 2026): o singură aplicație Vue cu două interfețe — **mobil** (`/m/*`, PWA, tab bar) și **web** (`/w/*`, bară sus + sidebar) — peste același client API. Repo în organizația HACK4ARAD, frate cu `AradEx-Plan` (planul comun), `AradEx-Backend`, `AradEx-Infrastructure` și `AradEx-Ops` (agenții Paperclip). **Citește întâi `../AradEx-Plan/CLAUDE.md`** (regulile echipei) ; `../AradEx-Plan/STRUCTURE.md` descrie toate repo-urile. Documentația e în `../AradEx-Plan/docs/`, designul în `../AradEx-Plan/design/`. Skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt într-un singur loc: `../AradEx-Plan/.claude/skills/`.
 
 ## Citește înainte de orice task
-1. `../AradEx-Plan/docs/PLAN.md` — task-ul curent (partea „FE”). 2. `../AradEx-Plan/docs/API.md` — contractul; `src/shared/types/api.ts` îl oglindește. 3. `../AradEx-Plan/docs/FEATURES.md` — regulile pe roluri și diferențele mobil vs web.
+1. `../AradEx-Plan/docs/PLAN.md` — task-ul curent (partea „FE”). 2. `../AradEx-Plan/docs/API.md` — contractul; `src/shared/types/<modul>.ts` îl oglindesc. 3. `../AradEx-Plan/docs/FEATURES.md` — regulile pe roluri și diferențele mobil vs web.
 Design: **`../AradEx-Plan/design/final/`** — sursa de adevăr: `mobile.html` (aplicația, 36 de ecrane, cu Transport și Voluntar) și `web.html` (site public + panourile Primărie / Admin / Firmă, 37 de pagini), planșele în `design/final/screens/`, tabelul mobil / web în `design/final/README.md`. Prototipurile vechi din `design/` sunt doar istoric. Poze cu licență în `../AradEx-Plan/design/assets/`, copiate în `public/img/` (vezi `../AradEx-Plan/design/README.md`). Stil „Clean Ink” (valorile din `design/final/shared/ui.css`, deja în `base.css`): fundal `#FAFAF7`, ink `#111`, muted `#5C5C5C`, line `#E8E8E3`, accent `#FF5A36`, verde `#3B6D11` / închis `#1F3A12`, galben `#FFC244`, piersică `#FFE8E2`; panouri web cu sidebar întunecat `#0E0E10` pe fundal `#F6F6F3`; carduri albe radius 16, butoane negre radius 14; Inter + Material Symbols Outlined (fonturi locale în `public/fonts`).
 
 ## Stack aprobat
@@ -14,18 +14,20 @@ Fără UI kit-uri (Vuetify etc.), fără Google Maps, fără pachete de icon-uri
 ```
 src/
   shared/                     tot ce e comun mobil + web (aici stă logica; mobile/ și web/ doar o așază pe ecran)
-    types/api.ts              DTO-urile din docs/API.md (= modulul api din BE); sursa de adevăr pentru tipuri
-    api/                      client.ts (fetch wrapper: Bearer, ProblemDetail → ApiError, 401 → logout) + un fișier per interfață din BE:
-                              auth.ts, health.ts, apoi events.ts, tickets.ts, places.ts, business.ts, offers.ts, community.ts, ai.ts, admin.ts
+    types/<modul>.ts          DTO-urile din docs/API.md pe module: common, auth, business, places, events, tickets, offers, community,
+                              chat, plan, admin, volunteer (api.ts doar le re-exportă — cod nou importă din fișierul modulului)
+    api/                      client.ts (fetch wrapper: Bearer, ProblemDetail → ApiError, 401 → logout) + un fișier per interfață din BE,
+                              toate create în T02: auth, health, places, events, tickets, business, offers, community, ai, admin, volunteer
     stores/                   stare globală (Pinia): auth.ts (token + user + rol, hasRole), ui.ts (toast); de adăugat doar ce e cu adevărat global
-    composables/              logica de ecran, refolosibilă (= service): useFormat (date/bani/km în ro); vin useGeo, useRouteOsrm, useTts, useEvents(filters)…
-    components/ui/            componente generice Clean Ink: AppButton, AppChip, AppCard, AppInput, AppIcon, AppToast, EmptyState, Skeleton, ApiStatus, PlaceholderScreen (+ AppSheet)
-    components/<feature>/     componente de feature, comune mobil + web: auth/LoginForm; vin events/EventCard, offers/OfferCard, community/ActionCard,
-                              places/PlaceCard + AudioGuideBar, map/MapView, qr/QrCode + QrScanner
-    i18n/                     ro.json, en.json (chei grupate pe ecran)
+    composables/              logica de ecran, refolosibilă (= service): useFormat, useAuthForm, useBack, useGeo (T02); vin useRouteOsrm, useTts, useEvents(filters)…
+    components/ui/            componente generice Clean Ink: AppButton, AppChip, AppCard, AppInput, AppIcon, AppSheet, AppToast, EmptyState, Skeleton, ApiStatus, PlaceholderScreen
+    components/<feature>/     componente de feature, comune mobil + web: auth/LoginForm, qr/QrCode + QrScanner (T02); vin events/EventCard, offers/OfferCard,
+                              community/ActionCard, places/PlaceCard + AudioGuideBar, map/MapView
+    i18n/                     ro/<modul>.json + en/<modul>.json (fișierul = cheia de top: ro/events.json → t('events.…')), încărcate automat
     styles/base.css           tokens + bază Tailwind
-  mobile/  layouts/MobileLayout.vue (tab bar)   views/<feature>/XView.vue  (home/HomeView, auth/LoginView; restul PlaceholderView până la task-ul lor)
-  web/     layouts/WebLayout.vue (bară + sidebar) views/<feature>/XView.vue  (home/LandingView, auth/LoginView; business/, city/, admin/ vin în task-uri)
+  mobile/  layouts/MobileLayout.vue (tab bar)   views/<feature>/XView.vue (câte unul per rută)   components/home/ (tab-urile din Acasă), components/panel/ (/m/panel)
+  web/     layouts/WebLayout.vue (bară + sidebar) views/<feature>/XView.vue (câte unul per rută; business-panel/, city/, admin/ = câte unul pe secțiune;
+           account/ = Contul meu cu tab-uri)   components/home/ (secțiunile landing-ului)
   router/index.ts             toate rutele din API.md §Rute FE; meta.roles; `/` → /m sau /w după lățime; `?ui=m|w` forțează, se ține în localStorage
 public/                       manifest, icon-uri, fonturi, `_redirects` (Netlify), img/ (pozele din seed, copiate din ../AradEx-Plan/design/assets)
 ```
@@ -44,23 +46,37 @@ npm run cap:sync       # doar build + copiere în android/ (apoi `npm run androi
 
 ## Reguli
 - O view = o rută = un fișier în `views/<feature>/`. View-urile nu conțin logică de date: o iau din composables/store-uri și compun componente din `shared`. Dacă mobil și web au 80% același markup → componentă în `shared/components/<feature>/` folosită de amândouă (ex. `LoginForm`). O view nu importă altă view.
-- Nu apela `fetch` direct în view-uri sau componente — doar prin `shared/api`. Nu scrie `/api/v1` în cod (vine din `VITE_API_URL`). Fără `any`; tipurile vin din `shared/types/api.ts` și se schimbă în același task cu `docs/API.md`.
+- Nu apela `fetch` direct în view-uri sau componente — doar prin `shared/api`. Nu scrie `/api/v1` în cod (vine din `VITE_API_URL`). Fără `any`; tipurile vin din `shared/types/<modul>.ts` și se schimbă în același task cu `docs/API.md`.
 - Stări: fiecare listă are loading (`Skeleton`), empty (`EmptyState` cu text + acțiune) și error (toast cu `detail` din ProblemDetail + „Reîncearcă”). Niciodată ecran alb.
-- Texte: `t('events.title')`, cheile în `ro.json` grupate pe ecran, diacritice corecte (ă â î ș ț). `en.json` poate rămâne cu aceleași texte până la T15.
+- Texte: `t('events.title')`, cheile în `shared/i18n/ro/<modul>.json` grupate pe ecran, diacritice corecte (ă â î ș ț). `en/<modul>.json` poate rămâne cu aceleași texte până la T15.
 - Formatare: `useFormat().date(startAt)` → „Sâm., 7 nov. · 11:00”; `.money(40)` → „40 lei”; `.km(0.4)` → „0,4 km”.
 - Hartă: `MapView` e singura componentă care importă Leaflet. QR: `QrCode` primește `value` (codul text `AX-…`); `QrScanner` emite `scanned(code)` și se oprește după prima citire. TTS: `useTts()` cu `speechSynthesis`, pornește doar la tap.
 - Autentificare (T03): token în `localStorage` (`ax.token`), `authStore.user` din `/me` la pornire; 401 pe o cerere cu token → logout (+ login cu `?next=` dacă ruta cere cont). După login fiecare rol ajunge acasă la el (`homeFor` / `landingFor` din `shared/composables/useAuthForm`); limba se schimbă cu `auth.changeLocale`. Rutele au `meta.roles`.
 - Mobil: conținut cu `pb-24` ca tab bar-ul să nu acopere butonul de jos; butonul principal fix jos. Web: panourile au sidebar întunecat 256px pe grupuri (Adminul vede panoul Primăriei + „Administrare”) + conținut max 1280px; paginile web rămân utilizabile pe telefon (fără scroll orizontal).
 
 ## Teste
-- vitest pe composables cu logică (`useFormat` există; urmează totalul biletelor, filtrarea itinerarului) și pe componente cheie (`EventCard` randează badge-ul Popular, `QrCode` randează SVG), lângă fișierul testat.
+- vitest pe composables cu logică (`useFormat`, `useAuthForm`, `useGeo` există; urmează totalul biletelor, filtrarea itinerarului) și pe componente cheie (`QrCode` randează SVG și `AppSheet` se închide cu Esc există; urmează `EventCard` cu badge-ul Popular), lângă fișierul testat.
 - Nu testăm layout-uri. Ecranele se verifică manual din checklist-ul task-ului, pe 390×844 și ≥1280 (+ telefon real pentru cameră/TTS).
 
 ## Nu
 - Nu pune chei API în FE (OpenAI e doar în BE). Nu duplica un ecran în `web/` copiind codul din `mobile/`. Nu adăuga librării fără motiv notat în descrierea PR-ului. Designul se modifică doar în `../AradEx-Plan/design/`.
 
 ## Culoare (4 oameni în paralel)
-Fiecare story lucrează doar în fișierele feature-ului lui. După T02 fiecare rută are deja fișierul ei de view în `views/<feature>/`, iar textele, tipurile și clientul API sunt împărțite pe fișiere de modul (`shared/i18n/ro/<modul>.json`, `shared/types/<modul>.ts`, `shared/api/<modul>.ts`) — tu doar completezi fișierele tale; `router/index.ts`, layout-urile, navigația și `components/ui/` sunt ale lui P1. Poți importa componentele/composables altui culoar, dar nu le modifici.
+Din T02 fiecare rută are fișierul ei de view (`meta.task` din router spune al cui e) și fiecare modul are fișierele lui de texte, tipuri și API. Fiecare story lucrează **doar** în fișierele lui; `router/index.ts`, layout-urile, navigația, `client.ts`, `components/ui/`, `components/qr/`, `useGeo`, `i18n/index.ts` și fișierele index (`types/api.ts`, `api/index.ts`, `components/index.ts`), plus cochiliile `HomeView`, `LandingView`, `PanelView`, `AccountView`, sunt ale lui P1 și nu se mai ating (ce îți lipsește ceri în PR-ul lui P1). Poți importa orice, dar nu modifici fișierele altui story.
+
+| Story | Fișierele tale (în `src/`) |
+|---|---|
+| T05 Locuri & ghid | `mobile/views/places/*`, `web/views/places/*`, `web/views/city/CityPlacesView.vue`, `shared/components/places/`, `types/places.ts`, `api/places.ts`, `i18n/*/places.json` |
+| T06 Evenimente | `mobile/views/events/*`, `web/views/events/*`, `mobile/components/home/HomeEventsTab.vue`, `web/components/home/LandingEvents.vue`, `web/views/account/AccountSavedView.vue`, `web/views/city/CityEventsView.vue`, `shared/components/events/`, `types/events.ts`, `api/events.ts`, `i18n/*/events.json` |
+| T07 Bilete | `mobile/views/tickets/*`, `web/views/account/AccountTicketsView.vue`, `shared/components/tickets/`, `types/tickets.ts`, `api/tickets.ts`, `i18n/*/tickets.json` |
+| T08 Hartă | `mobile/views/map/*`, `web/views/map/*`, `web/components/home/LandingMap.vue`, `shared/components/map/`, `i18n/*/map.json` |
+| T09 Firme | `mobile/views/business/*`, `web/views/business/*`, `mobile/components/panel/BusinessPanel.vue`, `web/views/business-panel/Biz{Dashboard,Events,Announcements,Profile}View.vue`, `shared/components/business/`, `types/business.ts`, `api/business.ts`, `i18n/*/business.json` |
+| T10 Oferte | `mobile/views/offers/*`, `web/views/offers/*`, `mobile/components/home/HomeOffersTab.vue`, `web/views/business-panel/Biz{Offers,Codes}View.vue`, `web/views/account/AccountOffersView.vue`, `shared/components/offers/`, `types/offers.ts`, `api/offers.ts`, `i18n/*/offers.json`; în `BusinessPanel.vue` doar după ce T09 e pe `main` |
+| T11 Comunitate | `mobile/views/community/*`, `web/views/community/*`, `mobile/components/home/HomeCommunityTab.vue`, `mobile/components/panel/CityPanel.vue`, `web/views/city/City{Dashboard,Actions,Validate,Leaderboard}View.vue`, `web/views/account/AccountPointsView.vue`, `shared/components/community/`, `types/community.ts`, `api/community.ts`, `i18n/*/community.json` |
+| T12 Chat · T13 Planificator | `mobile/views/chat/*`, `web/views/chat/*` · `mobile/views/plan/*`, `web/views/plan/*`, `web/views/account/AccountItinerariesView.vue`; `types/chat.ts`, `types/plan.ts`, `api/ai.ts`, `i18n/*/chat.json`, `i18n/*/plan.json` |
+| T14 Admin | `web/views/admin/*`, `web/views/city/CityPartnersView.vue`, `types/admin.ts`, `api/admin.ts`, `i18n/*/admin.json` |
+| T18 Voluntari | `mobile/views/volunteer/*`, `web/views/city/City{Volunteers,Messages}View.vue`, `types/volunteer.ts`, `api/volunteer.ts`, `i18n/*/volunteer.json` (rutele `/m/vol/*` au deja `roles: ['VOLUNTEER']`, fără cont → `/m/vol/login`) |
+| T19 Transport | `mobile/views/transport/*`, `i18n/*/transport.json` (datele liniilor în `shared/data/transport/` sau `public/`) |
 
 ## Commit-uri
 Mesaje scurte în engleză (`feat(events): list + filters`). **Fără `Co-Authored-By:` și fără „Generated with Claude Code”** — hook-ul din `.githooks` le scoate (`git config core.hooksPath .githooks`). Branch `feat/Txx-...` din `origin/main`, PR în acest repo; regulile complete: `../AradEx-Plan/CLAUDE.md`.

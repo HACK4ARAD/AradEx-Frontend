@@ -11,7 +11,7 @@ import {
   BUSINESS_CATEGORIES, DEMO_ENABLED, DEMO_PASSWORD, authErrorMessage, emptyAuthForm, landingFor, validateAuthForm,
   type AuthMode, type Ui,
 } from '@/shared/composables/useAuthForm'
-import type { RegisterRequest } from '@/shared/types/api'
+import type { RegisterRequest } from '@/shared/types/auth'
 
 const props = withDefaults(defineProps<{
   ui: Ui

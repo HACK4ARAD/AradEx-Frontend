@@ -1,0 +1,17 @@
+{
+  "loading": "Se încarcă…",
+  "retry": "Reîncearcă",
+  "empty": "Nimic aici încă",
+  "save": "Salvează",
+  "cancel": "Anulează",
+  "back": "Înapoi",
+  "continue": "Continuă",
+  "search": "Caută evenimente și activități",
+  "apiOnline": "API online",
+  "apiOffline": "API indisponibil",
+  "demoData": "Date de exemplu",
+  "comingSoon": "În lucru — vezi docs/PLAN.md",
+  "close": "Închide",
+  "scanHint": "Îndreaptă camera spre codul QR",
+  "cameraError": "Nu pot porni camera. Dă voie aplicației să folosească camera sau scrie codul de mână."
+}

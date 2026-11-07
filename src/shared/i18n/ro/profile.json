@@ -1,0 +1,14 @@
+{
+  "title": "Profil",
+  "connectedAs": "Cont conectat · {role}",
+  "guestTitle": "Navighezi ca vizitator",
+  "guestText": "Te conectezi când cumperi bilete sau vrei puncte.",
+  "verified": "Verificată",
+  "pendingVerification": "În verificare",
+  "points": "Punctele tale",
+  "pointsAvailable": "puncte disponibile",
+  "language": "Limba aplicației",
+  "roleRow": "Rolul contului",
+  "roleHint": "Rolul vine de la cont și îl poate schimba doar administratorul.",
+  "loggedOut": "Te-ai deconectat."
+}

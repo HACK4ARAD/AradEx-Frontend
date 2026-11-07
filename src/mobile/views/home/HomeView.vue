@@ -2,16 +2,19 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { AppChip, AppIcon, EmptyState } from '@/shared/components'
+import { AppIcon } from '@/shared/components'
 import ApiStatus from '@/shared/components/ui/ApiStatus.vue'
 import { useFormat } from '@/shared/composables/useFormat'
 import { useAuthStore } from '@/shared/stores/auth'
+// Cochilie (T02): fiecare tab e componenta story-ului lui — T06 evenimente, T10 oferte, T11 comunitate.
+import HomeEventsTab from '@/mobile/components/home/HomeEventsTab.vue'
+import HomeOffersTab from '@/mobile/components/home/HomeOffersTab.vue'
+import HomeCommunityTab from '@/mobile/components/home/HomeCommunityTab.vue'
 
 const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 const f = useFormat()
-const period = ref<'today' | 'weekend' | 'week'>('today')
 const tab = ref<'events' | 'offers' | 'community'>('events')
 </script>
 
@@ -43,14 +46,9 @@ const tab = ref<'events' | 'offers' | 'community'>('events')
     <AppIcon name="chevron_right" />
   </button>
 
-  <div class="flex gap-2 flex-wrap my-3">
-    <AppChip :active="period === 'today'" @click="period = 'today'">{{ t('home.today') }}</AppChip>
-    <AppChip :active="period === 'weekend'" @click="period = 'weekend'">{{ t('home.weekend') }}</AppChip>
-    <AppChip :active="period === 'week'" @click="period = 'week'">{{ t('home.week') }}</AppChip>
-  </div>
-
-  <!-- T06: aici vine lista de EventCard din GET /events; T10: OfferCard; T11: tab-ul Comunitate -->
-  <EmptyState icon="event" :title="t('common.empty')" text="Lista de evenimente vine în T06 (docs/PLAN.md)." />
+  <HomeEventsTab v-if="tab === 'events'" />
+  <HomeOffersTab v-else-if="tab === 'offers'" />
+  <HomeCommunityTab v-else />
 
   <div class="flex justify-center mt-2"><ApiStatus /></div>
 </template>
