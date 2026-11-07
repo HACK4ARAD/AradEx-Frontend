@@ -62,8 +62,10 @@ export function installGuard(router: Router, ui: Ui, logins: Logins): void {
         const login = logins.volunteer && roles.includes('VOLUNTEER') ? logins.volunteer : '/login'
         return { path: login, query: { next: to.fullPath } }
       }
-      if (!auth.hasRole(...roles)) return { path: '/' }
+      if (!auth.hasRole(...roles)) return { path: ui === 'm' && auth.user?.role === 'VOLUNTEER' ? '/vol/actions' : '/' }
     }
+    // T18: în aplicație, voluntarul are doar cele 3 tab-uri ale lui (/vol/*); restul aplicației nu e pentru el
+    if (ui === 'm' && auth.user?.role === 'VOLUNTEER' && !to.path.startsWith('/vol/')) return { path: '/vol/actions' }
     setDocumentTitle(to)
     return true
   })

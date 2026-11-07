@@ -35,7 +35,7 @@ const topNav = computed(() => personal.value
 const pageTitle = computed(() => { void locale.value; return routeTitle(route) })
 const navActive = (to: string) => !to.includes('#') && (to === '/' ? route.path === '/' : route.path.startsWith(to))
 
-type NavItem = { to: string; icon: string; label: string }
+type NavItem = { to: string; icon: string; label: string; badge?: number }
 type NavGroup = { title?: string; items: NavItem[] }
 
 /** Panourile (design/final, web.html): sidebar întunecat pe grupuri. Adminul folosește panoul Primăriei + grupul „Administrare”.
@@ -58,7 +58,7 @@ const sidebar = computed<NavGroup[] | null>(() => {
     ] },
     { title: n('groups.community'), items: [
       { to: '/city/actions', icon: 'volunteer_activism', label: n('city.actions') }, { to: '/city/validate', icon: 'fact_check', label: n('city.validate') },
-      { to: '/city/volunteers', icon: 'badge', label: n('city.volunteers') }, { to: '/city/messages', icon: 'forum', label: n('city.messages') },
+      { to: '/city/volunteers', icon: 'badge', label: n('city.volunteers') },
       { to: '/city/leaderboard', icon: 'emoji_events', label: n('city.leaderboard') },
     ] },
     { title: n('groups.partners'), items: [{ to: '/city/partners', icon: 'storefront', label: n('city.partners') }] },
@@ -113,6 +113,7 @@ function toggleLocale() {
           class="flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-[14px] no-underline"
           :class="isActive(s.to) ? 'bg-side2 text-white font-semibold' : 'text-sidetx hover:text-white'">
           <AppIcon :name="s.icon" :size="20" /> {{ s.label }}
+          <span v-if="s.badge" class="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-accent text-white text-[11.5px] font-bold flex items-center justify-center" data-test="nav-badge">{{ s.badge }}</span>
         </router-link>
       </template>
       <div class="flex-1" />

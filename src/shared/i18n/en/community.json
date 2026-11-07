@@ -172,7 +172,7 @@
     "confirmAnyway": "Confirm anyway",
     "scannersTitle": "Volunteers who scan",
     "scannersHint": "On-site confirmation is done from the phone app, not from here.",
-    "fieldApp": "City Hall scans from the app, under Dashboard → On-site validation. Volunteer accounts are coming soon.",
+    "fieldApp": "City Hall scans in the app under Panel → On-site validation; volunteers in their Scan tab.",
     "manualLabel": "Confirm manually by code",
     "cols": {
       "who": "Participant",
@@ -231,7 +231,7 @@
     "kpiPoints": "Points awarded",
     "thisMonth": "this month",
     "kpiVolunteers": "Active volunteers",
-    "volunteersSoon": "volunteer accounts are coming soon",
+    "volunteersSoon": "add them in Volunteers",
     "participation": "Participation in actions",
     "participationHint": "Registered compared with the spots available",
     "toValidate": "{n} to validate",
@@ -269,8 +269,10 @@
       "when": "When",
       "points": "Points",
       "spots": "Spots",
-      "status": "Status"
-    }
+      "status": "Status",
+      "volunteers": "Volunteers"
+    },
+    "noVolunteers": "none"
   },
   "cityBoard": {
     "title": "Volunteer leaderboard",

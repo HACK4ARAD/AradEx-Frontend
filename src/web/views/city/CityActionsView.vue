@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // T11 · Acțiuni comunitare — design/final web `#/city/actions` (tabel: Acțiune, Când, Puncte, Locuri, Stare + Urmează / Toate / Ciorne)
 // și `#/city/actions/new` (formular + previzualizare). `/city/actions/new` = nouă, `/city/actions/:id` = editare.
-// Coloana „Voluntari” din design vine cu T18.
+// Coloana „Voluntari” (T18): cine scanează la fiecare acțiune.
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -11,6 +11,7 @@ import * as P from '@/web/components/community/panel'
 import { useFormat } from '@/shared/composables/useFormat'
 import { fromAction, useCityCommunity } from '@/shared/composables/useCommunity'
 import { useUiStore } from '@/shared/stores/ui'
+import { useCityVolunteers } from '@/shared/composables/useVolunteer'
 import type { ActionCreate } from '@/shared/types/community'
 
 const route = useRoute()
@@ -20,6 +21,8 @@ const f = useFormat()
 const ui = useUiStore()
 const city = useCityCommunity()
 const filter = ref<'up' | 'all' | 'draft'>('up')
+const vols = useCityVolunteers()
+const volunteersOf = (id: number) => vols.items.value.filter((v) => v.actionIds.includes(id) && v.status === 'ACTIVE')
 
 const sub = computed(() => (route.params.sub ? String(route.params.sub) : ''))
 const isNew = computed(() => sub.value === 'new')
@@ -34,7 +37,7 @@ const rows = computed(() => {
 })
 const pct = (a: { registeredCount: number; capacity: number }) => Math.min(100, Math.round((a.registeredCount / Math.max(1, a.capacity)) * 100))
 
-onMounted(city.loadActions)
+onMounted(() => { void city.loadActions(); void vols.load() })
 watch(sub, () => window.scrollTo(0, 0))
 
 async function save(req: ActionCreate) {
@@ -94,6 +97,7 @@ async function save(req: ActionCreate) {
             <span :class="[P.PILL, P.PILL_TONE[a.status]]"><i class="w-1.5 h-1.5 rounded-full bg-current" />{{ t(`community.actionStatus.${a.status}`) }}</span>
             <span :class="[P.PILL, 'bg-ok-soft text-ok']">+{{ a.pointsReward }}</span>
             <span :class="P.TS">{{ a.registeredCount }}/{{ a.capacity }}</span>
+            <span v-for="v in volunteersOf(a.id)" :key="v.id" class="h-6 px-2 rounded-full border border-line text-[11.5px] inline-flex items-center"><AppIcon name="badge" :size="13" class="mr-1" />{{ v.name }}</span>
           </div>
           <div class="flex gap-1.5 mt-2.5">
             <router-link v-if="a.status === 'PUBLISHED'" :to="{ path: '/city/validate', query: { a: a.id } }" :class="[P.BTN_SM_SEC, 'flex-1']">{{ t('community.cityActions.validate') }}</router-link>
@@ -102,9 +106,9 @@ async function save(req: ActionCreate) {
         </div>
       </div>
       <div class="hidden md:block overflow-x-auto">
-        <table class="w-full border-collapse min-w-[860px]">
+        <table class="w-full border-collapse min-w-[980px]">
           <thead><tr>
-            <th v-for="c in ['action', 'when', 'points', 'spots', 'status']" :key="c" :class="P.TH">{{ t(`community.cityActions.cols.${c}`) }}</th>
+            <th v-for="c in ['action', 'when', 'points', 'spots', 'volunteers', 'status']" :key="c" :class="P.TH">{{ t(`community.cityActions.cols.${c}`) }}</th>
             <th :class="P.TH" />
           </tr></thead>
           <tbody>
@@ -119,6 +123,10 @@ async function save(req: ActionCreate) {
                 <div :class="[P.BAR, 'w-20']"><i class="block h-full bg-ok rounded-[3px]" :style="{ width: `${pct(a)}%` }" /></div>
                 <span :class="P.TS">{{ a.registeredCount }}/{{ a.capacity }}</span>
               </div></td>
+              <td :class="P.TD">
+                <span v-for="v in volunteersOf(a.id)" :key="v.id" class="h-6 my-0.5 px-2 rounded-full border border-line text-[11.5px] flex items-center w-fit whitespace-nowrap">{{ v.name }}</span>
+                <span v-if="!volunteersOf(a.id).length" :class="P.TS">{{ t('community.cityActions.noVolunteers') }}</span>
+              </td>
               <td :class="P.TD"><span :class="[P.PILL, P.PILL_TONE[a.status]]"><i class="w-1.5 h-1.5 rounded-full bg-current" />{{ t(`community.actionStatus.${a.status}`) }}</span></td>
               <td :class="P.TD"><div class="flex gap-1.5 justify-end">
                 <router-link v-if="a.status === 'PUBLISHED'" :to="{ path: '/city/validate', query: { a: a.id } }" :class="P.BTN_SM_SEC">{{ t('community.cityActions.validate') }}</router-link>

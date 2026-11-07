@@ -39,6 +39,9 @@ const firmDemo = [
       @click="mode = mode === 'phone' ? 'firm' : 'phone'">
       {{ mode === 'phone' ? t('auth.phone.firmLink') : t('auth.phone.personalLink') }}
     </button>
-    <p class="text-muted text-[12.5px] text-center mt-4 mb-0">{{ t('auth.volunteerNote') }}</p>
+    <p class="text-muted text-[12.5px] text-center mt-4 mb-0">
+      {{ t('auth.volunteerNote') }}
+      <router-link to="/vol/login" class="block mt-1 text-ink font-semibold underline underline-offset-[3px]" data-test="vol-login-link">{{ t('auth.volunteerLink') }}</router-link>
+    </p>
   </div>
 </template>

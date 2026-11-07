@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import { useAuthStore } from '@/shared/stores/auth'
+import { refreshVolunteerUnread, volunteerUnread } from '@/shared/composables/useVolunteer'
 
 const route = useRoute()
 const auth = useAuthStore()
@@ -32,7 +33,9 @@ const tabs = computed(() => {
 const hideTabs = computed(() => route.meta.hideTabs === true)
 /** Punctul de pe „Bilete” (design/final): ai bilete viitoare și nu ești pe tab-ul lor (T07; lista se reîncarcă după o cumpărare). */
 const myTickets = useMyTickets()
-watch(() => [auth.user?.id, route.path === '/tickets' || route.path.startsWith('/confirm')], () => { if (auth.user) void myTickets.load() }, { immediate: true })
+watch(() => [auth.user?.id, route.path === '/tickets' || route.path.startsWith('/confirm')], () => { if (auth.user && auth.user.role !== 'VOLUNTEER') void myTickets.load() }, { immediate: true })
+/** T18: punctul de pe „Mesaje” al voluntarului (mesaje noi de la coordonator); se reîmprospătează la fiecare tab. */
+watch(() => route.path, (p) => { if (auth.user?.role === 'VOLUNTEER' && p.startsWith('/vol/') && p !== '/vol/messages') void refreshVolunteerUnread() }, { immediate: true })
 const hasUpcomingTickets = computed(() => !!auth.user && myTickets.upcoming.value.length > 0)
 </script>
 
@@ -55,7 +58,7 @@ const hasUpcomingTickets = computed(() => !!auth.user && myTickets.upcoming.valu
         </span>
         <span v-else class="relative w-[52px] h-8 rounded-full flex items-center justify-center" :class="tab.match(route.path) ? 'bg-soft' : ''">
           <AppIcon :name="tab.icon" :fill="tab.match(route.path)" />
-          <span v-if="tab.to === '/tickets' && hasUpcomingTickets && !tab.match(route.path)" class="absolute top-[3px] right-2 w-[9px] h-[9px] rounded-full bg-accent border-2 border-white" />
+          <span v-if="(tab.to === '/tickets' && hasUpcomingTickets || tab.to === '/vol/messages' && volunteerUnread > 0) && !tab.match(route.path)" class="absolute top-[3px] right-2 w-[9px] h-[9px] rounded-full bg-accent border-2 border-white" data-test="tab-dot" />
         </span>
         <span>{{ tab.label }}</span>
       </router-link>

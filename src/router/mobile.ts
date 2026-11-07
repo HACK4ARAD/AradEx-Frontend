@@ -48,6 +48,8 @@ export const mobileRoutes: RouteRecordRaw[] = [
       { path: 'vol/actions', name: 'm-vol-actions', component: () => import('@/mobile/views/volunteer/VolActionsView.vue'), meta: { title: 'Acțiunile mele', task: 'T18', roles: ['VOLUNTEER'] } },
       { path: 'vol/scan', name: 'm-vol-scan', component: () => import('@/mobile/views/volunteer/VolScanView.vue'), meta: { title: 'Scanează', task: 'T18', roles: ['VOLUNTEER'] } },
       { path: 'vol/messages', name: 'm-vol-messages', component: () => import('@/mobile/views/volunteer/VolMessagesView.vue'), meta: { title: 'Mesaje', task: 'T18', roles: ['VOLUNTEER'] } },
+      // chatul de grup al voluntarilor unei acțiuni (text + poze); fără tab bar, câmpul de scris e jos
+      { path: 'vol/messages/:actionId(\\d+)', name: 'm-vol-chat', component: () => import('@/mobile/views/volunteer/VolChatView.vue'), meta: { title: 'Chat', task: 'T18', roles: ['VOLUNTEER'], hideTabs: true } },
     ],
   },
   // orice altă cale → Acasă

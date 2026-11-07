@@ -172,7 +172,7 @@
     "confirmAnyway": "Confirmă totuși",
     "scannersTitle": "Voluntarii care scanează",
     "scannersHint": "Confirmarea pe teren se face din aplicația de telefon, nu de aici.",
-    "fieldApp": "Primăria scanează din aplicație, la Panou → Validare pe teren. Conturile de voluntar vin în curând.",
+    "fieldApp": "Primăria scanează din aplicație, la Panou → Validare pe teren; voluntarii, din tab-ul lor Scanează.",
     "manualLabel": "Confirmă manual după cod",
     "cols": {
       "who": "Participant",
@@ -231,7 +231,7 @@
     "kpiPoints": "Puncte acordate",
     "thisMonth": "luna aceasta",
     "kpiVolunteers": "Voluntari activi",
-    "volunteersSoon": "conturile de voluntar vin în curând",
+    "volunteersSoon": "adaugă-i din Voluntari",
     "participation": "Participare la acțiuni",
     "participationHint": "Înscriși față de locurile disponibile",
     "toValidate": "{n} de validat",
@@ -269,8 +269,10 @@
       "when": "Când",
       "points": "Puncte",
       "spots": "Locuri",
-      "status": "Stare"
-    }
+      "status": "Stare",
+      "volunteers": "Voluntari"
+    },
+    "noVolunteers": "niciunul"
   },
   "cityBoard": {
     "title": "Clasamentul voluntarilor",
