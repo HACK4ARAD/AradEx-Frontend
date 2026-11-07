@@ -63,19 +63,22 @@
   },
   "messages": {
     "title": "Mesaje",
-    "with": "Conversație cu {name}, coordonatorul tău",
-    "withCity": "Conversație cu Primăria Arad",
-    "placeholder": "Scrie coordonatorului…",
+    "subtitle": "Câte un chat pentru fiecare acțiune, cu voluntarii alocați la ea.",
+    "members": "0 voluntari | 1 voluntar | {n} voluntari",
+    "empty": "Niciun chat încă",
+    "emptyText": "Primești un chat pentru fiecare acțiune la care te alocă Primăria.",
+    "noMessages": "Niciun mesaj încă. Scrie-le celorlalți voluntari.",
+    "you": "Tu",
+    "photo": "Poză",
+    "placeholder": "Scrie un mesaj…",
     "send": "Trimite",
-    "you": "tu",
-    "empty": "Niciun mesaj încă. Scrie-i coordonatorului dacă ai nevoie de ceva.",
-    "newMessages": "Mesaje noi"
-  },
-  "quick": {
-    "thanks": "Mulțumim!",
-    "materials": "Vin imediat cu materiale",
-    "team": "Ok, anunț echipa",
-    "startScanning": "Poți începe scanarea"
+    "addPhoto": "Trimite o poză",
+    "sendingPhoto": "Se trimite poza…",
+    "back": "Înapoi la mesaje",
+    "close": "Închide",
+    "openPhoto": "Deschide poza",
+    "newMessages": "Mesaje noi",
+    "loadError": "Nu am putut deschide chatul"
   },
   "errors": {
     "wrongCode": "Cod greșit. Verifică SMS-ul sau întreabă coordonatorul.",
@@ -90,7 +93,10 @@
     "unknownCode": "Cod necunoscut. Verifică literele sau cere participantului să arate din nou codul.",
     "invalidCode": "Codul nu arată ca un cod de acțiune (AX-C…).",
     "network": "Nu am putut contacta serverul. Verifică conexiunea.",
-    "generic": "Nu am putut confirma."
+    "generic": "Nu am putut confirma.",
+    "notInChat": "Nu ești alocat la această acțiune, deci nu ești în chatul ei.",
+    "photoTooLarge": "Poza e prea mare (max. 10 MB).",
+    "photoType": "Doar poze JPEG, PNG, WebP sau GIF."
   },
   "errorTitles": {
     "unknownCode": "Cod necunoscut",
@@ -104,7 +110,7 @@
   },
   "panel": {
     "title": "Voluntari",
-    "subtitle": "Conturile de voluntar le creezi doar tu. Voluntarii folosesc aplicația pentru scanare și mesaje.",
+    "subtitle": "Conturile de voluntar le creezi doar tu. Voluntarii folosesc aplicația pentru scanare și pentru chatul de grup al fiecărei acțiuni.",
     "add": "Adaugă voluntar",
     "kpiActive": "Voluntari activi",
     "kpiScans": "Scanări înregistrate",
@@ -132,7 +138,6 @@
     "oneTime": "unică folosință",
     "noActions": "nicio acțiune",
     "editActions": "Acțiuni",
-    "message": "Mesaj",
     "suspend": "Suspendă",
     "reactivate": "Reactivează",
     "suspendAsk": "Suspenzi contul lui {name}? Nu va mai putea intra și nu va mai putea scana până îl reactivezi.",
@@ -149,7 +154,7 @@
   },
   "form": {
     "title": "Voluntar nou",
-    "subtitle": "Voluntarul primește prin SMS un cod de 6 cifre și intră în aplicație doar cu el: vede acțiunile lui, scanează, îți scrie.",
+    "subtitle": "Voluntarul primește prin SMS un cod de 6 cifre și intră în aplicație doar cu el: vede acțiunile lui, scanează și vorbește cu ceilalți voluntari din acțiune.",
     "person": "Persoana",
     "name": "Nume",
     "namePh": "Prenume și nume",
@@ -175,19 +180,6 @@
       "phone": "Un număr de telefon valid (07xx xxx xxx).",
       "email": "Adresa de e-mail nu e validă."
     }
-  },
-  "inbox": {
-    "title": "Mesaje",
-    "subtitle": "Conversații cu voluntarii. Ei scriu din aplicație, tu răspunzi de aici.",
-    "you": "Tu: ",
-    "noMessages": "Fără mesaje",
-    "meta": "Voluntar · {n} acțiuni alocate · coordonator {name} | Voluntar · 1 acțiune alocată · coordonator {name} | Voluntar · {n} acțiuni alocate · coordonator {name}",
-    "placeholder": "Scrie un mesaj…",
-    "send": "Trimite",
-    "empty": "Niciun voluntar încă",
-    "emptyText": "Conversațiile apar aici după ce creezi conturi de voluntar.",
-    "emptyThread": "Niciun mesaj încă. Scrie-i voluntarului.",
-    "suspendedNote": "Contul e suspendat: voluntarul nu vede mesajele până îl reactivezi."
   },
   "validate": {
     "title": "Voluntarii care scanează",

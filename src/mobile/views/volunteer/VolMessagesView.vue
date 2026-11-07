@@ -1,29 +1,23 @@
 <script setup lang="ts">
-// T18 · Mesaje (design/final `/vol/messages`): conversația cu coordonatorul, răspunsurile rapide și câmpul de jos.
-import { nextTick, onMounted, ref, watch } from 'vue'
+// T18 · Mesaje: câte un chat de grup pentru fiecare acțiune alocată, cu toți voluntarii ei (Primăria nu e în chat).
+// Fiecare rând: data acțiunii, titlul, câți voluntari, ultimul mesaj și punctul pentru mesaje noi.
+import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AppIcon, Skeleton } from '@/shared/components'
+import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import VolAccountButton from '@/shared/components/volunteer/VolAccountButton.vue'
-import MessageThread from '@/shared/components/volunteer/MessageThread.vue'
-import { volunteerApi } from '@/shared/api/volunteer'
-import { QUICK_REPLIES, useThread, useVolunteerHome, volunteerUnread } from '@/shared/composables/useVolunteer'
+import { dayParts } from '@/shared/composables/useCommunity'
+import { messageTime, useVolunteerChats } from '@/shared/composables/useVolunteer'
+import type { ChatSummaryDto } from '@/shared/types/volunteer'
 
 const { t } = useI18n()
-const home = useVolunteerHome()
-const thread = useThread(volunteerApi.messages, volunteerApi.send)
-const text = ref('')
+const chats = useVolunteerChats()
+onMounted(chats.load)
 
-/** Până jos de tot (nu doar „în ecran”): ultimele mesaje și răspunsurile rapide trebuie să rămână deasupra câmpului și a barei. */
-const scrollDown = () => nextTick(() => window.scrollTo({ top: document.documentElement.scrollHeight }))
-onMounted(async () => {
-  await Promise.all([home.load(), thread.reload()])
-  volunteerUnread.value = 0
-  scrollDown()
-})
-watch(() => thread.messages.value.length, scrollDown)
-
-async function send(value = text.value) {
-  if (await thread.send(value)) { if (value === text.value) text.value = '' }
+function preview(c: ChatSummaryDto): string {
+  const m = c.lastMessage
+  if (!m) return t('volunteer.messages.noMessages')
+  const who = m.mine ? t('volunteer.messages.you') : (m.authorName ?? '').split(' ')[0]
+  return `${who}: ${m.text ?? t('volunteer.messages.photo')}`
 }
 </script>
 
@@ -31,27 +25,35 @@ async function send(value = text.value) {
   <div class="flex items-start justify-between gap-3 pt-2 mb-4">
     <div class="min-w-0">
       <h1 class="text-[32px] leading-[1.08] font-semibold tracking-[-0.035em] m-0">{{ t('volunteer.messages.title') }}</h1>
-      <p class="text-muted text-[15px] mt-1.5 mb-0">{{ home.me.value?.coordinatorName ? t('volunteer.messages.with', { name: home.me.value.coordinatorName }) : t('volunteer.messages.withCity') }}</p>
+      <p class="text-muted text-[15px] mt-1.5 mb-0">{{ t('volunteer.messages.subtitle') }}</p>
     </div>
-    <VolAccountButton :coordinator="home.me.value?.coordinatorName" :one-time="home.me.value?.oneTime" />
+    <VolAccountButton />
   </div>
 
-  <div class="pb-[110px]">
-    <Skeleton v-if="thread.loading.value && !thread.messages.value.length" :rows="3" :height="64" />
-    <p v-else-if="!thread.messages.value.length" class="text-muted text-[14px]">{{ t('volunteer.messages.empty') }}</p>
-    <MessageThread v-else :messages="thread.messages.value" :mine="(m) => !m.fromCity" />
-    <div class="flex flex-wrap gap-2 mt-2">
-      <button v-for="q in QUICK_REPLIES" :key="q" type="button" class="h-9 px-3.5 rounded-full bg-white border border-line text-[14px] font-medium disabled:opacity-50"
-        :disabled="thread.sending.value" @click="send(t(`volunteer.quick.${q}`))">{{ t(`volunteer.quick.${q}`) }}</button>
-    </div>
+  <Skeleton v-if="chats.loading.value && !chats.items.value.length" :rows="3" :height="84" />
+  <EmptyState v-else-if="!chats.items.value.length" icon="forum" :title="t('volunteer.messages.empty')" :text="t('volunteer.messages.emptyText')" />
+  <div v-else class="bg-white border border-line rounded-[20px] overflow-hidden">
+    <router-link v-for="c in chats.items.value" :key="c.actionId" :to="`/vol/messages/${c.actionId}`" data-test="chat-row"
+      class="flex items-center gap-3 px-4 py-3.5 border-b border-line last:border-b-0 no-underline text-ink active:bg-soft">
+      <div class="w-[50px] shrink-0 py-1 rounded-[12px] border border-line flex flex-col items-center leading-[1.05]">
+        <span class="text-[9.5px] font-extrabold text-muted">{{ dayParts(c.startAt).dow }}</span>
+        <b class="text-[18px]">{{ dayParts(c.startAt).day }}</b>
+        <span class="text-[9.5px] font-extrabold text-muted">{{ dayParts(c.startAt).mon }}</span>
+      </div>
+      <div class="min-w-0 flex-1">
+        <div class="flex items-baseline justify-between gap-2">
+          <b class="text-[15.5px] leading-snug truncate">{{ c.title }}</b>
+          <span v-if="c.lastMessage" class="text-[12px] text-muted shrink-0">{{ messageTime(c.lastMessage.createdAt) }}</span>
+        </div>
+        <span class="flex items-center gap-1 text-[12.5px] text-muted"><AppIcon name="group" :size="15" />{{ t('volunteer.messages.members', { n: c.members }, c.members) }}</span>
+        <span class="flex items-center gap-1 text-[14px] mt-0.5 min-w-0" :class="c.unread ? 'text-ink font-semibold' : 'text-muted'">
+          <AppIcon v-if="c.lastMessage?.imageUrl && !c.lastMessage.text" name="image" :size="16" class="shrink-0" />
+          <span class="truncate">{{ preview(c) }}</span>
+        </span>
+      </div>
+      <span v-if="c.unread" class="min-w-[22px] h-[22px] px-1.5 rounded-full bg-accent text-white text-[12px] font-bold flex items-center justify-center shrink-0"
+        :aria-label="t('volunteer.messages.newMessages')">{{ c.unread }}</span>
+      <AppIcon v-else name="chevron_right" class="text-muted shrink-0" />
+    </router-link>
   </div>
-
-  <!-- câmpul de scris, deasupra barei de tab-uri (design `.composer`) -->
-  <form class="fixed left-1/2 -translate-x-1/2 bottom-[calc(max(22px,env(safe-area-inset-bottom))+80px)] w-[calc(100%-40px)] max-w-[440px] z-30 flex items-center gap-2.5"
-    @submit.prevent="send()">
-    <input v-model="text" maxlength="1000" :placeholder="t('volunteer.messages.placeholder')" :aria-label="t('volunteer.messages.placeholder')" data-test="vol-message"
-      class="flex-1 min-w-0 h-[52px] rounded-full bg-white border border-line px-5 text-[16px] outline-none focus:border-ink shadow-[0_6px_18px_rgba(17,17,17,.08)] placeholder:text-[#9A9A94]">
-    <button type="submit" class="w-[52px] h-[52px] shrink-0 rounded-full bg-ink text-white flex items-center justify-center disabled:opacity-50"
-      :disabled="!text.trim() || thread.sending.value" :aria-label="t('volunteer.messages.send')"><AppIcon name="arrow_upward" /></button>
-  </form>
 </template>

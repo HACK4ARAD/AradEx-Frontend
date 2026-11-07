@@ -254,7 +254,6 @@ async function manual() {
               <div class="min-w-0 flex-1"><b class="block text-[13.5px] truncate">{{ v.name }}</b>
                 <div :class="P.TS">{{ t('volunteer.validate.row', { code: v.loginCode, n: v.scans, name: v.coordinatorName ?? '—' }) }}</div></div>
               <span v-if="v.status === 'SUSPENDED' || v.expired" :class="[P.PILL, v.status === 'SUSPENDED' ? 'bg-bad-soft text-bad' : 'bg-soft text-muted']">{{ t(`volunteer.panel.status.${v.status === 'SUSPENDED' ? 'SUSPENDED' : 'EXPIRED'}`) }}</span>
-              <router-link :to="{ path: '/city/messages', query: { v: v.id } }" :class="P.BTN_SM_SEC" :aria-label="t('volunteer.panel.message')"><AppIcon name="forum" :size="15" /></router-link>
             </div>
           </div>
           <div v-else class="flex items-start gap-2.5 text-[13px] text-muted rounded-[10px] bg-soft p-3">

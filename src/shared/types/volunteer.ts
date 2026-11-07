@@ -5,14 +5,18 @@ export type VolunteerStatus = 'ACTIVE' | 'SUSPENDED'
 /** LOCKED până cu 30 de min înainte de start, OPEN până la miezul nopții zilei acțiunii, ENDED după. */
 export type VolunteerActionState = 'LOCKED' | 'OPEN' | 'ENDED'
 
-export interface VolunteerMessageDto {
-  id: number; fromCity: boolean; authorName?: string; text: string; createdAt: string; readAt?: string
+/** Un mesaj din chatul de grup al unei acțiuni (doar voluntarii ei): text și / sau poză; `mine` = scris de cel care citește. */
+export interface ChatMessageDto {
+  id: number; actionId: number; authorId: number; authorName?: string; mine: boolean; text?: string; imageUrl?: string; createdAt: string
 }
+export interface ChatMemberDto { id: number; name: string }
+export interface ChatSummaryDto { actionId: number; title: string; startAt: string; members: number; lastMessage?: ChatMessageDto; unread: number }
+export interface ChatDto { actionId: number; title: string; startAt: string; members: ChatMemberDto[]; messages: ChatMessageDto[] }
 
 export interface VolunteerDto {
   id: number; name: string; phone: string; email?: string; loginCode: string; oneTime: boolean; status: VolunteerStatus
-  expired: boolean; coordinatorId: number; coordinatorName?: string; actionIds: number[]; scans: number; unread: number
-  lastMessage?: VolunteerMessageDto; createdAt: string; lastLoginAt?: string
+  expired: boolean; coordinatorId: number; coordinatorName?: string; actionIds: number[]; scans: number
+  createdAt: string; lastLoginAt?: string
 }
 
 export interface VolunteerCreate {

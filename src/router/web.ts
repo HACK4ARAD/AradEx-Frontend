@@ -76,7 +76,6 @@ export const webRoutes: RouteRecordRaw[] = [
           { path: 'actions/:sub?', name: 'w-city-actions', component: () => import('@/web/views/city/CityActionsView.vue'), meta: { title: 'Acțiuni comunitare', task: 'T11' } },
           { path: 'validate', name: 'w-city-validate', component: () => import('@/web/views/city/CityValidateView.vue'), meta: { title: 'Validare', task: 'T11' } },
           { path: 'volunteers/:sub?', name: 'w-city-volunteers', component: () => import('@/web/views/city/CityVolunteersView.vue'), meta: { title: 'Voluntari', task: 'T18' } },
-          { path: 'messages', name: 'w-city-messages', component: () => import('@/web/views/city/CityMessagesView.vue'), meta: { title: 'Mesaje', task: 'T18' } },
           { path: 'leaderboard', name: 'w-city-leaderboard', component: () => import('@/web/views/city/CityLeaderboardView.vue'), meta: { title: 'Clasament', task: 'T11' } },
           { path: 'partners/:sub?', name: 'w-city-partners', component: () => import('@/web/views/city/CityPartnersView.vue'), meta: { title: 'Firme partenere', task: 'T14' } },
         ],

@@ -63,19 +63,22 @@
   },
   "messages": {
     "title": "Messages",
-    "with": "Conversation with {name}, your coordinator",
-    "withCity": "Conversation with Arad City Hall",
-    "placeholder": "Write to your coordinator…",
+    "subtitle": "One chat per action, with the volunteers assigned to it.",
+    "members": "0 volunteers | 1 volunteer | {n} volunteers",
+    "empty": "No chats yet",
+    "emptyText": "You get a chat for each action the City Hall assigns you to.",
+    "noMessages": "No messages yet. Write to the other volunteers.",
+    "you": "You",
+    "photo": "Photo",
+    "placeholder": "Write a message…",
     "send": "Send",
-    "you": "you",
-    "empty": "No messages yet. Write to your coordinator if you need anything.",
-    "newMessages": "New messages"
-  },
-  "quick": {
-    "thanks": "Thank you!",
-    "materials": "Coming right away with supplies",
-    "team": "Ok, I'll tell the team",
-    "startScanning": "You can start scanning"
+    "addPhoto": "Send a photo",
+    "sendingPhoto": "Sending the photo…",
+    "back": "Back to messages",
+    "close": "Close",
+    "openPhoto": "Open the photo",
+    "newMessages": "New messages",
+    "loadError": "Could not open the chat"
   },
   "errors": {
     "wrongCode": "Wrong code. Check the SMS or ask your coordinator.",
@@ -90,7 +93,10 @@
     "unknownCode": "Unknown code. Check the letters or ask the participant to show the code again.",
     "invalidCode": "This doesn't look like an action code (AX-C…).",
     "network": "Could not reach the server. Check your connection.",
-    "generic": "Could not confirm."
+    "generic": "Could not confirm.",
+    "notInChat": "You are not assigned to this action, so you are not in its chat.",
+    "photoTooLarge": "The photo is too large (max 10 MB).",
+    "photoType": "Only JPEG, PNG, WebP or GIF photos."
   },
   "errorTitles": {
     "unknownCode": "Unknown code",
@@ -104,7 +110,7 @@
   },
   "panel": {
     "title": "Volunteers",
-    "subtitle": "Only you create volunteer accounts. Volunteers use the app to scan and to message you.",
+    "subtitle": "Only you create volunteer accounts. Volunteers use the app to scan and for the group chat of each action.",
     "add": "Add volunteer",
     "kpiActive": "Active volunteers",
     "kpiScans": "Scans recorded",
@@ -132,7 +138,6 @@
     "oneTime": "single-use",
     "noActions": "no actions",
     "editActions": "Actions",
-    "message": "Message",
     "suspend": "Suspend",
     "reactivate": "Reactivate",
     "suspendAsk": "Suspend {name}'s account? They won't be able to sign in or scan until you reactivate it.",
@@ -149,7 +154,7 @@
   },
   "form": {
     "title": "New volunteer",
-    "subtitle": "The volunteer gets a 6-digit code by SMS and signs in with it only: sees their actions, scans, writes to you.",
+    "subtitle": "The volunteer gets a 6-digit code by SMS and signs in with it only: sees their actions, scans and talks to the other volunteers of the action.",
     "person": "Person",
     "name": "Name",
     "namePh": "First and last name",
@@ -175,19 +180,6 @@
       "phone": "A valid phone number (07xx xxx xxx).",
       "email": "The email address is not valid."
     }
-  },
-  "inbox": {
-    "title": "Messages",
-    "subtitle": "Conversations with volunteers. They write from the app, you reply from here.",
-    "you": "You: ",
-    "noMessages": "No messages",
-    "meta": "Volunteer · {n} actions assigned · coordinator {name} | Volunteer · 1 action assigned · coordinator {name} | Volunteer · {n} actions assigned · coordinator {name}",
-    "placeholder": "Write a message…",
-    "send": "Send",
-    "empty": "No volunteers yet",
-    "emptyText": "Conversations appear here after you create volunteer accounts.",
-    "emptyThread": "No messages yet. Write to the volunteer.",
-    "suspendedNote": "The account is suspended: the volunteer won't see messages until you reactivate it."
   },
   "validate": {
     "title": "Volunteers who scan",

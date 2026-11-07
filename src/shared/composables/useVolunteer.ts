@@ -1,4 +1,4 @@
-import { computed, ref, type Ref } from 'vue'
+import { computed, onBeforeUnmount, ref, type Ref } from 'vue'
 import { ApiError } from '@/shared/api/client'
 import { cityVolunteersApi, volunteerApi } from '@/shared/api/volunteer'
 import { useUiStore } from '@/shared/stores/ui'
@@ -7,13 +7,11 @@ import { intlLocale } from '@/shared/composables/useFormat'
 import { i18n } from '@/shared/i18n'
 import type { ConfirmResultDto, RegistrationDto } from '@/shared/types/community'
 import type {
-  CoordinatorDto, VolunteerActionDto, VolunteerCreate, VolunteerDto, VolunteerMeDto, VolunteerMessageDto, VolunteerUpdate,
+  ChatDto, ChatMessageDto, ChatSummaryDto, CoordinatorDto, VolunteerActionDto, VolunteerCreate, VolunteerDto, VolunteerMeDto, VolunteerUpdate,
 } from '@/shared/types/volunteer'
 
-/** T18 · Voluntari: logica ecranelor din aplicație (/vol/*) și din panoul Primăriei (Voluntari, Mesaje, Validare). */
-
-/** Răspunsurile rapide din design (aceleași în aplicație și în panou). Cheile din `volunteer.quick`. */
-export const QUICK_REPLIES = ['thanks', 'materials', 'team', 'startScanning'] as const
+/** T18 · Voluntari: logica ecranelor din aplicație (/vol/*, cu chatul de grup al fiecărei acțiuni) și din panoul Primăriei
+ *  (Voluntari, Validare). Primăria nu are mesaje cu voluntarii. */
 
 /** Mesajele de eroare ale BE (engleză, docs/API.md) → cheile `volunteer.errors.*`. */
 const KNOWN: [RegExp, string][] = [
@@ -27,6 +25,9 @@ const KNOWN: [RegExp, string][] = [
   [/^This action has ended/, 'ended'],
   [/cancelled/, 'cancelled'],
   [/^Unknown code/, 'unknownCode'],
+  [/not assigned to this action/, 'notInChat'],
+  [/^Image too large/, 'photoTooLarge'],
+  [/^Only JPEG, PNG, WebP or GIF/, 'photoType'],
 ]
 export function volunteerErrorKey(e: unknown): string | null {
   if (e instanceof ApiError) {
@@ -122,44 +123,79 @@ export function useVolunteerScan(actions: Ref<VolunteerActionDto[]>, initial?: n
   return { selectedId, selected, result, busy, recent, loadRecent, scan }
 }
 
-/**
- * O conversație voluntar ↔ Primărie (aplicația: /vol/messages; panoul: Mesaje). `load` și `post` vin de la apelant, ca același
- * cod să servească ambele părți. Mesajul trimis apare imediat; la eroare se scoate și textul rămâne în câmp.
- */
-export function useThread(load: () => Promise<VolunteerMessageDto[]>, post: (text: string) => Promise<VolunteerMessageDto>) {
+/** Lista „Mesaje”: un chat de grup pe fiecare acțiune alocată (cele cu mesaje noi întâi). */
+export function useVolunteerChats() {
   const ui = useUiStore()
-  const messages = ref<VolunteerMessageDto[]>([])
-  const loading = ref(false)
-  const sending = ref(false)
-  async function reload() {
+  const items = ref<ChatSummaryDto[]>([])
+  const loading = ref(true)
+  async function load() {
     loading.value = true
-    try { messages.value = await load() } catch (e) { ui.error(e) } finally { loading.value = false }
+    try {
+      items.value = await volunteerApi.chats()
+      volunteerUnread.value = items.value.reduce((s, c) => s + c.unread, 0)
+    } catch (e) { ui.error(e) } finally { loading.value = false }
+  }
+  return { items, loading, load }
+}
+
+/**
+ * Chatul de grup al unei acțiuni: membrii și mesajele; se reîmprospătează singur la 8 secunde cât e deschis (fără WebSocket).
+ * Un mesaj trimis apare imediat; o poză se urcă întâi (S3), apoi apare ca mesaj.
+ */
+export function useActionChat(actionId: Ref<number>) {
+  const ui = useUiStore()
+  const chat = ref<ChatDto | null>(null)
+  const loading = ref(true)
+  const sending = ref(false)
+  const failed = ref<string | null>(null)
+  let timer: number | undefined
+
+  async function load(silent = false) {
+    if (!silent) loading.value = true
+    try {
+      chat.value = await volunteerApi.chat(actionId.value)
+      failed.value = null
+    } catch (e) {
+      if (!silent) { failed.value = volunteerErrorKey(e) ?? 'volunteer.errors.generic'; ui.error(e) }
+    } finally {
+      loading.value = false
+    }
+  }
+  function append(m: ChatMessageDto) {
+    if (chat.value && !chat.value.messages.some((x) => x.id === m.id)) chat.value = { ...chat.value, messages: [...chat.value.messages, m] }
   }
   async function send(text: string): Promise<boolean> {
     const clean = text.trim()
     if (!clean || sending.value) return false
     sending.value = true
+    try { append(await volunteerApi.post(actionId.value, clean)); return true } catch (e) { ui.error(e); return false } finally { sending.value = false }
+  }
+  async function sendPhoto(file: File, caption?: string): Promise<boolean> {
+    if (sending.value) return false
+    sending.value = true
     try {
-      messages.value = [...messages.value, await post(clean)]
+      append(await volunteerApi.postPhoto(actionId.value, file, caption?.trim() || undefined))
       return true
     } catch (e) {
-      ui.error(e)
+      const key = volunteerErrorKey(e)
+      if (key && key.includes('photo')) ui.toast(i18n.global.t(key), 'error'); else ui.error(e)
       return false
     } finally {
       sending.value = false
     }
   }
-  return { messages, loading, sending, reload, send }
+  function start() {
+    void load()
+    timer = window.setInterval(() => { if (document.visibilityState === 'visible') void load(true) }, 8000)
+  }
+  onBeforeUnmount(() => window.clearInterval(timer))
+  return { chat, loading, sending, failed, load, send, sendPhoto, start }
 }
 
-/** Mesajele necitite: în aplicație (punctul de pe tab-ul Mesaje) și în panou (numărul de lângă „Mesaje”). */
+/** Mesajele noi din chaturile voluntarului (punctul de pe tab-ul Mesaje). */
 export const volunteerUnread = ref(0)
-export const cityUnread = ref(0)
 export async function refreshVolunteerUnread() {
   try { volunteerUnread.value = (await volunteerApi.me()).unreadMessages } catch { /* doar punctul de pe tab */ }
-}
-export async function refreshCityUnread() {
-  try { cityUnread.value = (await cityVolunteersApi.list()).reduce((s, v) => s + v.unread, 0) } catch { /* doar badge-ul */ }
 }
 
 // ---------------------------------------------------------------- panoul Primăriei
@@ -171,7 +207,7 @@ export function formatPhone(e164?: string): string {
   return m ? `0${m[1]} ${m[2]} ${m[3]}` : e164
 }
 
-/** Voluntarii (Voluntari, Mesaje, Validare): lista, contul nou, alocarea, suspendarea. */
+/** Voluntarii (Voluntari, Validare, Acțiuni comunitare): lista, contul nou, alocarea, suspendarea. */
 export function useCityVolunteers() {
   const ui = useUiStore()
   const items = ref<VolunteerDto[]>([])
@@ -179,10 +215,7 @@ export function useCityVolunteers() {
   const saving = ref(false)
   async function load() {
     loading.value = true
-    try {
-      items.value = await cityVolunteersApi.list()
-      cityUnread.value = items.value.reduce((s, v) => s + v.unread, 0)
-    } catch (e) { ui.error(e) } finally { loading.value = false }
+    try { items.value = await cityVolunteersApi.list() } catch (e) { ui.error(e) } finally { loading.value = false }
   }
   function put(v: VolunteerDto) {
     const i = items.value.findIndex((x) => x.id === v.id)

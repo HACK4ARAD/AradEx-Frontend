@@ -47,7 +47,6 @@
     "w-city-actions": "Community actions",
     "w-city-validate": "Validation",
     "w-city-volunteers": "Volunteers",
-    "w-city-messages": "Messages",
     "w-city-leaderboard": "Leaderboard",
     "w-city-partners": "Partner businesses",
     "w-admin": "Administration",
@@ -96,7 +95,6 @@
       "actions": "Community actions",
       "validate": "Validation",
       "volunteers": "Volunteers",
-      "messages": "Messages",
       "leaderboard": "Leaderboard",
       "partners": "Partner businesses"
     },

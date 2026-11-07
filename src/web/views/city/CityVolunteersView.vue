@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // T18 · Panou Primărie · Voluntari — design/final web `#/city/volunteers` (3 KPI, Toți / Activi / Suspendați, tabelul: voluntar,
-// cod de acces, participă la, coordonator, scanări, stare + Acțiuni / Mesaj / suspendă) și `#/city/volunteers/new` (formular +
+// cod de acces, participă la, coordonator, scanări, stare + Acțiuni / suspendă; mesajele sunt doar între voluntari, în aplicație) și `#/city/volunteers/new` (formular +
 // previzualizare pe telefon cu SMS-ul). Conturile le creează doar Primăria; codul de 6 cifre „pleacă prin SMS” (simulat).
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -129,7 +129,6 @@ async function toggle(v: VolunteerDto) {
             </div>
             <div class="flex gap-1.5 mt-2.5">
               <button type="button" :class="[P.BTN_SM_SEC, 'flex-1']" @click="editActions(v)"><AppIcon name="edit" :size="15" />{{ t('volunteer.panel.editActions') }}</button>
-              <router-link :to="{ path: '/city/messages', query: { v: v.id } }" :class="[P.BTN_SM_SEC, 'flex-1']"><AppIcon name="forum" :size="15" />{{ t('volunteer.panel.message') }}</router-link>
               <button type="button" :class="P.BTN_SM_SEC" :title="t(v.status === 'ACTIVE' ? 'volunteer.panel.suspend' : 'volunteer.panel.reactivate')" @click="toggle(v)">
                 <AppIcon :name="v.status === 'ACTIVE' ? 'pause_circle' : 'play_circle'" :size="16" /></button>
             </div>
@@ -157,8 +156,6 @@ async function toggle(v: VolunteerDto) {
                 <td :class="P.TD"><span :class="[P.PILL, PILL[statusOf(v)]]"><i class="w-1.5 h-1.5 rounded-full bg-current" />{{ t(`volunteer.panel.status.${statusOf(v)}`) }}</span></td>
                 <td :class="P.TD"><div class="flex gap-1.5 justify-end">
                   <button type="button" :class="P.BTN_SM_SEC" data-test="edit-actions" @click="editActions(v)"><AppIcon name="edit" :size="15" />{{ t('volunteer.panel.editActions') }}</button>
-                  <router-link :to="{ path: '/city/messages', query: { v: v.id } }" :class="[P.BTN_SM_SEC, 'relative']"><AppIcon name="forum" :size="15" />{{ t('volunteer.panel.message') }}
-                    <span v-if="v.unread" class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-accent text-white text-[11px] font-bold flex items-center justify-center">{{ v.unread }}</span></router-link>
                   <button type="button" :class="P.BTN_SM_SEC" :title="t(v.status === 'ACTIVE' ? 'volunteer.panel.suspend' : 'volunteer.panel.reactivate')"
                     :aria-label="t(v.status === 'ACTIVE' ? 'volunteer.panel.suspend' : 'volunteer.panel.reactivate')" data-test="toggle-status" @click="toggle(v)">
                     <AppIcon :name="v.status === 'ACTIVE' ? 'pause_circle' : 'play_circle'" :size="16" /></button>

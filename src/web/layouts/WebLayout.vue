@@ -7,7 +7,6 @@ import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 import { CONTACT_EMAIL } from '@/web/presentation'
 import { routeTitle } from '@/router/guard'
-import { cityUnread, refreshCityUnread } from '@/shared/composables/useVolunteer'
 
 const route = useRoute()
 const router = useRouter()
@@ -59,7 +58,7 @@ const sidebar = computed<NavGroup[] | null>(() => {
     ] },
     { title: n('groups.community'), items: [
       { to: '/city/actions', icon: 'volunteer_activism', label: n('city.actions') }, { to: '/city/validate', icon: 'fact_check', label: n('city.validate') },
-      { to: '/city/volunteers', icon: 'badge', label: n('city.volunteers') }, { to: '/city/messages', icon: 'forum', label: n('city.messages'), badge: cityUnread.value },
+      { to: '/city/volunteers', icon: 'badge', label: n('city.volunteers') },
       { to: '/city/leaderboard', icon: 'emoji_events', label: n('city.leaderboard') },
     ] },
     { title: n('groups.partners'), items: [{ to: '/city/partners', icon: 'storefront', label: n('city.partners') }] },
@@ -72,8 +71,6 @@ const sidebar = computed<NavGroup[] | null>(() => {
 })
 /** Pe ecrane sub lg (telefon, tabletă) sidebar-ul panourilor e un meniu care se deschide din bara de sus (☰); se închide la navigare. */
 const menuOpen = ref(false)
-/** T18: mesajele noi de la voluntari (numărul de lângă „Mesaje”), reîmprospătat la fiecare pagină din panoul Primăriei. */
-watch(() => route.path, (p) => { if (/^\/(city|admin)(\/|$)/.test(p) && auth.hasRole('CITY_HALL')) void refreshCityUnread() }, { immediate: true })
 watch(() => route.fullPath, () => { menuOpen.value = false })
 const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') menuOpen.value = false }
 window.addEventListener('keydown', onKey)
