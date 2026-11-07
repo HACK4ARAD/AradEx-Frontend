@@ -109,15 +109,15 @@ function toggleLocale() {
 
   <!-- Site public: bară sus -->
   <div v-else class="min-h-dvh bg-bg flex flex-col">
-    <header class="h-16 bg-white border-b border-line flex items-center px-7 gap-7 sticky top-0 z-20">
-      <router-link to="/w" class="font-bold text-[16px] flex items-center gap-2 no-underline text-ink">
+    <header class="h-16 bg-white border-b border-line flex items-center px-4 md:px-7 gap-3 md:gap-7 sticky top-0 z-20">
+      <router-link to="/w" class="font-bold text-[16px] flex items-center gap-2 no-underline text-ink shrink-0">
         <span class="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {{ t('app.name') }}
       </router-link>
       <nav class="hidden md:flex gap-6 text-[14px] font-medium">
         <router-link v-for="n in topNav" :key="n.to" :to="n.to" class="no-underline"
           :class="route.path.startsWith(n.to) ? 'text-ink font-semibold' : 'text-muted hover:text-ink'">{{ n.label }}</router-link>
       </nav>
-      <div class="ml-auto flex items-center gap-2.5">
+      <div class="ml-auto flex items-center gap-2 md:gap-2.5 min-w-0">
         <button type="button" class="h-8 px-2.5 rounded-full border border-line text-[12px] font-semibold uppercase" :aria-label="t('profile.language')" @click="toggleLocale">
           {{ locale === 'ro' ? 'RO' : 'EN' }}
         </button>
@@ -129,10 +129,10 @@ function toggleLocale() {
           <span class="text-[12px] text-muted hidden lg:inline">· {{ t(`auth.role.${auth.user?.role}`) }}</span>
           <AppButton variant="ghost" size="sm" icon="logout" @click="logout">{{ t('nav.logout') }}</AppButton>
         </template>
-        <AppButton size="sm" icon="auto_awesome" @click="router.push('/w/plan')">{{ t('nav.plan') }}</AppButton>
+        <span class="hidden sm:inline-flex"><AppButton size="sm" icon="auto_awesome" @click="router.push('/w/plan')">{{ t('nav.plan') }}</AppButton></span>
       </div>
     </header>
-    <main class="flex-1 min-w-0 px-8 py-7 max-w-[1280px] mx-auto w-full">
+    <main class="flex-1 min-w-0 px-4 md:px-8 py-5 md:py-7 max-w-[1280px] mx-auto w-full">
       <router-view />
     </main>
   </div>

@@ -1,5 +1,5 @@
 import { client } from './client'
-import type { AuthResponse, RegisterRequest, UpdateMeRequest, UserDto } from '@/shared/types/api'
+import type { AuthResponse, RegisterRequest, UpdateMeRequest, UserDto } from '@/shared/types/auth'
 
 /** AuthApi din BE (docs/API.md §Auth & utilizator). */
 export const authApi = {

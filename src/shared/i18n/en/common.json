@@ -1,0 +1,17 @@
+{
+  "loading": "Loading…",
+  "retry": "Retry",
+  "empty": "Nothing here yet",
+  "save": "Save",
+  "cancel": "Cancel",
+  "back": "Back",
+  "continue": "Continue",
+  "search": "Search events and activities",
+  "apiOnline": "API online",
+  "apiOffline": "API unavailable",
+  "demoData": "Sample data",
+  "comingSoon": "In progress — see docs/PLAN.md",
+  "close": "Close",
+  "scanHint": "Point the camera at the QR code",
+  "cameraError": "Cannot start the camera. Allow camera access or type the code instead."
+}

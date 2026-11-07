@@ -1,5 +1,7 @@
 import { ApiError } from '@/shared/api/client'
-import type { BusinessCategory, Role, SelfRegisterRole } from '@/shared/types/api'
+import type { Role } from '@/shared/types/common'
+import type { SelfRegisterRole } from '@/shared/types/auth'
+import type { BusinessCategory } from '@/shared/types/business'
 
 /** Logica formularelor de cont (S12 mobil, W0 web), fără UI: validare, mesaje de eroare, unde ajungi după login. */
 
@@ -58,9 +60,12 @@ export function authErrorMessage(err: unknown, mode: AuthMode): { key: string } 
   return { key: 'auth.errors.generic' }
 }
 
-/** Unde ajunge fiecare rol după login: firmele și Primăria în panou, adminul în administrare (doar web). */
+/** Unde ajunge fiecare rol după login: firmele și Primăria în panou, adminul în administrare (doar web), voluntarul la acțiunile lui (T18). */
 export function homeFor(role: Role, ui: Ui): string {
-  if (ui === 'm') return role === 'BUSINESS' || role === 'CITY_HALL' ? '/m/panel' : '/m'
+  if (ui === 'm') {
+    if (role === 'VOLUNTEER') return '/m/vol/actions'
+    return role === 'BUSINESS' || role === 'CITY_HALL' ? '/m/panel' : '/m'
+  }
   switch (role) {
     case 'BUSINESS': return '/w/business'
     case 'CITY_HALL': return '/w/city'

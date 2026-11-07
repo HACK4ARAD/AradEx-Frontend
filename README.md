@@ -11,9 +11,9 @@ cp .env.example .env # VITE_API_URL, VITE_DEMO=true (arată butoanele „Conturi
 ```
 
 Scheletul (T02) e construit și verificat (`build` + `test` verzi):
-- `src/shared/` — `types/api.ts` (toate DTO-urile din `docs/API.md`), `api/` (client cu Bearer + ProblemDetail → `ApiError`, `auth.ts`, `health.ts`), `stores/` (auth, ui), `composables/useFormat` (+ test), `components/ui/` (AppIcon, AppButton, AppChip, AppCard, AppInput, EmptyState, Skeleton, AppToast, ApiStatus, PlaceholderScreen), `components/auth/LoginForm`, `i18n/` (RO/EN), `styles/base.css` (tokens Clean Ink, Tailwind 4).
+- `src/shared/` — `types/<modul>.ts` (DTO-urile din `docs/API.md`, câte un fișier pe modul), `api/` (client cu Bearer + ProblemDetail → `ApiError` și câte un fișier per modul BE), `stores/` (auth, ui), `composables/` (useFormat, useAuthForm, useGeo, cu teste), `components/ui/` (AppIcon, AppButton, AppChip, AppCard, AppInput, AppSheet, EmptyState, Skeleton, AppToast, ApiStatus, PlaceholderScreen), `components/qr/` (QrCode, QrScanner), `components/auth/LoginForm`, `i18n/ro|en/<modul>.json`, `styles/base.css` (tokens Clean Ink, Tailwind 4).
 - `src/mobile/` — `MobileLayout` (tab bar cu Hartă în centru; Firma/Primăria văd „Panou”), `views/home/HomeView`, `views/auth/LoginView`. `src/web/` — `WebLayout` (bară sus + sidebar pe `/w/business`, `/w/city`, `/w/admin`), `views/home/LandingView`, `views/auth/LoginView`.
-- `src/router/index.ts` — toate rutele din `docs/API.md` §Rute FE; cele neimplementate afișează `PlaceholderView` cu codul ecranului și task-ul; guard pe `meta.roles`.
+- `src/router/index.ts` — toate rutele din `docs/API.md` §Rute FE, fiecare cu view-ul ei în `views/<feature>/` (panourile web: câte o rută pe secțiune); cele neimplementate afișează `PlaceholderScreen` cu codul ecranului și task-ul; guard pe `meta.roles` (voluntarii → `/m/vol/login`).
 - PWA (`vite-plugin-pwa`), fonturi locale (Inter, Material Symbols în `public/fonts`), `public/_redirects` pentru Netlify.
 
 ## Aplicația Android (Capacitor 6, T15)
@@ -27,4 +27,4 @@ adb reverse tcp:8081 tcp:8081   # emulator/telefon prin USB: localhost:8081 din 
 - Live reload în aplicația instalată: `adb reverse tcp:5173 tcp:5173`, apoi `CAP_SERVER_URL=http://localhost:5173 npx cap run android`.
 - iOS: `npx cap add ios` + build doar pe macOS cu Xcode.
 
-Mod de lucru: `CLAUDE.md` de aici + `../AradEx-Plan/CLAUDE.md`; skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt în `../AradEx-Plan/.claude/skills/`. Următorul pas: T03 (login real pe API), apoi T05/T06 — înlocuiești `PlaceholderView` rută cu rută.
+Mod de lucru: `CLAUDE.md` de aici + `../AradEx-Plan/CLAUDE.md`; skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt în `../AradEx-Plan/.claude/skills/`. Următorii pași: T05/T06 și apoi restul story-urilor — fiecare completează doar fișierele lui (tabelul din `CLAUDE.md` §Culoare).
