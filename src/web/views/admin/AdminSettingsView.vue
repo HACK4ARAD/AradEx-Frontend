@@ -16,8 +16,9 @@ const integrations = [
   { icon: 'directions_bus', label: 'transit', state: 'on' }, { icon: 'sms', label: 'sms', state: 'on' },
   { icon: 'photo_library', label: 'media', state: 'on' }, { icon: 'rate_review', label: 'places', state: 'optional' },
 ]
-const languages = [{ label: 'ro', state: 'complete' }, { label: 'en', state: 'partial' }, { label: 'hu', state: 'planned' }]
-const tone: Record<string, string> = { on: 'bg-ok-soft text-ok', complete: 'bg-ok-soft text-ok', partial: 'bg-warn-soft text-warn', optional: 'bg-soft text-muted', planned: 'bg-soft text-muted' }
+/** Interfața e tradusă complet în engleză; conținutul din baza de date (evenimente, locuri, ghiduri, oferte, acțiuni) e doar în română. */
+const languages = [{ label: 'ro', state: 'complete' }, { label: 'en', state: 'uiOnly', hint: 'enHint' }, { label: 'hu', state: 'planned' }]
+const tone: Record<string, string> = { on: 'bg-ok-soft text-ok', complete: 'bg-ok-soft text-ok', uiOnly: 'bg-warn-soft text-warn', optional: 'bg-soft text-muted', planned: 'bg-soft text-muted' }
 </script>
 
 <template>
@@ -43,7 +44,8 @@ const tone: Record<string, string> = { on: 'bg-ok-soft text-ok', complete: 'bg-o
       <div :class="P.FSEC">{{ t('admin.settings.languages') }}</div>
       <div class="flex flex-col mt-1">
         <div v-for="x in languages" :key="x.label" :class="P.LROW">
-          <AppIcon name="language" :size="18" class="text-muted" /><span class="flex-1">{{ t(`admin.settings.${x.label}`) }}</span>
+          <AppIcon name="language" :size="18" class="text-muted self-start mt-0.5" />
+          <span class="flex-1 min-w-0">{{ t(`admin.settings.${x.label}`) }}<span v-if="x.hint" :class="[P.TS, 'block']">{{ t(`admin.settings.${x.hint}`) }}</span></span>
           <span :class="[P.PILL, tone[x.state]]">{{ t(`admin.settings.${x.state}`) }}</span>
         </div>
       </div>
