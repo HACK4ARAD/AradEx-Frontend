@@ -101,8 +101,8 @@ export const useAuthStore = defineStore('auth', () => {
     import('@/router').then(({ router }) => {
       const current = router.currentRoute.value
       if (!current.meta.roles?.length) return
-      const base = current.path.startsWith('/w') ? '/w' : '/m'
-      router.push({ path: `${base}/login`, query: { next: current.fullPath } })
+      const login = current.meta.roles.includes('VOLUNTEER') ? '/vol/login' : '/login'
+      router.push({ path: login, query: { next: current.fullPath } })
     })
   })
 
