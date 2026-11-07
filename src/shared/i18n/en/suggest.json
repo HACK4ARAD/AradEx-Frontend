@@ -1,0 +1,9 @@
+{
+  "popular": "Popular",
+  "results": "Matches",
+  "stop": "CTP stop",
+  "linesNear": "Lines nearby",
+  "noLines": "No CTP line nearby",
+  "more": "+{n}",
+  "empty": "Nothing starting with “{q}”."
+}

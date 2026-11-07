@@ -136,13 +136,20 @@ export function useMapScreen(to: unknown, opts: { travel?: unknown; focus?: unkn
   let stopFollow: (() => void) | null = null
   /**
    * „Locația mea”: harta zboară la prima poziție, apoi o urmează cât timp GPS-ul mai trimite citiri mai precise (prima e
-   * adesea aproximativă, de la rețea), ca punctul albastru să nu rămână în afara hărții.
+   * adesea aproximativă, de la rețea), ca punctul albastru să nu rămână în afara hărții. `silent` = pornită singură la
+   * deschiderea hărții: fără mesaj dacă locația e oprită.
    */
-  async function locateMe(fly: (p: GeoPoint) => void) {
+  async function locateMe(fly: (p: GeoPoint) => void, { silent = false } = {}) {
     stopFollow?.()
+    // o poziție știută de curând (alt ecran): harta zboară imediat acolo, apoi se mută la citirea nouă
+    if (!geo.isFallback.value) fly(geo.position.value)
     const p = await geo.locate()
+    // fără locație nu mai zburăm în centrul Aradului (părea că „nu te găsește”): spunem de ce
+    if (geo.isFallback.value) {
+      if (!silent) ui.toast(t(geo.error.value === 'denied' ? 'map.locationDenied' : 'map.locationUnavailable'), 'info')
+      return
+    }
     fly(p)
-    if (geo.isFallback.value) return
     const stop = watch(geo.position, (q) => fly(q))
     const timer = setTimeout(() => stopFollow?.(), REFINE_MS)
     stopFollow = () => { stop(); clearTimeout(timer); stopFollow = null }

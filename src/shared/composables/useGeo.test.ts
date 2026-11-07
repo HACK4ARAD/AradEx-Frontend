@@ -1,12 +1,16 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ARAD_CENTER, GOOD_ACCURACY_M, REFINE_MS, useGeo } from './useGeo'
+import { ARAD_CENTER, GOOD_ACCURACY_M, REFINE_MS, resetLastFix, useGeo } from './useGeo'
 
 const original = navigator.geolocation
 
 afterEach(() => {
   Object.defineProperty(navigator, 'geolocation', { value: original, configurable: true })
+  resetLastFix()
   vi.useRealTimers()
 })
+
+/** pornirea ascultării așteaptă verificarea permisiunii (câteva microtask-uri) */
+const started = async () => { for (let i = 0; i < 6; i++) await Promise.resolve() }
 
 const fix = (lat: number, lng: number, accuracy = 10) => ({ coords: { latitude: lat, longitude: lng, accuracy } }) as GeolocationPosition
 
@@ -57,6 +61,7 @@ describe('useGeo', () => {
     const w = mockWatch()
     const g = useGeo()
     const p = g.locate()
+    await started()
     expect(w.state.opts).toMatchObject({ enableHighAccuracy: true, maximumAge: 0 })
     w.emit(fix(46.18, 21.30, 900)) // Wi-Fi / rețea: aproximativ
     await expect(p).resolves.toEqual({ lat: 46.18, lng: 21.30 })
@@ -75,6 +80,7 @@ describe('useGeo', () => {
     const w = mockWatch()
     const g = useGeo()
     const p = g.locate()
+    await started()
     w.emit(fix(46.17, 21.31, 60))
     await p
     w.fail(3)
@@ -89,8 +95,50 @@ describe('useGeo', () => {
     mockWatch()
     const g = useGeo()
     const p = g.locate(5000)
+    await started()
     vi.advanceTimersByTime(REFINE_MS + 1)
     await expect(p).resolves.toEqual(ARAD_CENTER)
     expect(g.error.value).toBe('unavailable')
+  })
+
+  it('resolves a request that a newer one replaces, instead of leaving it hanging', async () => {
+    mockWatch()
+    const g = useGeo()
+    const first = g.locate()
+    void g.locate()
+    await expect(first).resolves.toEqual(ARAD_CENTER)
+  })
+
+  it('starts the next screen on the last good fix', async () => {
+    const w = mockWatch()
+    const a = useGeo()
+    const p = a.locate()
+    await started()
+    w.emit(fix(46.17, 21.32, 8))
+    await p
+    const b = useGeo()
+    expect(b.isFallback.value).toBe(false)
+    expect(b.position.value).toEqual({ lat: 46.17, lng: 21.32 })
+  })
+
+  it('waits for the permission prompt before the timeout starts, and stops at a denied permission', async () => {
+    vi.useFakeTimers()
+    const w = mockWatch()
+    const perms = { query: vi.fn(async () => ({ state: 'prompt' })) }
+    Object.defineProperty(navigator, 'permissions', { value: perms, configurable: true })
+    const g = useGeo()
+    const p = g.locate()
+    await started()
+    vi.advanceTimersByTime(REFINE_MS + 1) // fereastra de permisiune e încă deschisă: nu renunțăm
+    w.emit(fix(46.17, 21.32, 10))
+    await expect(p).resolves.toEqual({ lat: 46.17, lng: 21.32 })
+    perms.query.mockResolvedValue({ state: 'denied' })
+    const q = useGeo()
+    resetLastFix()
+    const r = useGeo()
+    await expect(r.locate()).resolves.toEqual(ARAD_CENTER)
+    expect(r.error.value).toBe('denied')
+    expect(q).toBeTruthy()
+    Object.defineProperty(navigator, 'permissions', { value: undefined, configurable: true })
   })
 })

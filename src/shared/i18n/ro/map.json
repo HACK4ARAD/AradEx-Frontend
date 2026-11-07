@@ -1,8 +1,23 @@
 {
   "search": "Caută pe hartă",
-  "period": { "today": "Azi", "weekend": "Weekend", "week": "7 zile" },
-  "kind": { "all": "Toate", "event": "Evenimente", "place": "Obiective", "offer": "Oferte", "action": "Acțiuni" },
-  "kindLabel": { "event": "Eveniment", "place": "Obiectiv", "offer": "Firmă parteneră", "action": "Acțiune comunitară" },
+  "period": {
+    "today": "Azi",
+    "weekend": "Weekend",
+    "week": "7 zile"
+  },
+  "kind": {
+    "all": "Toate",
+    "event": "Evenimente",
+    "place": "Obiective",
+    "offer": "Oferte",
+    "action": "Acțiuni"
+  },
+  "kindLabel": {
+    "event": "Eveniment",
+    "place": "Obiectiv",
+    "offer": "Firmă parteneră",
+    "action": "Acțiune comunitară"
+  },
   "guide": "Ghid virtual · {n} puncte",
   "offers": "nicio ofertă | o ofertă | {n} oferte",
   "points": "puncte",
@@ -32,7 +47,12 @@
     "routing": "Se calculează traseul…",
     "transitHint": "În modul Transport harta arată doar stațiile, liniile și vehiculele CTP și stațiile de biciclete. Apasă pe o stație pentru sosiri sau alege „Pe jos” ca să vezi din nou evenimentele și locurile."
   },
-  "travel": { "label": "Cum te deplasezi", "foot": "Pe jos", "transit": "Transport", "car": "Mașină" },
+  "travel": {
+    "label": "Cum te deplasezi",
+    "foot": "Pe jos",
+    "transit": "Transport",
+    "car": "Mașină"
+  },
   "layers": {
     "tram": "Tramvaie",
     "bus": "Autobuze",
@@ -41,5 +61,7 @@
     "transitHint": "Liniile CTP, vehiculele live și stațiile de biciclete.",
     "carHint": "Parcări cu plată, colorate pe zone; traseele se calculează cu mașina.",
     "bikesMissing": "{n} din {total} stații de biciclete au poziție publică."
-  }
+  },
+  "locationDenied": "Locația e oprită pentru aplicație. Permite-o din setările telefonului (sau ale browserului) ca harta să te găsească.",
+  "locationUnavailable": "Nu te-am găsit. Pornește locația telefonului și încearcă din nou."
 }

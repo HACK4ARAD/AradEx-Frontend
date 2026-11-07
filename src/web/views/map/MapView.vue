@@ -57,7 +57,11 @@ function myLocation() {
 
 function resetFilters() { q.value = ''; kind.value = 'all'; period.value = 'week' }
 
-onMounted(init)
+onMounted(() => {
+  void init()
+  // la deschidere harta te caută singură (fără mesaj dacă locația e oprită sau refuzată); cu `?to=` traseul o cere oricum
+  if (!route.query.to) void locateMe((p) => mapRef.value?.flyTo(p, 16), { silent: true })
+})
 </script>
 
 <template>

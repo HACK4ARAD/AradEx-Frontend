@@ -34,7 +34,12 @@ function myLocation() {
   void locateMe((p) => mapRef.value?.flyTo(p, 16))
 }
 
-onMounted(init)
+onMounted(() => {
+  void init()
+  // la deschidere harta te caută singură (fără mesaj dacă locația e oprită); cu un traseu sau o stație cerută doar punctul albastru
+  if (route.query.to || focusPoint) { if (geo.isFallback.value) void geo.locate() }
+  else void locateMe((p) => mapRef.value?.flyTo(p, 16), { silent: true })
+})
 </script>
 
 <template>

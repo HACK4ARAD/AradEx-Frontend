@@ -1,0 +1,9 @@
+{
+  "popular": "Populare",
+  "results": "Se potrivesc",
+  "stop": "Stație CTP",
+  "linesNear": "Liniile din apropiere",
+  "noLines": "Nicio linie CTP aproape",
+  "more": "+{n}",
+  "empty": "Nimic care să înceapă cu „{q}”."
+}
