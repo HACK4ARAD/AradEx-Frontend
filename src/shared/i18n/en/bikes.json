@@ -1,0 +1,12 @@
+{
+  "attribution": "Source: Arad City Hall · aradbikes.ro",
+  "attributionOsm": "© OpenStreetMap contributors",
+  "card": {
+    "dock": "Bike-sharing station",
+    "rental": "Bike rental",
+    "unlock": "Unlock a bike in the GloBikes app",
+    "return": "Return it to any station with a free dock",
+    "live": "Available bikes are shown only in the app",
+    "rentalText": "Rental point with its own opening hours (from OpenStreetMap)."
+  }
+}

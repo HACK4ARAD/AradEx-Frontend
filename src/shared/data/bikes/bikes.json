@@ -1,0 +1,93 @@
+{
+ "source": "Amplasamente: Primăria Arad (Regulamentul sistemului de bike sharing) · coordonate: aradbikes.ro · închirieri: © OpenStreetMap contributors (ODbL)",
+ "officialStations": 22,
+ "stations": [
+  {
+   "id": "dock-22",
+   "kind": "dock",
+   "name": "Gara Aradul Nou",
+   "address": "str. Ștefan cel Mare, între str. Caransebeș și str. N. Gogol",
+   "lat": 46.14465,
+   "lng": 21.33392
+  },
+  {
+   "id": "dock-11",
+   "kind": "dock",
+   "name": "Piața UTA",
+   "address": "Calea Aurel Vlaicu",
+   "lat": 46.19191,
+   "lng": 21.30718
+  },
+  {
+   "id": "dock-4",
+   "kind": "dock",
+   "name": "Zona Polivalentă",
+   "address": "Piața Sporturilor, lângă intrarea la bazinul de înot",
+   "lat": 46.18028,
+   "lng": 21.33397
+  },
+  {
+   "id": "dock-7",
+   "kind": "dock",
+   "name": "Teatrul Ioan Slavici",
+   "address": "B-dul Revoluției, în Piața Avram Iancu",
+   "lat": 46.17095,
+   "lng": 21.31601
+  },
+  {
+   "id": "dock-10",
+   "kind": "dock",
+   "name": "Piața Gării",
+   "address": "B-dul Revoluției",
+   "lat": 46.18809,
+   "lng": 21.32483
+  },
+  {
+   "id": "dock-16",
+   "kind": "dock",
+   "name": "Piața Sârbească",
+   "address": "parc",
+   "lat": 46.16683,
+   "lng": 21.31108
+  },
+  {
+   "id": "dock-3",
+   "kind": "dock",
+   "name": "Zona Fortuna",
+   "address": "Calea Aurel Vlaicu, colț cu str. Dâmboviței",
+   "lat": 46.19919,
+   "lng": 21.2948
+  },
+  {
+   "id": "dock-8",
+   "kind": "dock",
+   "name": "Piața Arenei",
+   "address": "colț cu str. Mucius Scaevola",
+   "lat": 46.16657,
+   "lng": 21.3201
+  },
+  {
+   "id": "dock-19",
+   "kind": "dock",
+   "name": "Vârful cu Dor",
+   "address": "str. Vârful cu Dor intersecție cu str. Blanduziei",
+   "lat": 46.16939,
+   "lng": 21.30427
+  },
+  {
+   "id": "dock-15",
+   "kind": "dock",
+   "name": "Grădiște",
+   "address": "str. Petru Rareș",
+   "lat": 46.19006,
+   "lng": 21.32973
+  },
+  {
+   "id": "osm-node-261768677",
+   "kind": "rental",
+   "name": "Casa de Vizitare Parcul Natural Lunca Mureșului",
+   "lat": 46.15783,
+   "lng": 21.27359
+  }
+ ]
+}

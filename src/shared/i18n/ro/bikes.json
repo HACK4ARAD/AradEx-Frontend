@@ -1,0 +1,12 @@
+{
+  "attribution": "Sursa: Primăria Arad · aradbikes.ro",
+  "attributionOsm": "© OpenStreetMap contributors",
+  "card": {
+    "dock": "Stație bike sharing",
+    "rental": "Închiriere biciclete",
+    "unlock": "Deblochezi bicicleta din aplicația GloBikes",
+    "return": "O returnezi la orice stație cu loc liber",
+    "live": "Bicicletele libere se văd doar în aplicație",
+    "rentalText": "Punct de închiriere cu program propriu (din OpenStreetMap)."
+  }
+}

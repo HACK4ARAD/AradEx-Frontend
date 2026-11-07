@@ -1,11 +1,11 @@
 import type { GeoPoint } from '@/shared/types/common'
 
-/** Un pin pe hartă (T08); `stop` / `vehicle` = transportul public (T22); `parking` = stratul „Parcări”. */
+/** Un pin pe hartă (T08); `stop` / `vehicle` = transportul public (T22); `parking` / `bike` = parcările și bicicletele. */
 export interface MapMarker {
   id: string
   lat: number
   lng: number
-  kind: 'event' | 'place' | 'offer' | 'action' | 'stop' | 'vehicle' | 'parking'
+  kind: 'event' | 'place' | 'offer' | 'action' | 'stop' | 'vehicle' | 'parking' | 'bike'
   /** text mic în pin (de ex. numărul opririi din itinerar sau linia tramvaiului) */
   label?: string
   /** culoarea pinului `#rrggbb` (variabila CSS `--pin`, de ex. zona parcării), unde stilul tipului o folosește */

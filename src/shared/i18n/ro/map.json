@@ -30,5 +30,15 @@
     "emptyText": "Schimbă perioada, tipul sau căutarea.",
     "reset": "Arată tot",
     "routing": "Se calculează traseul…"
+  },
+  "travel": { "label": "Cum te deplasezi", "foot": "Pe jos", "transit": "Transport", "car": "Mașină" },
+  "layers": {
+    "tram": "Tramvaie",
+    "bus": "Autobuze",
+    "bikes": "Biciclete",
+    "footHint": "Obiective, evenimente și oferte; traseele se calculează pe jos.",
+    "transitHint": "Liniile CTP, vehiculele live și stațiile de biciclete.",
+    "carHint": "Parcări cu plată, colorate pe zone; traseele se calculează cu mașina.",
+    "bikesMissing": "{n} din {total} stații de biciclete au poziție publică."
   }
 }

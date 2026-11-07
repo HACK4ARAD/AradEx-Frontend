@@ -18,6 +18,9 @@ vi.mock('@/shared/composables/useDirections', async (orig) => ({
   ...(await orig<typeof import('./useDirections')>()),
   fetchDirections: (...a: unknown[]) => fetchDirections(...a),
 }))
+vi.mock('@/shared/api/transit', () => ({ transitApi: {
+  stops: async () => [], routes: async () => [], vehicles: async () => ({ live: false, attribution: '', vehicles: [] }),
+} }))
 vi.mock('@/shared/composables/useMapData', async (orig) => ({
   ...(await orig<typeof import('./useMapData')>()),
   useMapData: () => ({ items: mapItems, loading: ref(false), load: async () => {}, ensure: (k: string) => ensure(k) }),
@@ -111,6 +114,45 @@ describe('useMapScreen', () => {
     expect(s.sel.value?.key).toBe('event:1')
     mapItems.value = [item('place:2')]
     await nextTick()
+    expect(s.selected.value).toBeNull()
+  })
+})
+
+describe('travel mode', () => {
+  it('switches the layers and the route mode: transit → CTP + bikes, car → parking + car routes, foot → none', async () => {
+    const s = useMapScreen(undefined)
+    expect(s.layerMarkers.value).toEqual([])
+    s.travel.value = 'transit'
+    await nextTick()
+    expect(s.transit.on.value).toBe(true)
+    expect(s.parking.on.value).toBe(false)
+    expect(s.mode.value).toBe('foot')
+    expect(s.layerMarkers.value.some((m) => m.kind === 'bike')).toBe(true)
+    s.showBikes.value = false
+    expect(s.layerMarkers.value.some((m) => m.kind === 'bike')).toBe(false)
+
+    s.travel.value = 'car'
+    await nextTick()
+    expect(s.transit.on.value).toBe(false)
+    expect(s.parking.on.value).toBe(true)
+    expect(s.mode.value).toBe('car')
+    await vi.waitFor(() => expect(s.layerMarkers.value.some((m) => m.kind === 'parking')).toBe(true))
+
+    s.travel.value = 'foot'
+    await nextTick()
+    expect(s.layerMarkers.value).toEqual([])
+    expect(s.mode.value).toBe('foot')
+  })
+
+  it('closes a layer card when its layer goes away', async () => {
+    const s = useMapScreen(undefined)
+    s.travel.value = 'transit'
+    await nextTick()
+    const bike = s.layerMarkers.value.find((m) => m.kind === 'bike')!
+    s.select(bike.id)
+    expect(s.selBike.value?.id).toBe(bike.id.slice(5))
+    s.travel.value = 'car'
+    await nextTick(); await nextTick()
     expect(s.selected.value).toBeNull()
   })
 })
