@@ -60,40 +60,46 @@ export function authErrorMessage(err: unknown, mode: AuthMode): { key: string } 
   return { key: 'auth.errors.generic' }
 }
 
-/** Unde ajunge fiecare rol după login: firmele și Primăria în panou, adminul în administrare (doar web), voluntarul la acțiunile lui (T18). */
+/**
+ * Unde ajunge fiecare rol după login. Mobil (`m`): voluntarul la acțiunile lui (T18), firma și Primăria în panoul de teren,
+ * restul acasă. Web (`w`): firma, Primăria și Adminul în panoul lor, restul pe prezentare.
+ */
 export function homeFor(role: Role, ui: Ui): string {
   if (ui === 'm') {
-    if (role === 'VOLUNTEER') return '/m/vol/actions'
-    return role === 'BUSINESS' || role === 'CITY_HALL' ? '/m/panel' : '/m'
+    if (role === 'VOLUNTEER') return '/vol/actions'
+    return role === 'BUSINESS' || role === 'CITY_HALL' ? '/panel' : '/'
   }
   switch (role) {
-    case 'BUSINESS': return '/w/business'
-    case 'CITY_HALL': return '/w/city'
-    case 'ADMIN': return '/w/admin'
-    default: return '/w'
+    case 'BUSINESS': return '/business'
+    case 'CITY_HALL': return '/city'
+    case 'ADMIN': return '/admin'
+    default: return '/'
   }
 }
 
 /**
- * `?next=` acceptat doar dacă e o cale internă din aceeași interfață (fără redirect deschis spre alt site).
- * Pagina de start goală (`/m`, `/w`) nu contează ca destinație: atunci fiecare rol merge acasă la el (homeFor).
+ * `?next=` acceptat doar dacă e o cale internă (fără redirect deschis spre alt site). Prefixele vechi (`/m`, `/w`) se scot.
+ * Pagina de start (`/`) și login-ul nu contează ca destinație: atunci fiecare rol merge acasă la el (homeFor).
  */
-export function safeNext(next: unknown, ui: Ui): string | null {
+export function safeNext(next: unknown): string | null {
   if (typeof next !== 'string') return null
-  const base = `/${ui}`
-  if (!next.startsWith(`${base}/`) || next.startsWith(`${base}/login`)) return null
-  return next
+  const path = next.replace(/^\/[mw](?=\/|$|\?)/, '') || '/'
+  if (!path.startsWith('/') || path.startsWith('//') || path.startsWith('/\\')) return null
+  const bare = path.split(/[?#]/)[0]
+  if (bare === '/' || bare === '/login' || bare === '/vol/login') return null
+  return path
 }
 
 /**
- * Unde ajunge utilizatorul după login (sau dacă deschide login-ul deja conectat): `next` dacă e sigur și rolul are voie
- * pe ruta respectivă, altfel pagina rolului. `rolesOf(path)` = `meta.roles` al rutei (din router.resolve).
+ * Unde ajunge utilizatorul după login (sau dacă deschide login-ul deja conectat): `next` dacă e sigur, e o rută a aplicației
+ * curente și rolul are voie pe ea, altfel pagina rolului. `rolesOf(path)` = `meta.roles` al rutei (din router.resolve),
+ * sau `null` dacă nu există o asemenea rută în aplicația curentă.
  */
-export function landingFor(role: Role, ui: Ui, next: unknown, rolesOf: (path: string) => Role[] | undefined): string {
-  const target = safeNext(next, ui)
+export function landingFor(role: Role, ui: Ui, next: unknown, rolesOf: (path: string) => Role[] | undefined | null): string {
+  const target = safeNext(next)
   if (target) {
     const roles = rolesOf(target)
-    if (!roles?.length || role === 'ADMIN' || roles.includes(role)) return target
+    if (roles !== null && (!roles?.length || role === 'ADMIN' || roles.includes(role))) return target
   }
   return homeFor(role, ui)
 }

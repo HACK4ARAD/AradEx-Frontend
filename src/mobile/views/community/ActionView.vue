@@ -18,7 +18,7 @@ const { t } = useI18n()
 const f = useFormat()
 const ui = useUiStore()
 const auth = useAuthStore()
-const back = useBack('/m/community')
+const back = useBack('/community')
 const id = computed(() => Number(route.params.id))
 const { action, loading, notFound, saving, load, register, cancel } = useAction(id)
 const qrOpen = ref(false)
@@ -44,7 +44,7 @@ const calendarUrl = computed(() => {
 })
 
 async function onRegister() {
-  if (!auth.isLoggedIn) { router.push({ path: '/m/login', query: { next: route.fullPath } }); return }
+  if (!auth.isLoggedIn) { router.push({ path: '/login', query: { next: route.fullPath } }); return }
   const r = await register()
   if (r) { ui.toast(t('community.action.registeredToast'), 'success'); qrOpen.value = true }
 }
@@ -85,7 +85,7 @@ async function share() {
 
   <div class="pt-4 pb-32">
     <Skeleton v-if="loading" :rows="4" />
-    <EmptyState v-else-if="notFound" icon="volunteer_activism" :title="t('community.action.notFound')" :action="t('community.action.backToList')" @action="router.push('/m/community')" />
+    <EmptyState v-else-if="notFound" icon="volunteer_activism" :title="t('community.action.notFound')" :action="t('community.action.backToList')" @action="router.push('/community')" />
     <EmptyState v-else-if="!a" icon="cloud_off" :title="t('community.loadError')" :action="t('common.retry')" @action="load" />
     <template v-else>
       <div class="flex flex-wrap items-center gap-2">
@@ -135,7 +135,7 @@ async function share() {
 
   <!-- bara de jos din design (`bottombar`), peste tab bar, ca la detaliul evenimentului (T06) și al ofertei (T10) -->
   <div v-if="a" class="fixed left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[480px] z-40 px-5 pt-3 pb-[max(30px,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur border-t border-line">
-    <AppButton v-if="isStaff" block variant="secondary" icon="qr_code_scanner" @click="router.push('/m/panel')">{{ t('community.action.staffCta') }}</AppButton>
+    <AppButton v-if="isStaff" block variant="secondary" icon="qr_code_scanner" @click="router.push('/panel')">{{ t('community.action.staffCta') }}</AppButton>
     <AppButton v-else-if="reg" block icon="qr_code_2" :class="reg.status === 'CONFIRMED' ? '!bg-green' : ''" @click="qrOpen = true">
       {{ reg.status === 'CONFIRMED' ? t('community.action.confirmedCta', { n: a.pointsReward }) : t('community.action.myQrCta') }}
     </AppButton>

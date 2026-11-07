@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli'
 
 /**
- * Aplicația Android (T15, Capacitor): același build Vue (`dist`), împachetat ca aplicație nativă; deschide direct interfața mobilă (/m).
+ * Aplicația Android (T15, Capacitor): același build Vue (`dist`), împachetat ca aplicație nativă; pornește mereu aplicația mobilă (src/router/app.ts: nativ → mobile), de la `/`.
  * - implicit: APK cu build-ul inclus (`npm run android:apk`) — API-ul e cel din VITE_API_URL de la build.
  * - live reload: `CAP_SERVER_URL=http://localhost:5173 npx cap run android` → aplicația instalată încarcă din Vite (în emulator: `adb reverse tcp:5173 tcp:5173`).
  * iOS: `npx cap add ios` + build doar pe macOS cu Xcode.

@@ -20,7 +20,7 @@ const ui = useUiStore()
 const store = useTicketOrderStore()
 const errorText = useTicketErrors()
 const o = computed(() => store.order)
-const back = useBack(o.value ? `/m/events/${o.value.event.id}/tickets` : '/m')
+const back = useBack(o.value ? `/events/${o.value.event.id}/tickets` : '/')
 const email = ref(auth.user?.email ?? '')
 const method = ref<'saved' | 'new'>('saved')
 const paying = ref(false)
@@ -38,7 +38,7 @@ async function pay() {
     const ticket = await ticketsApi.buy(o.value.event.id, { qtyAdult: o.value.adult, qtyChild: o.value.child, email: email.value.trim() })
     if (auth.user) cacheTicket(auth.user.id, ticket)
     store.clear()
-    await router.replace(`/m/confirm/${ticket.code}`)
+    await router.replace(`/confirm/${ticket.code}`)
   } catch (err) {
     ui.toast(errorText(err), 'error')
   } finally {

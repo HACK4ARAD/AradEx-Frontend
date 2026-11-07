@@ -184,7 +184,11 @@
     "all": "Tot"
   },
   "web": {
-    "boardMonth": "Clasament · luna aceasta"
+    "boardMonth": "Clasament · luna aceasta",
+    "inApp": "Te înscrii din aplicația AradExperience",
+    "boardTitle": "Clasamentul lunii · {month}",
+    "ctaTitle": "Te înscrii din aplicație",
+    "ctaText": "Descarcă AradExperience, alege o acțiune din tab-ul Comunitate și arată codul QR la fața locului."
   },
   "pointsType": {
     "EARN_ACTION": "Acțiune comunitară",
@@ -295,5 +299,9 @@
     "capacityBelowRegistered": "Nu poate fi mai mic decât numărul de înscriși",
     "photoHint": "Alege una dintre pozele cu licență ale acțiunilor sau lasă fără poză.",
     "previewSpots": "{taken}/{total} locuri · {org}"
+  },
+  "tickets": {
+    "title": "Acțiuni comunitare",
+    "pending": "Așteaptă validarea pe teren"
   }
 }

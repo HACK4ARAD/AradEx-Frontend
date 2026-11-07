@@ -15,7 +15,7 @@ import { useGeo } from '@/shared/composables/useGeo'
 import { useFormat } from '@/shared/composables/useFormat'
 
 const { t } = useI18n()
-const back = useBack('/m')
+const back = useBack('/')
 const input = ref<HTMLInputElement | null>(null)
 const text = ref('')
 const q = ref('')
@@ -64,7 +64,7 @@ onMounted(() => input.value?.focus())
 
   <template v-if="q && places.length">
     <h3 class="text-[16px] font-semibold mt-2.5 mb-1">{{ t('events.search.places') }}</h3>
-    <router-link v-for="p in places" :key="p.id" :to="`/m/places/${p.id}`" class="flex items-center gap-3.5 w-full py-3.5 border-b border-line no-underline text-ink">
+    <router-link v-for="p in places" :key="p.id" :to="`/places/${p.id}`" class="flex items-center gap-3.5 w-full py-3.5 border-b border-line no-underline text-ink">
       <span class="w-11 h-11 shrink-0 rounded-xl bg-[#555] bg-cover bg-center text-white flex items-center justify-center" :style="p.imageUrl ? { backgroundImage: `url('${p.imageUrl}')` } : undefined"><AppIcon v-if="!p.imageUrl" name="location_on" /></span>
       <span class="flex-1 min-w-0"><b class="block">{{ p.name }}</b><span class="text-muted text-[13px]">{{ t(`places.type.${p.type}`) }}<template v-if="p.distanceKm != null"> · {{ fmtKm(p.distanceKm) }}</template></span></span>
       <AppIcon name="chevron_right" />
@@ -74,7 +74,7 @@ onMounted(() => input.value?.focus())
   <Skeleton v-if="loading && !list.length" :rows="4" :height="84" />
   <template v-else-if="list.length">
     <h3 v-if="q" class="text-[16px] font-semibold mt-2.5 mb-1">{{ t('events.search.events') }}</h3>
-    <EventRow v-for="e in list" :key="e.id" :event="e" :to="`/m/events/${e.id}`" />
+    <EventRow v-for="e in list" :key="e.id" :event="e" :to="`/events/${e.id}`" />
   </template>
   <EmptyState v-else-if="q && !places.length" icon="search_off" :title="t('events.search.noResults', { q })" :text="t('events.search.noResultsText')" />
 

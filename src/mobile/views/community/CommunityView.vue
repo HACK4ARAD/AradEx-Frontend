@@ -1,12 +1,12 @@
 <script setup lang="ts">
-// T11 · /m/community — același conținut ca tab-ul Comunitate din Acasă (S1d), ca pagină separată (link-uri din hartă, profil, notificări).
+// T11 · /community — același conținut ca tab-ul Comunitate din Acasă (S1d), ca pagină separată (link-uri din hartă, profil, notificări).
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import HomeCommunityTab from '@/mobile/components/home/HomeCommunityTab.vue'
 import { useBack } from '@/shared/composables/useBack'
 
 const { t } = useI18n()
-const back = useBack('/m')
+const back = useBack('/')
 </script>
 
 <template>

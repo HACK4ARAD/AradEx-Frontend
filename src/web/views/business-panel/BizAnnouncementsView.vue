@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // T09 · Panou firmă · Anunțuri (design/final web.html „Firmă · Anunțuri”): scurte, fără dată; apar pe pagina publică a firmei.
-// `/w/business/announcements/new` deschide direct formularul.
+// `/business/announcements/new` deschide direct formularul.
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -19,7 +19,7 @@ const p = useBusinessPanel()
 
 const sheet = computed({
   get: () => route.params.sub === 'new',
-  set: (v: boolean) => { router.replace(v ? '/w/business/announcements/new' : '/w/business/announcements') },
+  set: (v: boolean) => { router.replace(v ? '/business/announcements/new' : '/business/announcements') },
 })
 
 onMounted(p.load)

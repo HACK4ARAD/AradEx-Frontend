@@ -47,7 +47,7 @@ const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' 
 </script>
 
 <template>
-  <button v-if="isVisitor" type="button" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] bg-ink text-white mb-3.5 text-left" @click="router.push('/m/plan')">
+  <button v-if="isVisitor" type="button" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] bg-ink text-white mb-3.5 text-left" @click="router.push('/plan')">
     <AppIcon name="auto_awesome" />
     <span class="flex-1 min-w-0"><b class="block text-[15px] leading-[1.3]">{{ t('home.planCta') }}</b><span class="block text-[13px] leading-[1.35] opacity-[.78]">{{ t('events.home.plannerSub') }}</span></span>
     <AppIcon name="chevron_right" />
@@ -68,7 +68,7 @@ const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' 
 
   <Skeleton v-if="loading && !list.length" :rows="2" :height="300" />
   <template v-else-if="list.length">
-    <EventCard v-for="e in list" :key="e.id" :event="e" :to="`/m/events/${e.id}`" @toggle-save="saver.toggle(e, '/m/login')" />
+    <EventCard v-for="e in list" :key="e.id" :event="e" :to="`/events/${e.id}`" @toggle-save="saver.toggle(e, '/login')" />
   </template>
   <EmptyState v-else icon="event_busy" :title="t('events.empty.title')" :text="t('events.empty.text')" :action="t('events.empty.action')" @action="choose('week'); reload()" />
 
@@ -80,7 +80,7 @@ const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' 
     <div class="flex gap-3 overflow-x-auto -mx-5 px-5 pt-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <HomePlaceCard v-for="p in places" :key="p.id" :place="p" />
     </div>
-    <router-link to="/m/places" class="mt-1 flex items-center justify-center w-full min-h-[52px] rounded-[16px] bg-white border border-line text-ink text-[16px] font-semibold no-underline">{{ t('events.home.allPlaces') }}</router-link>
+    <router-link to="/places" class="mt-1 flex items-center justify-center w-full min-h-[52px] rounded-[16px] bg-white border border-line text-ink text-[16px] font-semibold no-underline">{{ t('events.home.allPlaces') }}</router-link>
   </template>
 
   <EventFiltersSheet :count="list.length" />

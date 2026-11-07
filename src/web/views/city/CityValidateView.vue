@@ -120,7 +120,7 @@ async function manual() {
   <Skeleton v-if="city.loading.value" :rows="3" :height="96" />
   <div v-else-if="!actions.length" :class="[P.CARD, P.EMPTY]">
     <AppIcon name="event_busy" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.home.empty') }}</b>
-    <div class="mt-3"><router-link to="/w/city/actions/new" :class="P.BTN_SM">{{ t('community.dashboard.newAction') }}</router-link></div>
+    <div class="mt-3"><router-link to="/city/actions/new" :class="P.BTN_SM">{{ t('community.dashboard.newAction') }}</router-link></div>
   </div>
   <template v-else>
     <div v-if="current" class="grid gap-3.5 mb-4 grid-cols-2 xl:grid-cols-4">
@@ -181,7 +181,7 @@ async function manual() {
           <ScanResultCard v-if="manualResult" :result="manualResult" class="mt-2.5" />
         </div>
         <div :class="P.CARD">
-          <div :class="[P.CH, 'items-center']"><h2 :class="P.CH_TITLE">{{ t('community.web.boardMonth') }}</h2><router-link to="/w/city/leaderboard" :class="P.BTN_SM_SEC">{{ t('community.validate.all') }}</router-link></div>
+          <div :class="[P.CH, 'items-center']"><h2 :class="P.CH_TITLE">{{ t('community.web.boardMonth') }}</h2><router-link to="/city/leaderboard" :class="P.BTN_SM_SEC">{{ t('community.validate.all') }}</router-link></div>
           <Skeleton v-if="lb.loading.value" :rows="3" :height="32" />
           <div v-else-if="!lb.board.value" :class="P.EMPTY">
             <b class="text-ink">{{ t('community.leaderboard.loadError') }}</b>

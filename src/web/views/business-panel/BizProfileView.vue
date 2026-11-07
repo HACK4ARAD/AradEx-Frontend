@@ -2,15 +2,16 @@
 // T09 · Panou firmă · Profilul firmei (design/final web.html „Firmă · Profilul firmei”): ce văd oamenii pe pagina publică.
 // `verified` nu se schimbă de aici (îl setează Primăria/Adminul, T14).
 import { onMounted, reactive, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppButton, AppInput, EmptyState, Skeleton } from '@/shared/components'
 import PanelHeader from '@/shared/components/business/PanelHeader.vue'
 import UnverifiedBanner from '@/shared/components/business/UnverifiedBanner.vue'
 import { useBusinessPanel } from '@/shared/composables/useBusiness'
+import { mobilePreviewHref } from '@/router/app'
 import type { BusinessCategory } from '@/shared/types/business'
 
-const router = useRouter()
+/** Pagina publică a firmei e doar în aplicația mobilă: o deschidem într-un tab nou, ca previzualizare. */
+const openPublic = (id: number) => window.open(mobilePreviewHref(`/businesses/${id}`), '_blank', 'noopener')
 const { t } = useI18n()
 const p = useBusinessPanel()
 
@@ -52,7 +53,7 @@ const field = 'w-full bg-white border border-line rounded-[14px] px-3.5 text-[16
   <template v-else>
     <UnverifiedBanner v-if="!p.me.value.business.verified" />
     <PanelHeader :title="t('business.profile.title')" :subtitle="t('business.profile.subtitle')">
-      <AppButton variant="ghost" size="sm" icon="visibility" @click="router.push(`/w/businesses/${p.me.value.business.id}`)">{{ t('business.panel.openPublic') }}</AppButton>
+      <AppButton variant="ghost" size="sm" icon="visibility" @click="openPublic(p.me.value.business.id)">{{ t('business.panel.openPublic') }}</AppButton>
     </PanelHeader>
     <form class="bg-white rounded-[20px] border border-line p-6 max-w-[760px] flex flex-col gap-4" novalidate @submit.prevent="save">
       <div class="grid gap-3 sm:grid-cols-2">

@@ -15,7 +15,7 @@ const { t, locale } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 const ui = useUiStore()
-const back = useBack('/m')
+const back = useBack('/')
 
 const initials = computed(() => (auth.user?.displayName ?? '?').split(/\s+/).map((w) => w.charAt(0)).join('').slice(0, 2).toUpperCase())
 
@@ -26,7 +26,7 @@ function changeLocale(l: Locale) {
 function logout() {
   auth.logout()
   ui.toast(t('profile.loggedOut'))
-  router.push('/m')
+  router.push('/')
 }
 
 // T06: numărul de evenimente salvate pe rândul „Salvate” (design/final S11)
@@ -60,7 +60,7 @@ onMounted(async () => {
           <b class="block text-[16px]">{{ t('profile.guestTitle') }}</b>
           <span class="block text-muted text-[13.5px]">{{ t('profile.guestText') }}</span>
         </div>
-        <router-link to="/m/login" class="h-9 px-3 rounded-xl bg-ink text-white text-[13px] font-semibold flex items-center no-underline shrink-0">{{ t('nav.login') }}</router-link>
+        <router-link to="/login" class="h-9 px-3 rounded-xl bg-ink text-white text-[13px] font-semibold flex items-center no-underline shrink-0">{{ t('nav.login') }}</router-link>
       </template>
     </div>
 
@@ -89,7 +89,7 @@ onMounted(async () => {
     <!-- setări -->
     <div class="bg-white rounded-[20px] px-4 mt-3">
       <!-- T06: Salvate stă în Profil (design/final S11) -->
-      <router-link to="/m/saved" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
+      <router-link to="/saved" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
         <AppIcon name="bookmark" />
         <span class="flex-1 text-[15px]">{{ t('events.savedList.title') }}</span>
         <span v-if="savedCount != null" class="text-muted text-[15px]">{{ savedCount }}</span>

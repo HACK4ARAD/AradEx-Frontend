@@ -5,7 +5,7 @@ import type { AnnouncementCreate, AnnouncementDto, BusinessActivityDto, Business
 import type { EventDto } from '@/shared/types/events'
 
 /**
- * Panoul firmei (T09) — aceeași logică pentru web (`/w/business/*`) și mobil (`/m/panel`, E5): firma + statistici,
+ * Panoul firmei (T09) — aceeași logică pentru web (`/business/*`) și mobil (`/panel`, E5): firma + statistici,
  * evenimentele, anunțurile, activitatea; acțiunile reîncarcă ce s-a schimbat. Erorile → toast cu `detail` (ProblemDetail).
  */
 export function useBusinessPanel() {

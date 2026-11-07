@@ -9,7 +9,7 @@ import { usePlaces } from '@/shared/composables/usePlaces'
 import { useBack } from '@/shared/composables/useBack'
 
 const { t } = useI18n()
-const back = useBack('/m')
+const back = useBack('/')
 const { items, total, loading, error, filters, reload } = usePlaces()
 </script>
 
@@ -27,7 +27,7 @@ const { items, total, loading, error, filters, reload } = usePlaces()
     <EmptyState v-else-if="!items.length" icon="location_off" :title="t('places.list.empty')" :text="t('places.list.emptyText')"
       :action="t('places.list.showAll')" @action="filters.tag = null" />
     <div v-else :class="loading && 'opacity-60 transition-opacity'">
-      <PlaceCard v-for="p in items" :key="p.id" :place="p" :to="`/m/places/${p.id}`" />
+      <PlaceCard v-for="p in items" :key="p.id" :place="p" :to="`/places/${p.id}`" />
     </div>
   </div>
 </template>

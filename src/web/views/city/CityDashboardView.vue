@@ -32,8 +32,8 @@ const pct = (a: { registeredCount: number; capacity: number }) => Math.min(100, 
       <div :class="P.SUB">{{ f.longDate(new Date().toISOString()) }}</div>
     </div>
     <div class="flex flex-wrap gap-2">
-      <router-link to="/w/city/events/new" :class="P.BTN_SEC"><AppIcon name="add" :size="16" />{{ t('community.dashboard.newEvent') }}</router-link>
-      <router-link to="/w/city/actions/new" :class="P.BTN"><AppIcon name="add" :size="16" />{{ t('community.dashboard.newAction') }}</router-link>
+      <router-link to="/city/events/new" :class="P.BTN_SEC"><AppIcon name="add" :size="16" />{{ t('community.dashboard.newEvent') }}</router-link>
+      <router-link to="/city/actions/new" :class="P.BTN"><AppIcon name="add" :size="16" />{{ t('community.dashboard.newAction') }}</router-link>
     </div>
   </div>
 
@@ -55,13 +55,13 @@ const pct = (a: { registeredCount: number; capacity: number }) => Math.min(100, 
       <div :class="P.CARD">
         <div :class="P.CH">
           <div><h2 :class="P.CH_TITLE">{{ t('community.dashboard.participation') }}</h2><div :class="P.HINT">{{ t('community.dashboard.participationHint') }}</div></div>
-          <router-link to="/w/city/validate" :class="P.BTN_SM_SEC">{{ t('community.dashboard.all') }}<AppIcon name="chevron_right" :size="16" /></router-link>
+          <router-link to="/city/validate" :class="P.BTN_SM_SEC">{{ t('community.dashboard.all') }}<AppIcon name="chevron_right" :size="16" /></router-link>
         </div>
         <div v-if="!data.actions.length" :class="P.EMPTY">
           <AppIcon name="event_busy" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.home.empty') }}</b>
         </div>
         <div v-else class="flex flex-col gap-3">
-          <router-link v-for="a in data.actions" :key="a.id" :to="{ path: '/w/city/validate', query: { a: a.id } }"
+          <router-link v-for="a in data.actions" :key="a.id" :to="{ path: '/city/validate', query: { a: a.id } }"
             class="grid grid-cols-[minmax(0,1fr)_90px_46px] sm:grid-cols-[minmax(0,1fr)_140px_46px] gap-3 items-center text-[13px] no-underline text-ink">
             <div class="flex items-center gap-3 min-w-0">
               <span :class="P.THUMB" :style="a.imageUrl ? { backgroundImage: `url('${a.imageUrl}')` } : undefined"><AppIcon v-if="!a.imageUrl" name="volunteer_activism" :size="18" /></span>

@@ -11,28 +11,28 @@ const auth = useAuthStore()
 const { t } = useI18n()
 
 /** Tab bar (design/final): Evenimente · Chat · [Hartă] · Bilete/Panou · Transport. Firma și Primăria au „Panou” în loc de „Bilete”.
- *  Salvate e în Profil. Voluntarul (T18, rutele /m/vol/*) are doar Acțiuni · [Scanează] · Mesaje. */
+ *  Salvate e în Profil. Voluntarul (T18, rutele /vol/*) are doar Acțiuni · [Scanează] · Mesaje. */
 const tabs = computed(() => {
-  if (route.path.startsWith('/m/vol/') && route.path !== '/m/vol/login') return [
-    { to: '/m/vol/actions', icon: 'event_available', label: t('nav.volActions'), match: (p: string) => p.startsWith('/m/vol/actions') },
-    { to: '/m/vol/scan', icon: 'qr_code_scanner', label: t('nav.volScan'), center: true, match: (p: string) => p.startsWith('/m/vol/scan') },
-    { to: '/m/vol/messages', icon: 'forum', label: t('nav.volMessages'), match: (p: string) => p.startsWith('/m/vol/messages') },
+  if (route.path.startsWith('/vol/') && route.path !== '/vol/login') return [
+    { to: '/vol/actions', icon: 'event_available', label: t('nav.volActions'), match: (p: string) => p.startsWith('/vol/actions') },
+    { to: '/vol/scan', icon: 'qr_code_scanner', label: t('nav.volScan'), center: true, match: (p: string) => p.startsWith('/vol/scan') },
+    { to: '/vol/messages', icon: 'forum', label: t('nav.volMessages'), match: (p: string) => p.startsWith('/vol/messages') },
   ]
   const panel = auth.hasRole('BUSINESS', 'CITY_HALL')
   return [
-    { to: '/m', icon: 'calendar_month', label: t('nav.events'), match: (p: string) => p === '/m' || p.startsWith('/m/search') || p.startsWith('/m/events') || p.startsWith('/m/offers') || p.startsWith('/m/community') || p.startsWith('/m/places') || p.startsWith('/m/businesses') },
-    { to: '/m/chat', icon: 'chat_bubble', label: t('nav.chat'), match: (p: string) => p.startsWith('/m/chat') },
-    { to: '/m/map', icon: 'map', label: t('nav.map'), center: true, match: (p: string) => p.startsWith('/m/map') },
+    { to: '/', icon: 'calendar_month', label: t('nav.events'), match: (p: string) => p === '/' || p.startsWith('/search') || p.startsWith('/events') || p.startsWith('/offers') || p.startsWith('/community') || p.startsWith('/places') || p.startsWith('/businesses') },
+    { to: '/chat', icon: 'chat_bubble', label: t('nav.chat'), match: (p: string) => p.startsWith('/chat') },
+    { to: '/map', icon: 'map', label: t('nav.map'), center: true, match: (p: string) => p.startsWith('/map') },
     panel
-      ? { to: '/m/panel', icon: 'dashboard', label: t('nav.panel'), match: (p: string) => p.startsWith('/m/panel') }
-      : { to: '/m/tickets', icon: 'confirmation_number', label: t('nav.tickets'), match: (p: string) => p.startsWith('/m/tickets') },
-    { to: '/m/transport', icon: 'tram', label: t('nav.transport'), match: (p: string) => p.startsWith('/m/transport') },
+      ? { to: '/panel', icon: 'dashboard', label: t('nav.panel'), match: (p: string) => p.startsWith('/panel') }
+      : { to: '/tickets', icon: 'confirmation_number', label: t('nav.tickets'), match: (p: string) => p.startsWith('/tickets') },
+    { to: '/transport', icon: 'tram', label: t('nav.transport'), match: (p: string) => p.startsWith('/transport') },
   ]
 })
 const hideTabs = computed(() => route.meta.hideTabs === true)
 /** Punctul de pe „Bilete” (design/final): ai bilete viitoare și nu ești pe tab-ul lor (T07; lista se reîncarcă după o cumpărare). */
 const myTickets = useMyTickets()
-watch(() => [auth.user?.id, route.path === '/m/tickets' || route.path.startsWith('/m/confirm')], () => { if (auth.user) void myTickets.load() }, { immediate: true })
+watch(() => [auth.user?.id, route.path === '/tickets' || route.path.startsWith('/confirm')], () => { if (auth.user) void myTickets.load() }, { immediate: true })
 const hasUpcomingTickets = computed(() => !!auth.user && myTickets.upcoming.value.length > 0)
 </script>
 
@@ -55,7 +55,7 @@ const hasUpcomingTickets = computed(() => !!auth.user && myTickets.upcoming.valu
         </span>
         <span v-else class="relative w-[52px] h-8 rounded-full flex items-center justify-center" :class="tab.match(route.path) ? 'bg-soft' : ''">
           <AppIcon :name="tab.icon" :fill="tab.match(route.path)" />
-          <span v-if="tab.to === '/m/tickets' && hasUpcomingTickets && !tab.match(route.path)" class="absolute top-[3px] right-2 w-[9px] h-[9px] rounded-full bg-accent border-2 border-white" />
+          <span v-if="tab.to === '/tickets' && hasUpcomingTickets && !tab.match(route.path)" class="absolute top-[3px] right-2 w-[9px] h-[9px] rounded-full bg-accent border-2 border-white" />
         </span>
         <span>{{ tab.label }}</span>
       </router-link>

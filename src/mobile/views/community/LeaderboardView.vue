@@ -17,7 +17,7 @@ const { t } = useI18n()
 const router = useRouter()
 const f = useFormat()
 const auth = useAuthStore()
-const back = useBack('/m/community')
+const back = useBack('/community')
 const period = ref<LeaderboardPeriod>('month')
 const { board, loading, load } = useLeaderboard(period)
 onMounted(load)
@@ -50,7 +50,7 @@ const showMe = computed(() => earnsPoints(auth.role))
     </div>
     <div v-else-if="!auth.isLoggedIn" class="rounded-[16px] bg-green-soft p-4 text-[14px] text-green-deep">
       {{ t('community.leaderboard.loginToSee') }}
-      <AppButton size="sm" class="mt-2 block" @click="router.push({ path: '/m/login', query: { next: '/m/community/leaderboard' } })">{{ t('community.how.login') }}</AppButton>
+      <AppButton size="sm" class="mt-2 block" @click="router.push({ path: '/login', query: { next: '/community/leaderboard' } })">{{ t('community.how.login') }}</AppButton>
     </div>
 
     <PrizesCard class="mt-3" />
@@ -63,6 +63,6 @@ const showMe = computed(() => earnsPoints(auth.role))
 
     <h2 class="text-[20px] font-semibold tracking-[-0.02em] m-0 mt-6">{{ t('community.home.usePoints') }}</h2>
     <p class="text-muted text-[14px] m-0 mt-1 mb-3">{{ t('community.leaderboard.useText') }}</p>
-    <AppButton block variant="ghost" icon="sell" @click="router.push('/m/offers')">{{ t('community.leaderboard.seeOffers') }}</AppButton>
+    <AppButton block variant="ghost" icon="sell" @click="router.push('/offers')">{{ t('community.leaderboard.seeOffers') }}</AppButton>
   </template>
 </template>

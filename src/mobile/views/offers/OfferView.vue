@@ -21,7 +21,7 @@ const router = useRouter()
 const { t } = useI18n()
 const auth = useAuthStore()
 const ui = useUiStore()
-const back = useBack('/m/offers')
+const back = useBack('/offers')
 const id = computed(() => Number(route.params.id))
 const { offer, loading, notFound, error, redeeming, reload, redeem } = useOffer(id, t)
 const sheet = ref(false)
@@ -39,7 +39,7 @@ const enough = computed(() => balance.value >= price.value)
 async function onPay() {
   if (!auth.isLoggedIn) {
     ui.toast(t('offers.redeem.login'))
-    router.push({ path: '/m/login', query: { next: route.fullPath } })
+    router.push({ path: '/login', query: { next: route.fullPath } })
     return
   }
   if (!canEarn.value) { ui.toast(t('offers.redeem.pointsLocalsOnly')); return }
@@ -50,7 +50,7 @@ async function onPay() {
 async function onRedeem() {
   if (!auth.isLoggedIn) {
     ui.toast(t('offers.redeem.login'))
-    router.push({ path: '/m/login', query: { next: route.fullPath } })
+    router.push({ path: '/login', query: { next: route.fullPath } })
     return
   }
   if (active.value) { sheet.value = true; return }
@@ -69,9 +69,9 @@ async function onRedeem() {
 
   <div class="pt-4 pb-28">
     <Skeleton v-if="loading" :rows="3" />
-    <EmptyState v-else-if="notFound" icon="sell" :title="t('offers.detail.notFound')" :text="t('offers.detail.notFoundText')" :action="t('offers.title')" @action="router.push('/m/offers')" />
+    <EmptyState v-else-if="notFound" icon="sell" :title="t('offers.detail.notFound')" :text="t('offers.detail.notFoundText')" :action="t('offers.title')" @action="router.push('/offers')" />
     <EmptyState v-else-if="error || !offer" icon="cloud_off" :title="t('business.loadError')" :action="t('common.retry')" @action="reload" />
-    <OfferDetailBody v-else :offer="offer" :business-link="`/m/businesses/${offer.businessId}`" />
+    <OfferDetailBody v-else :offer="offer" :business-link="`/businesses/${offer.businessId}`" />
   </div>
 
   <!-- bara de jos din design (`bottombar`), peste tab bar, ca la detaliul evenimentului (T06) -->

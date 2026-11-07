@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// T09/T10 · E5 — Panoul firmei pe telefon (în cochilia /m/panel). Design: mobile.html „Panou firmă (teren)”: firma, 3 statistici,
+// T09/T10 · E5 — Panoul firmei pe telefon (în cochilia /panel). Design: mobile.html „Panou firmă (teren)”: firma, 3 statistici,
 // „Validează un cod” (T10: text sau QR, într-un sheet), tab-urile simplificate Oferte / Evenimente / Anunțuri cu creare în sheet.
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -152,7 +152,7 @@ async function removeAnnouncement(id: number, title: string) {
 
       <div class="mt-5 rounded-[16px] bg-white p-3.5 flex items-start gap-2.5 text-[13.5px] text-muted">
         <AppIcon name="computer" :size="20" />
-        <span>{{ t('business.panel.webOnly') }} <router-link :to="`/m/businesses/${p.me.value.business.id}`" class="text-ink font-semibold">{{ t('business.panel.openPublic') }}</router-link></span>
+        <span>{{ t('business.panel.webOnly') }} <router-link :to="`/businesses/${p.me.value.business.id}`" class="text-ink font-semibold">{{ t('business.panel.openPublic') }}</router-link></span>
       </div>
     </template>
 

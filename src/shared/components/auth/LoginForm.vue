@@ -63,7 +63,7 @@ async function submit() {
   try {
     const u = mode.value === 'login' ? await auth.login(form.email.trim(), form.password) : await auth.register(buildRegister())
     ui.toast(t(mode.value === 'business' ? 'auth.businessCreated' : 'auth.welcome', { name: u.displayName.split(' ')[0] }), 'success')
-    await router.replace(landingFor(u.role, props.ui, route.query.next, (p) => router.resolve(p).meta.roles))
+    await router.replace(landingFor(u.role, props.ui, route.query.next, (p) => { const r = router.resolve(p); return r.name ? r.meta.roles : null }))
   } catch (e) {
     const m = authErrorMessage(e, mode.value)
     error.value = 'key' in m ? t(m.key) : m.text

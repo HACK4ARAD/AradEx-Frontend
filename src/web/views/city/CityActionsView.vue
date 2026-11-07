@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // T11 · Acțiuni comunitare — design/final web `#/city/actions` (tabel: Acțiune, Când, Puncte, Locuri, Stare + Urmează / Toate / Ciorne)
-// și `#/city/actions/new` (formular + previzualizare). `/w/city/actions/new` = nouă, `/w/city/actions/:id` = editare.
+// și `#/city/actions/new` (formular + previzualizare). `/city/actions/new` = nouă, `/city/actions/:id` = editare.
 // Coloana „Voluntari” din design vine cu T18.
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -41,7 +41,7 @@ async function save(req: ActionCreate) {
   const a = await city.save(req, editId.value ?? undefined)
   if (!a) return
   ui.toast(a.status === 'PUBLISHED' ? t('community.cityActions.published') : a.status === 'DRAFT' ? t('community.cityActions.draftSaved') : t('community.cityActions.saved'), 'success')
-  router.push('/w/city/actions')
+  router.push('/city/actions')
 }
 </script>
 
@@ -54,17 +54,17 @@ async function save(req: ActionCreate) {
     <Skeleton v-if="editId && city.loading.value" :rows="3" :height="96" />
     <div v-else-if="editId && !editing" :class="[P.CARD, P.EMPTY]">
       <AppIcon name="search_off" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.action.notFound') }}</b>
-      <div class="mt-3"><router-link to="/w/city/actions" :class="P.BTN_SM_SEC">{{ t('community.cityActions.backToList') }}</router-link></div>
+      <div class="mt-3"><router-link to="/city/actions" :class="P.BTN_SM_SEC">{{ t('community.cityActions.backToList') }}</router-link></div>
     </div>
     <ActionForm v-else :key="sub" :initial="editing ? fromAction(editing) : undefined" :status="editing?.status" :registered="editing?.registeredCount"
-      :saving="city.saving.value" @submit="save" @cancel="router.push('/w/city/actions')" />
+      :saving="city.saving.value" @submit="save" @cancel="router.push('/city/actions')" />
   </template>
 
   <!-- ======== listă ======== -->
   <template v-else>
     <div :class="P.HEAD">
       <div><h1 :class="P.H1">{{ t('community.cityActions.title') }}</h1><div :class="P.SUB">{{ t('community.cityActions.sub') }}</div></div>
-      <router-link to="/w/city/actions/new" :class="P.BTN"><AppIcon name="add" :size="16" />{{ t('community.cityActions.new') }}</router-link>
+      <router-link to="/city/actions/new" :class="P.BTN"><AppIcon name="add" :size="16" />{{ t('community.cityActions.new') }}</router-link>
     </div>
 
     <div :class="P.CARD_FLUSH">
@@ -98,8 +98,8 @@ async function save(req: ActionCreate) {
               </div></td>
               <td :class="P.TD"><span :class="[P.PILL, P.PILL_TONE[a.status]]"><i class="w-1.5 h-1.5 rounded-full bg-current" />{{ t(`community.actionStatus.${a.status}`) }}</span></td>
               <td :class="P.TD"><div class="flex gap-1.5 justify-end">
-                <router-link v-if="a.status === 'PUBLISHED'" :to="{ path: '/w/city/validate', query: { a: a.id } }" :class="P.BTN_SM_SEC">{{ t('community.cityActions.validate') }}</router-link>
-                <router-link :to="`/w/city/actions/${a.id}`" :class="P.BTN_SM_SEC">{{ t('community.cityActions.edit') }}</router-link>
+                <router-link v-if="a.status === 'PUBLISHED'" :to="{ path: '/city/validate', query: { a: a.id } }" :class="P.BTN_SM_SEC">{{ t('community.cityActions.validate') }}</router-link>
+                <router-link :to="`/city/actions/${a.id}`" :class="P.BTN_SM_SEC">{{ t('community.cityActions.edit') }}</router-link>
               </div></td>
             </tr>
           </tbody>
