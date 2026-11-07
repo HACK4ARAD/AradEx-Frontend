@@ -29,5 +29,5 @@ const chips: { key: P; label: () => string }[] = [
     <EventCardWeb v-for="e in items" :key="e.id" :event="e" />
   </div>
   <EmptyState v-else icon="event_busy" :title="t('events.empty.title')" :text="t('events.empty.text')" />
-  <router-link to="/w/events" class="inline-flex mt-4 h-10 px-4 rounded-[12px] border border-line bg-white font-semibold text-[14px] items-center no-underline text-ink">{{ t('events.web.title') }} →</router-link>
+  <router-link to="/events" class="inline-flex mt-4 h-10 px-4 rounded-[12px] border border-line bg-white font-semibold text-[14px] items-center no-underline text-ink">{{ t('events.web.title') }} →</router-link>
 </template>

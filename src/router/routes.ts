@@ -1,10 +1,10 @@
-import type { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
+import type { RouteLocation, RouteLocationRaw, RouteRecordRaw } from 'vue-router'
 import type { AppKind } from './app'
 import { mobileRoutes } from './mobile'
 import { webRoutes } from './web'
 
 /** Linkurile vechi (`/m/...`, `/w/...`, de exemplu din bookmark-uri) duc la aceeași cale fără prefix. */
-function stripPrefix(to: RouteLocationNormalized) {
+function stripPrefix(to: RouteLocation): RouteLocationRaw {
   const rest = to.params.rest
   const path = '/' + (Array.isArray(rest) ? rest.join('/') : (rest ?? ''))
   return { path, query: to.query, hash: to.hash }

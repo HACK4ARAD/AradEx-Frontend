@@ -78,7 +78,7 @@ export function homeFor(role: Role, ui: Ui): string {
 }
 
 /**
- * `?next=` acceptat doar dacă e o cale internă (fără redirect deschis spre alt site). Prefixele vechi `/m` și `/w` se scot.
+ * `?next=` acceptat doar dacă e o cale internă (fără redirect deschis spre alt site). Prefixele vechi (`/m`, `/w`) se scot.
  * Pagina de start (`/`) și login-ul nu contează ca destinație: atunci fiecare rol merge acasă la el (homeFor).
  */
 export function safeNext(next: unknown): string | null {

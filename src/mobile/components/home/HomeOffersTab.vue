@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// T10 · tab-ul Oferte din Acasă (S1b): banner „Doar în AradExperience”, categorii, OfferCard. Folosit și de /m/offers.
+// T10 · tab-ul Oferte din Acasă (S1b): banner „Doar în AradExperience”, categorii, OfferCard. Folosit și de /offers.
 import { useI18n } from 'vue-i18n'
 import { EmptyState } from '@/shared/components'
 const { t } = useI18n()

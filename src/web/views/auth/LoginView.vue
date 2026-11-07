@@ -36,7 +36,7 @@ function pick(email: string) {
   <div class="min-h-dvh grid min-[1100px]:grid-cols-[1.05fr_1fr]">
     <aside class="hidden min-[1100px]:flex relative overflow-hidden bg-[#111114] text-white p-12 flex-col justify-between">
       <div class="absolute -right-[120px] -top-[120px] w-[420px] h-[420px] rounded-full bg-[radial-gradient(circle,rgba(255,90,54,.35),transparent_65%)]" />
-      <router-link to="/w" class="relative flex items-center gap-2.5 text-white no-underline font-bold text-[16px]">
+      <router-link to="/" class="relative flex items-center gap-2.5 text-white no-underline font-bold text-[16px]">
         <span class="w-[30px] h-[30px] rounded-[9px] bg-accent inline-flex items-center justify-center"><AppIcon name="location_city" :size="18" /></span>
         {{ t('app.name') }}
       </router-link>
@@ -54,7 +54,7 @@ function pick(email: string) {
 
     <main class="flex items-center justify-center px-4 py-10 sm:p-10 bg-bg">
       <div class="w-full max-w-[460px] flex flex-col gap-3.5">
-        <router-link to="/w" class="min-[1100px]:hidden flex items-center gap-2 font-bold text-[15px] no-underline text-ink mb-2">
+        <router-link to="/" class="min-[1100px]:hidden flex items-center gap-2 font-bold text-[15px] no-underline text-ink mb-2">
           <span class="w-2.5 h-2.5 rounded-full bg-accent" /> {{ t('app.name') }}
         </router-link>
 
@@ -84,7 +84,7 @@ function pick(email: string) {
           </div>
         </template>
 
-        <router-link to="/w" class="self-center inline-flex items-center gap-1 text-[13px] text-muted no-underline mt-2">
+        <router-link to="/" class="self-center inline-flex items-center gap-1 text-[13px] text-muted no-underline mt-2">
           <AppIcon name="arrow_back" :size="16" /> {{ t('auth.backToSite') }}
         </router-link>
       </div>

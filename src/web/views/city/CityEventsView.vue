@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // T06 · Panou Primărie › Evenimente — design/final `#/city/events` (tabel cu filtre) și `#/city/events/new` (formular + previzualizare
-// pe telefon). `/w/city/events` = listă, `/w/city/events/new` = eveniment nou, `/w/city/events/:id` = editare. POST/PUT/DELETE /events.
+// pe telefon). `/city/events` = listă, `/city/events/new` = eveniment nou, `/city/events/:id` = editare. POST/PUT/DELETE /events.
 import { computed, reactive, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -11,6 +11,7 @@ import { useEventFormat } from '@/shared/composables/useEvents'
 import { bucharestIso, splitBucharest } from '@/shared/composables/useEventForm'
 import { useFormat } from '@/shared/composables/useFormat'
 import { useUiStore } from '@/shared/stores/ui'
+import { mobilePreviewHref } from '@/router/app'
 import { EVENT_CATEGORIES, type EventCategory, type EventCreate, type EventDto, type EventSummary, type TicketType } from '@/shared/types/events'
 
 const route = useRoute()
@@ -107,7 +108,7 @@ async function save(status: 'DRAFT' | 'PUBLISHED') {
   try {
     if (editing.value) { await eventsApi.update(editing.value.id, request(status)); ui.toast(t('events.city.form.updated'), 'success') }
     else { await eventsApi.create(request(status)); ui.toast(status === 'PUBLISHED' ? t('events.city.form.created') : t('events.city.form.draftSaved'), 'success') }
-    await router.push('/w/city/events')
+    await router.push('/city/events')
   } catch (err) { ui.error(err) } finally { saving.value = false }
 }
 const venue = computed(() => VENUES.find((v) => v.id === form.venue) ?? VENUES[0])
@@ -168,7 +169,7 @@ const label = 'font-semibold text-[13px]'
           <div class="flex-1 text-[12.5px] text-muted">{{ t('events.city.form.photoHint') }}</div>
         </div>
         <div class="flex gap-2.5 justify-end pt-4 border-t border-line">
-          <button type="button" class="h-10 px-4 rounded-xl border border-line bg-white font-semibold text-[14px]" :disabled="saving" @click="router.push('/w/city/events')">{{ t('common.cancel') }}</button>
+          <button type="button" class="h-10 px-4 rounded-xl border border-line bg-white font-semibold text-[14px]" :disabled="saving" @click="router.push('/city/events')">{{ t('common.cancel') }}</button>
           <button type="button" class="h-10 px-4 rounded-xl border border-line bg-white font-semibold text-[14px]" :disabled="saving" @click="save('DRAFT')">{{ t('events.city.form.saveDraft') }}</button>
           <button type="submit" class="h-10 px-4 rounded-xl bg-ink text-white font-semibold text-[14px] inline-flex items-center gap-1.5" :disabled="saving"><AppIcon name="publish" :size="16" />{{ t('events.city.form.publish') }}</button>
         </div>
@@ -200,7 +201,7 @@ const label = 'font-semibold text-[13px]'
         <h1 class="m-0 text-[24px] tracking-[-0.025em] font-semibold">{{ t('events.city.title') }}</h1>
         <div class="text-muted text-[13.5px] mt-1">{{ t('events.city.sub') }}</div>
       </div>
-      <router-link to="/w/city/events/new" class="h-10 px-4 rounded-xl bg-ink text-white font-semibold text-[14px] inline-flex items-center gap-1.5 no-underline"><AppIcon name="add" :size="16" />{{ t('events.city.new') }}</router-link>
+      <router-link to="/city/events/new" class="h-10 px-4 rounded-xl bg-ink text-white font-semibold text-[14px] inline-flex items-center gap-1.5 no-underline"><AppIcon name="add" :size="16" />{{ t('events.city.new') }}</router-link>
     </div>
     <div class="bg-white border border-line rounded-[14px] overflow-hidden">
       <div class="flex flex-wrap items-center gap-2.5 px-3.5 py-3 border-b border-line">
@@ -232,10 +233,10 @@ const label = 'font-semibold text-[13px]'
               <td class="px-3.5 py-3 border-b border-line"><span class="inline-flex items-center gap-[5px] text-[12px] font-semibold px-[9px] py-[3px] rounded-full whitespace-nowrap" :class="pill(statusOf(e))"><i class="w-1.5 h-1.5 rounded-full bg-current" />{{ t(`events.city.status.${statusOf(e)}`) }}</span></td>
               <td class="px-3.5 py-3 border-b border-line"><div class="flex gap-1.5 justify-end">
                 <template v-if="e.organizerType === 'CITY' || e.organizerType === 'ADMIN'">
-                  <router-link :to="`/w/city/events/${e.id}`" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-[13px] font-semibold inline-flex items-center no-underline text-ink">{{ t('events.city.edit') }}</router-link>
+                  <router-link :to="`/city/events/${e.id}`" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-[13px] font-semibold inline-flex items-center no-underline text-ink">{{ t('events.city.edit') }}</router-link>
                   <button type="button" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-[13px] font-semibold" @click="hide(e)">{{ t('events.city.hide') }}</button>
                 </template>
-                <router-link :to="`/w/events/${e.id}`" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-[13px] font-semibold inline-flex items-center no-underline text-ink">{{ t('events.city.view') }}</router-link>
+                <a :href="mobilePreviewHref(`/events/${e.id}`)" target="_blank" rel="noopener" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-[13px] font-semibold inline-flex items-center no-underline text-ink">{{ t('events.city.view') }}</a>
               </div></td>
             </tr>
           </tbody>

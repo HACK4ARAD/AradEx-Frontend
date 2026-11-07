@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { selectApp, uiOf } from './app'
+import { mobilePreviewHref, selectApp, uiOf } from './app'
 
 function memStorage(initial: Record<string, string> = {}) {
   const data = { ...initial }
@@ -35,6 +35,13 @@ describe('selectApp', () => {
     expect(storage.setItem).not.toHaveBeenCalled()
   })
 
+  it('?preview=mobile opens the mobile app once, without saving it', () => {
+    const storage = memStorage({ 'ax.app': 'web' })
+    expect(selectApp({ native: false, search: '?preview=mobile', storage })).toBe('mobile')
+    expect(storage.setItem).not.toHaveBeenCalled()
+    expect(selectApp({ native: false, search: '', storage })).toBe('web')
+  })
+
   it('works when storage throws', () => {
     const storage = {
       getItem: () => { throw new Error('blocked') },
@@ -49,5 +56,12 @@ describe('uiOf', () => {
   it('maps the app to the auth ui code', () => {
     expect(uiOf('mobile')).toBe('m')
     expect(uiOf('web')).toBe('w')
+  })
+})
+
+describe('mobilePreviewHref', () => {
+  it('adds the preview flag, keeping an existing query', () => {
+    expect(mobilePreviewHref('/places/3')).toBe('/places/3?preview=mobile')
+    expect(mobilePreviewHref('/map?to=place:3')).toBe('/map?to=place:3&preview=mobile')
   })
 })

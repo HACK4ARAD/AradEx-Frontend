@@ -34,7 +34,7 @@ const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' 
 </script>
 
 <template>
-  <button v-if="isVisitor" type="button" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] bg-ink text-white mb-3.5 text-left" @click="router.push('/m/plan')">
+  <button v-if="isVisitor" type="button" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] bg-ink text-white mb-3.5 text-left" @click="router.push('/plan')">
     <AppIcon name="auto_awesome" />
     <span class="flex-1 min-w-0"><b class="block text-[15px]">{{ t('home.planCta') }}</b><span class="text-[13px] opacity-[.78]">{{ t('home.planCtaSub') }}</span></span>
     <AppIcon name="chevron_right" />
@@ -55,7 +55,7 @@ const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' 
 
   <Skeleton v-if="loading && !list.length" :rows="2" :height="300" />
   <template v-else-if="list.length">
-    <EventCard v-for="e in list" :key="e.id" :event="e" :to="`/m/events/${e.id}`" @toggle-save="saver.toggle(e, '/m/login')" />
+    <EventCard v-for="e in list" :key="e.id" :event="e" :to="`/events/${e.id}`" @toggle-save="saver.toggle(e, '/login')" />
   </template>
   <EmptyState v-else icon="event_busy" :title="t('events.empty.title')" :text="t('events.empty.text')" :action="t('events.empty.action')" @action="choose('week'); reload()" />
 

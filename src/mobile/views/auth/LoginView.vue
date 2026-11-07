@@ -6,7 +6,7 @@ import LoginForm from '@/shared/components/auth/LoginForm.vue'
 import { useBack } from '@/shared/composables/useBack'
 
 const { t } = useI18n()
-const back = useBack('/m')
+const back = useBack('/')
 
 const demo = [
   { label: t('auth.role.VISITOR'), email: 'visitor@demo.ro' },

@@ -12,7 +12,7 @@ import { useBack } from '@/shared/composables/useBack'
 
 const route = useRoute()
 const { t } = useI18n()
-const back = useBack('/m')
+const back = useBack('/')
 const id = computed(() => Number(route.params.id))
 const { data, loading, error, notFound, reload } = useBusinessPage(id)
 const b = computed(() => data.value?.business)
@@ -51,7 +51,7 @@ const maps = computed(() => (b.value ? directionsUrl(b.value.lat, b.value.lng, b
 
       <h3 class="text-[18px] font-semibold mt-6 mb-2.5">{{ t('business.public.events') }}</h3>
       <div v-if="data.events.length" class="flex flex-col gap-2.5">
-        <PublicEventRow v-for="e in data.events" :key="e.id" :event="e" :to="`/m/events/${e.id}`" />
+        <PublicEventRow v-for="e in data.events" :key="e.id" :event="e" :to="`/events/${e.id}`" />
       </div>
       <div v-else class="bg-white rounded-[16px] p-4 text-[14px] text-muted">{{ t('business.public.noEventsText') }}</div>
 

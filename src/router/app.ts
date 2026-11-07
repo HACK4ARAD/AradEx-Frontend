@@ -16,12 +16,15 @@ function isApp(v: unknown): v is AppKind {
 }
 
 /**
- * Nativ (Capacitor) → mereu mobile. Altfel `?app=mobile|web` câștigă și se ține minte (test în browser, dev),
+ * Nativ (Capacitor) → mereu mobile. Altfel `?preview=mobile` (doar încărcarea asta), apoi `?app=mobile|web`, care câștigă și se ține minte (test în browser, dev),
  * apoi valoarea ținută minte, apoi web.
  */
 export function selectApp(opts: { native: boolean; search: string; storage?: AppStorage }): AppKind {
   if (opts.native) return 'mobile'
-  const forced = new URLSearchParams(opts.search).get('app')
+  const params = new URLSearchParams(opts.search)
+  // previzualizare din panourile web (tab nou): aplicația mobilă doar pentru încărcarea asta, fără să se țină minte
+  if (params.get('preview') === 'mobile') return 'mobile'
+  const forced = params.get('app')
   if (isApp(forced)) {
     try { opts.storage?.setItem(APP_KEY, forced) } catch { /* storage blocat: alegerea ține doar sesiunea asta */ }
     return forced
@@ -48,4 +51,9 @@ export function currentApp(): AppKind {
 /** Codul folosit de useAuthForm (`homeFor`, `landingFor`). */
 export function uiOf(app: AppKind): Ui {
   return app === 'mobile' ? 'm' : 'w'
+}
+
+/** Link spre un ecran al aplicației mobile, deschis din panourile web într-un tab nou (`?preview=mobile`, nu se ține minte). */
+export function mobilePreviewHref(path: string): string {
+  return path + (path.includes('?') ? '&' : '?') + 'preview=mobile'
 }

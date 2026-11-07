@@ -10,7 +10,7 @@ import { useBack } from '@/shared/composables/useBack'
 import type { EventQuery } from '@/shared/types/events'
 
 const { t } = useI18n()
-const back = useBack('/m')
+const back = useBack('/')
 const input = ref<HTMLInputElement | null>(null)
 const text = ref('')
 const q = ref('')
@@ -52,7 +52,7 @@ onMounted(() => input.value?.focus())
   <Skeleton v-if="loading && !list.length" :rows="4" :height="84" />
   <template v-else-if="list.length">
     <h3 v-if="q" class="text-[16px] font-semibold mt-2.5 mb-1">{{ t('events.search.events') }}</h3>
-    <EventRow v-for="e in list" :key="e.id" :event="e" :to="`/m/events/${e.id}`" />
+    <EventRow v-for="e in list" :key="e.id" :event="e" :to="`/events/${e.id}`" />
   </template>
   <EmptyState v-else-if="q" icon="search_off" :title="t('events.search.noResults', { q })" :text="t('events.search.noResultsText')" />
 

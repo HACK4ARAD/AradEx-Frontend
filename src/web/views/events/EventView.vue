@@ -38,7 +38,7 @@ const order = ref({ adult: 1, child: 0 })
 function requireLogin(): boolean {
   if (auth.isLoggedIn) return true
   ui.toast(t('tickets.loginToBuy'))
-  void router.push({ path: '/w/login', query: { next: route.fullPath } })
+  void router.push({ path: '/login', query: { next: route.fullPath } })
   return false
 }
 function startPay(o: { adult: number; child: number }) {
@@ -64,7 +64,7 @@ async function share() {
 async function toggleSave() {
   if (!e.value || busy.value) return
   busy.value = true
-  await saver.toggle(e.value, '/w/login')
+  await saver.toggle(e.value, '/login')
   busy.value = false
 }
 const chip = 'h-9 px-3.5 rounded-full inline-flex items-center gap-1.5 border border-line bg-white text-[13.5px] font-medium no-underline text-ink'
@@ -74,7 +74,7 @@ const chip = 'h-9 px-3.5 rounded-full inline-flex items-center gap-1.5 border bo
   <Skeleton v-if="loading && !e" :rows="3" :height="160" />
   <EmptyState v-else-if="notFound || !e" icon="event_busy" :title="t('events.detail.notFound')" :action="notFound ? undefined : t('common.retry')" @action="reload" />
   <template v-else>
-    <div class="text-muted text-[14px] mb-2.5"><router-link to="/w/events" class="no-underline text-muted hover:text-ink">{{ t('events.detail.breadcrumb') }}</router-link> › {{ t(`events.category.${e.category}`) }}</div>
+    <div class="text-muted text-[14px] mb-2.5"><router-link to="/events" class="no-underline text-muted hover:text-ink">{{ t('events.detail.breadcrumb') }}</router-link> › {{ t(`events.category.${e.category}`) }}</div>
 
     <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_420px] gap-6 items-start">
       <div class="min-w-0">
@@ -106,7 +106,7 @@ const chip = 'h-9 px-3.5 rounded-full inline-flex items-center gap-1.5 border bo
             <b>{{ t('events.detail.organizedBy', { name: e.organizerName }) }}</b>
             <div v-if="e.externalUrl" class="text-muted text-[14px] mt-0.5 truncate">{{ e.externalUrl.replace(/^https?:\/\//, '') }}</div>
           </div>
-          <router-link v-if="e.organizerBusinessId" :to="`/w/businesses/${e.organizerBusinessId}`" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-[13px] font-semibold flex items-center no-underline text-ink shrink-0">{{ t('events.detail.businessPage') }}</router-link>
+          <router-link v-if="e.organizerBusinessId" :to="`/businesses/${e.organizerBusinessId}`" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-[13px] font-semibold flex items-center no-underline text-ink shrink-0">{{ t('events.detail.businessPage') }}</router-link>
         </div>
         <p class="text-muted text-[12px] mt-3.5">{{ e.isDemo ? t('events.detail.demoNote') : t('events.detail.realNote') }}</p>
       </div>

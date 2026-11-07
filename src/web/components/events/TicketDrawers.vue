@@ -85,7 +85,7 @@ async function pay() {
       <div class="flex gap-2 flex-wrap">
         <a :href="ticketsApi.icsUrl(ticket.eventId)" class="h-10 px-4 rounded-[12px] border border-line bg-white font-semibold text-[14px] inline-flex items-center gap-1.5 no-underline text-ink"><AppIcon name="event_available" :size="16" />{{ t('tickets.mine.calendar') }}</a>
         <button type="button" class="h-10 px-4 rounded-[12px] border border-line bg-white font-semibold text-[14px] inline-flex items-center gap-1.5" @click="ui.toast(t('tickets.ticket.sendPhoneSoon'))"><AppIcon name="smartphone" :size="16" />{{ t('tickets.ticket.sendPhone') }}</button>
-        <router-link to="/w/account/tickets" class="h-10 px-4 rounded-[12px] border border-line bg-white font-semibold text-[14px] inline-flex items-center no-underline text-ink" @click="showTicket = false">{{ t('tickets.ticket.account') }}</router-link>
+        <router-link to="/account/tickets" class="h-10 px-4 rounded-[12px] border border-line bg-white font-semibold text-[14px] inline-flex items-center no-underline text-ink" @click="showTicket = false">{{ t('tickets.ticket.account') }}</router-link>
       </div>
     </template>
   </AppSheet>

@@ -13,7 +13,7 @@ const live = computed(() => fmt.liveUntil(props.event))
 </script>
 
 <template>
-  <router-link :to="`/w/events/${event.id}`" class="block w-full rounded-[16px] overflow-hidden bg-white border border-line no-underline text-ink transition hover:shadow-[0_8px_24px_rgba(0,0,0,.08)] hover:-translate-y-px">
+  <router-link :to="`/events/${event.id}`" class="block w-full rounded-[16px] overflow-hidden bg-white border border-line no-underline text-ink transition hover:shadow-[0_8px_24px_rgba(0,0,0,.08)] hover:-translate-y-px">
     <EventImage :src="event.imageUrl" :category="event.category" :emoji-size="44" :class="small ? 'h-[120px]' : 'h-[150px]'">
       <div class="absolute left-2.5 top-2.5 flex gap-1.5">
         <span v-if="live" class="inline-flex items-center gap-1 text-[12px] font-semibold px-[9px] py-[3px] rounded-full bg-white">● {{ t('events.now', { time: live }) }}</span>

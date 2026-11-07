@@ -18,7 +18,7 @@ const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const ui = useUiStore()
-const back = useBack('/m')
+const back = useBack('/')
 const fmt = useEventFormat()
 const saver = useSaveEvent()
 const id = computed(() => Number(route.params.id))
@@ -35,12 +35,12 @@ const myTicket = computed(() => mine.upcoming.value.find((x) => x.eventId === id
 /** T07: „Înscrie-te · gratuit” — înscriere directă (fără S4/S5), apoi S6. */
 async function joinFree() {
   if (!e.value || joining.value) return
-  if (!auth.user) { await router.push({ path: '/m/login', query: { next: route.fullPath } }); return }
+  if (!auth.user) { await router.push({ path: '/login', query: { next: route.fullPath } }); return }
   joining.value = true
   try {
     const tk = await ticketsApi.buy(e.value.id, { qtyAdult: 1, qtyChild: 0, email: auth.user.email })
     cacheTicket(auth.user.id, tk)
-    await router.push(`/m/confirm/${tk.code}`)
+    await router.push(`/confirm/${tk.code}`)
   } catch (err) {
     ui.toast(errorText(err), 'error')
   } finally {
@@ -85,7 +85,7 @@ function openExternal() {
         <button type="button" class="w-11 h-11 rounded-full bg-white/95 shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('common.back')" @click="back"><AppIcon name="arrow_back" /></button>
         <div class="flex gap-2">
           <button type="button" class="w-11 h-11 rounded-full bg-white/95 shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('events.detail.share')" @click="share"><AppIcon name="ios_share" /></button>
-          <button type="button" class="w-11 h-11 rounded-full bg-white/95 shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="e.saved ? t('events.saved') : t('events.save')" :aria-pressed="!!e.saved" @click="saver.toggle(e, '/m/login')">
+          <button type="button" class="w-11 h-11 rounded-full bg-white/95 shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="e.saved ? t('events.saved') : t('events.save')" :aria-pressed="!!e.saved" @click="saver.toggle(e, '/login')">
             <AppIcon :name="e.saved ? 'bookmark' : 'bookmark_border'" :fill="!!e.saved" />
           </button>
         </div>
@@ -123,7 +123,7 @@ function openExternal() {
           <AppIcon name="directions" :size="18" />{{ t('events.detail.directions') }}
         </a>
       </div>
-      <router-link v-if="e.organizerBusinessId" :to="`/m/businesses/${e.organizerBusinessId}`" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
+      <router-link v-if="e.organizerBusinessId" :to="`/businesses/${e.organizerBusinessId}`" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
         <AppIcon name="storefront" class="text-muted" />
         <div class="flex-1 text-[15.5px]">{{ t('events.detail.organizedBy', { name: e.organizerName }) }}</div>
         <AppIcon name="chevron_right" />
@@ -153,10 +153,10 @@ function openExternal() {
       <button v-if="ended" type="button" disabled class="flex-1 min-h-[52px] rounded-[16px] bg-soft text-ink text-[16px] font-semibold opacity-60">{{ t('events.detail.ended') }}</button>
       <template v-else-if="e.ticketType === 'IN_APP'">
         <button v-if="e.spotsLeft === 0" type="button" disabled class="flex-1 min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold opacity-45">{{ t('events.detail.soldOut') }}</button>
-        <button v-else type="button" class="flex-1 min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold" @click="router.push(`/m/events/${e.id}/tickets`)">{{ t('events.detail.buy') }}</button>
+        <button v-else type="button" class="flex-1 min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold" @click="router.push(`/events/${e.id}/tickets`)">{{ t('events.detail.buy') }}</button>
       </template>
       <template v-else-if="e.ticketType === 'FREE'">
-        <router-link v-if="e.capacity && myTicket" :to="`/m/tickets/${myTicket.code}`" class="flex-1 min-h-[52px] rounded-[16px] bg-soft text-ink text-[16px] font-semibold flex items-center justify-center no-underline">{{ t('events.detail.registered') }}</router-link>
+        <router-link v-if="e.capacity && myTicket" :to="`/tickets/${myTicket.code}`" class="flex-1 min-h-[52px] rounded-[16px] bg-soft text-ink text-[16px] font-semibold flex items-center justify-center no-underline">{{ t('events.detail.registered') }}</router-link>
         <button v-else-if="e.capacity" type="button" class="flex-1 min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold disabled:opacity-60" :disabled="joining || e.spotsLeft === 0" @click="joinFree">{{ e.spotsLeft === 0 ? t('events.detail.soldOut') : t('events.detail.register') }}</button>
         <a v-else :href="googleCalendarUrl(e)" target="_blank" rel="noopener" class="flex-1 min-h-[52px] rounded-[16px] bg-white border border-line text-ink text-[16px] font-semibold flex items-center justify-center gap-2 no-underline">
           <AppIcon name="event_available" :size="18" />{{ t('events.detail.addToCalendar') }}

@@ -10,9 +10,12 @@ import BusinessStats from '@/shared/components/business/BusinessStats.vue'
 import PanelHeader from '@/shared/components/business/PanelHeader.vue'
 import UnverifiedBanner from '@/shared/components/business/UnverifiedBanner.vue'
 import { useBusinessPanel } from '@/shared/composables/useBusiness'
+import { mobilePreviewHref } from '@/router/app'
 import type { AnnouncementCreate } from '@/shared/types/business'
 
 const router = useRouter()
+/** Pagina publică a firmei e doar în aplicația mobilă: o deschidem într-un tab nou, ca previzualizare. */
+const openPublic = (id: number) => window.open(mobilePreviewHref(`/businesses/${id}`), '_blank', 'noopener')
 const { t } = useI18n()
 const p = useBusinessPanel()
 const annSheet = ref(false)
@@ -32,9 +35,9 @@ async function saveAnnouncement(req: AnnouncementCreate) {
   <template v-else>
     <UnverifiedBanner v-if="!p.me.value.business.verified" />
     <PanelHeader :title="t('business.panel.title')" :subtitle="`${p.me.value.business.name} · ${p.me.value.business.address ?? ''}`">
-      <AppButton variant="ghost" size="sm" icon="visibility" @click="router.push(`/w/businesses/${p.me.value.business.id}`)">{{ t('business.panel.openPublic') }}</AppButton>
+      <AppButton variant="ghost" size="sm" icon="visibility" @click="openPublic(p.me.value.business.id)">{{ t('business.panel.openPublic') }}</AppButton>
       <AppButton variant="ghost" size="sm" icon="add" @click="annSheet = true">{{ t('business.panel.newAnnouncement') }}</AppButton>
-      <AppButton size="sm" icon="add" @click="router.push('/w/business/events/new')">{{ t('business.panel.newEvent') }}</AppButton>
+      <AppButton size="sm" icon="add" @click="router.push('/business/events/new')">{{ t('business.panel.newEvent') }}</AppButton>
     </PanelHeader>
 
     <BusinessStats :stats="p.me.value.stats" />
@@ -43,13 +46,13 @@ async function saveAnnouncement(req: AnnouncementCreate) {
       <div class="min-w-0">
         <div class="flex items-center justify-between mb-2.5">
           <b class="text-[15px]">{{ t('business.panel.upcomingTitle') }} · {{ p.me.value.stats.upcomingEvents }}</b>
-          <router-link to="/w/business/events" class="text-[13px] text-muted no-underline flex items-center">{{ t('business.panel.seeAll') }}<AppIcon name="chevron_right" :size="18" /></router-link>
+          <router-link to="/business/events" class="text-[13px] text-muted no-underline flex items-center">{{ t('business.panel.seeAll') }}<AppIcon name="chevron_right" :size="18" /></router-link>
         </div>
         <div v-if="nextEvents.length" class="flex flex-col gap-2.5">
           <BusinessEventItem v-for="e in nextEvents" :key="e.id" :event="e" />
         </div>
         <div v-else class="bg-white rounded-[16px] border border-line">
-          <EmptyState icon="event" :title="t('business.events.empty')" :text="t('business.events.emptyText')" :action="t('business.events.new')" @action="router.push('/w/business/events/new')" />
+          <EmptyState icon="event" :title="t('business.events.empty')" :text="t('business.events.emptyText')" :action="t('business.events.new')" @action="router.push('/business/events/new')" />
         </div>
       </div>
 

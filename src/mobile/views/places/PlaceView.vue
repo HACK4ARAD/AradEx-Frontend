@@ -19,7 +19,7 @@ const route = useRoute()
 const router = useRouter()
 const { t, locale } = useI18n()
 const { km } = useFormat()
-const back = useBack('/m/places')
+const back = useBack('/places')
 const share = useShare()
 
 const id = computed(() => Number(route.params.id))
@@ -39,7 +39,7 @@ const btn = 'flex items-center justify-center gap-2 min-h-[52px] rounded-2xl tex
   <div v-else-if="!place" class="pt-6">
     <EmptyState :icon="notFound ? 'location_off' : 'cloud_off'" :title="notFound ? t('places.detail.notFound') : t('places.list.error')"
       :text="notFound ? t('places.detail.notFoundText') : error ?? undefined"
-      :action="notFound ? t('places.detail.backToList') : t('common.retry')" @action="notFound ? router.push('/m/places') : reload()" />
+      :action="notFound ? t('places.detail.backToList') : t('common.retry')" @action="notFound ? router.push('/places') : reload()" />
   </div>
 
   <div v-else class="-mx-5 -mt-[max(12px,env(safe-area-inset-top))]">
@@ -88,10 +88,10 @@ const btn = 'flex items-center justify-center gap-2 min-h-[52px] rounded-2xl tex
       <button type="button" :class="[btn, 'flex-1 min-w-0 px-5 bg-ink text-white disabled:opacity-45']" :disabled="points.length < 2" @click="guide.next()">
         <span class="leading-tight">{{ t('places.detail.next') }}</span> <AppIcon name="arrow_forward" :size="18" />
       </button>
-      <button type="button" :class="[btn, 'px-4 bg-white border border-line text-ink']" @click="router.push({ path: '/m/map', query: { to: `place:${place.id}` } })">
+      <button type="button" :class="[btn, 'px-4 bg-white border border-line text-ink']" @click="router.push({ path: '/map', query: { to: `place:${place.id}` } })">
         <AppIcon name="directions" :size="18" /> {{ t('places.detail.directions') }}
       </button>
-      <button type="button" :class="[btn, 'px-3.5 bg-white border border-line text-ink']" :aria-label="t('places.detail.plan')" @click="router.push('/m/plan')">
+      <button type="button" :class="[btn, 'px-3.5 bg-white border border-line text-ink']" :aria-label="t('places.detail.plan')" @click="router.push('/plan')">
         <AppIcon name="auto_awesome" :size="18" />
       </button>
     </div>
