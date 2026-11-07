@@ -9,7 +9,7 @@ import EventImage from '@/shared/components/events/EventImage.vue'
 import { eventsApi } from '@/shared/api/events'
 import { useEventFormat } from '@/shared/composables/useEvents'
 import { bucharestIso, splitBucharest } from '@/shared/composables/useEventForm'
-import { useFormat } from '@/shared/composables/useFormat'
+import { intlLocale, useFormat } from '@/shared/composables/useFormat'
 import { useUiStore } from '@/shared/stores/ui'
 import { EVENT_CATEGORIES, type EventCategory, type EventCreate, type EventDto, type EventSummary, type TicketType } from '@/shared/types/events'
 
@@ -228,7 +228,7 @@ const label = 'font-semibold text-[13px]'
               <td class="px-3.5 py-3 border-b border-line">{{ fmt.when(e) }}</td>
               <td class="px-3.5 py-3 border-b border-line">{{ e.locationName }}</td>
               <td class="px-3.5 py-3 border-b border-line">{{ fmt.price(e) }}</td>
-              <td class="px-3.5 py-3 border-b border-line">{{ e.participantsCount ? e.participantsCount.toLocaleString('ro-RO') + (e.isHot ? ' 🔥' : '') : '—' }}</td>
+              <td class="px-3.5 py-3 border-b border-line">{{ e.participantsCount ? e.participantsCount.toLocaleString(intlLocale()) + (e.isHot ? ' 🔥' : '') : '—' }}</td>
               <td class="px-3.5 py-3 border-b border-line"><span class="inline-flex items-center gap-[5px] text-[12px] font-semibold px-[9px] py-[3px] rounded-full whitespace-nowrap" :class="pill(statusOf(e))"><i class="w-1.5 h-1.5 rounded-full bg-current" />{{ t(`events.city.status.${statusOf(e)}`) }}</span></td>
               <td class="px-3.5 py-3 border-b border-line"><div class="flex gap-1.5 justify-end">
                 <template v-if="e.organizerType === 'CITY' || e.organizerType === 'ADMIN'">

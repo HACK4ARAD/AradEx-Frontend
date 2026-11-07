@@ -28,5 +28,66 @@
   "myTickets": "My tickets",
   "pointsAndRegistrations": "Points & registrations",
   "myOffers": "My offers",
-  "menu": "Menu"
+  "menu": "Menu",
+  "routes": {
+    "w-login": "Log in",
+    "w-landing": "Home",
+    "w-community": "Community",
+    "w-privacy": "Privacy",
+    "w-business": "Business dashboard",
+    "w-business-offers": "Offers",
+    "w-business-events": "Events",
+    "w-business-announcements": "Announcements",
+    "w-business-codes": "Validate codes",
+    "w-business-reviews": "Reviews",
+    "w-business-profile": "Business profile",
+    "w-city": "City Hall dashboard",
+    "w-city-events": "Events",
+    "w-city-places": "Places & guides",
+    "w-city-actions": "Community actions",
+    "w-city-validate": "Validation",
+    "w-city-volunteers": "Volunteers",
+    "w-city-messages": "Messages",
+    "w-city-leaderboard": "Leaderboard",
+    "w-city-partners": "Partner businesses",
+    "w-admin": "Administration",
+    "w-admin-content": "Content & moderation",
+    "w-admin-users": "Users",
+    "w-admin-settings": "Settings"
+  },
+  "sidebar": {
+    "groups": {
+      "general": "General",
+      "community": "Community",
+      "partners": "Partners",
+      "admin": "Administration"
+    },
+    "business": {
+      "dashboard": "Dashboard",
+      "offers": "Offers",
+      "events": "Events",
+      "announcements": "Announcements",
+      "codes": "Validate codes",
+      "reviews": "Reviews",
+      "profile": "Business profile"
+    },
+    "city": {
+      "dashboard": "Dashboard",
+      "adminDashboard": "Dashboard",
+      "events": "Events",
+      "places": "Places & guides",
+      "actions": "Community actions",
+      "validate": "Validation",
+      "volunteers": "Volunteers",
+      "messages": "Messages",
+      "leaderboard": "Leaderboard",
+      "partners": "Partner businesses"
+    },
+    "admin": {
+      "content": "Content & moderation",
+      "users": "Users",
+      "settings": "Settings"
+    },
+    "language": "Language: English (tap for Romanian)"
+  }
 }
