@@ -4,7 +4,8 @@ import type { CapacitorConfig } from '@capacitor/cli'
  * Aplicația Android (T15, Capacitor): build-ul mobil (`npm run build:mobile` → `dist-mobile`), separat de web; `npm run cap:sync` îl face și îl copiază.
  * - implicit: APK cu build-ul inclus (`npm run android:apk`) — API-ul e cel din VITE_API_URL de la build.
  * - live reload: `npm run dev:mobile` + `CAP_SERVER_URL=http://localhost:5174 npx cap run android` → aplicația instalată încarcă din Vite (în emulator: `adb reverse tcp:5174 tcp:5174`).
- * iOS: `npx cap add ios` + build doar pe macOS cu Xcode.
+ * iOS (proiectul în `ios/`, doar pe macOS cu Xcode): `npm run ios:sync` (build cu VITE_API_URL de producție) + `npm run ios:open` → Xcode,
+ * Team = Apple ID-ul tău, iPhone-ul prin cablu, ▶ Run. Originea aplicației iOS e `capacitor://localhost` → trebuie în CORS_ORIGINS din BE.
  */
 const liveUrl = process.env.CAP_SERVER_URL
 
@@ -20,6 +21,9 @@ const config: CapacitorConfig = {
     ...(liveUrl ? { url: liveUrl } : {}),
   },
   android: {
+    backgroundColor: '#F7F7F2',
+  },
+  ios: {
     backgroundColor: '#F7F7F2',
   },
 }

@@ -14,11 +14,14 @@
     "lint": "vue-tsc --noEmit -p tsconfig.app.json",
     "cap:sync": "npm run build:mobile && cap sync android",
     "android:run": "npm run cap:sync && cap run android",
-    "android:open": "cap open android"
+    "android:open": "cap open android",
+    "ios:sync": "npm run build:mobile && cap sync ios",
+    "ios:open": "cap open ios"
   },
   "dependencies": {
     "@capacitor/android": "^6.2.3",
     "@capacitor/core": "^6.2.3",
+    "@capacitor/ios": "^6.2.1",
     "@tailwindcss/vite": "^4.3.4",
     "@vueuse/core": "^15.0.0",
     "html5-qrcode": "^2.3.8",
