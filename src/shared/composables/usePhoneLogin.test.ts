@@ -26,7 +26,7 @@ describe('normalizePhone', () => {
     expect(normalizePhone(raw)).toBe(e164)
   })
 
-  it.each(['abc', '07', '', '   ', '+0123456789', '0799 000 0011 22'])('rejects %s', (raw) => {
+  it.each(['abc', '07', '', '   ', '+0123456789', '0799 000 0011 22', '0257 280 000', '021 312 1234', '0900 123 456', '0800 800 800'])('rejects %s', (raw) => {
     expect(normalizePhone(raw)).toBeNull()
   })
 
