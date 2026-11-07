@@ -38,7 +38,9 @@ const places = shallowRef<PlaceSummary[]>([])
 onMounted(async () => {
   try {
     // design: obiectivele cu ghid din centru, cele mai apropiate primele
-    places.value = (await placesApi.list({ near: geo.near() })).filter((p) => p.guidePointsCount > 0).slice(0, 6)
+    const withGuide = (await placesApi.list({ near: geo.near() })).filter((p) => p.guidePointsCount > 0)
+    const FIRST = [1, 2, 3, 8] // design: Cetatea, Palatul Cultural, Teatrul Clasic, Turnul de Apă; apoi cele mai apropiate
+    places.value = [...withGuide.filter((p) => FIRST.includes(p.id)).sort((a, b) => FIRST.indexOf(a.id) - FIRST.indexOf(b.id)), ...withGuide.filter((p) => !FIRST.includes(p.id))].slice(0, 6)
   } catch { /* secțiunea rămâne ascunsă */ }
 })
 const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' }, { key: 'today' }, { key: 'weekend' }, { key: 'week' }]
@@ -47,7 +49,7 @@ const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' 
 <template>
   <button v-if="isVisitor" type="button" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] bg-ink text-white mb-3.5 text-left" @click="router.push('/m/plan')">
     <AppIcon name="auto_awesome" />
-    <span class="flex-1 min-w-0"><b class="block text-[15px]">{{ t('home.planCta') }}</b><span class="text-[13px] opacity-[.78]">{{ t('home.planCtaSub') }}</span></span>
+    <span class="flex-1 min-w-0"><b class="block text-[15px] leading-[1.3]">{{ t('home.planCta') }}</b><span class="block text-[13px] leading-[1.35] opacity-[.78]">{{ t('events.home.plannerSub') }}</span></span>
     <AppIcon name="chevron_right" />
   </button>
 

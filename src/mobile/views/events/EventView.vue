@@ -192,7 +192,7 @@ function openExternal() {
       </button>
     </div>
 
-    <AppSheet v-model:open="extSheet" :title="t('events.detail.extSheetTitle')">
+    <AppSheet v-model:open="extSheet" :title="t('events.detail.extSheetTitle')" :closable="false">
       <p class="text-muted m-0">{{ t('events.detail.extSheetText') }}</p>
       <div class="flex flex-col gap-2.5 mt-[18px]">
         <button type="button" class="min-h-[52px] rounded-[16px] bg-ink text-white font-semibold flex items-center justify-center gap-2" @click="openExternal"><AppIcon name="open_in_new" :size="18" />{{ t('events.detail.openSite') }}</button>

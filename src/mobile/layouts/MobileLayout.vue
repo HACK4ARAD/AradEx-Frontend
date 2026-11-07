@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
+import { useMyTickets } from '@/shared/composables/useTickets'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
@@ -29,16 +30,10 @@ const tabs = computed(() => {
   ]
 })
 const hideTabs = computed(() => route.meta.hideTabs === true)
-/** Punctul de pe „Bilete” (design/final): ai bilete viitoare și nu ești pe tab-ul lor. Citit din copia offline a biletelor (T07). */
-const hasUpcomingTickets = computed(() => {
-  void route.fullPath
-  const uid = auth.user?.id
-  if (!uid) return false
-  try {
-    const list = JSON.parse(localStorage.getItem(`ax.tickets.${uid}`) ?? '[]') as { startAt: string; endAt?: string }[]
-    return list.some((x) => new Date(x.endAt ?? x.startAt).getTime() >= Date.now())
-  } catch { return false }
-})
+/** Punctul de pe „Bilete” (design/final): ai bilete viitoare și nu ești pe tab-ul lor (T07; lista se reîncarcă după o cumpărare). */
+const myTickets = useMyTickets()
+watch(() => [auth.user?.id, route.path === '/m/tickets' || route.path.startsWith('/m/confirm')], () => { if (auth.user) void myTickets.load() }, { immediate: true })
+const hasUpcomingTickets = computed(() => !!auth.user && myTickets.upcoming.value.length > 0)
 </script>
 
 <template>
