@@ -17,7 +17,7 @@ const target = computed(() => (auth.user ? homeFor(auth.user.role, 'w') : '/logi
       <h2 class="text-[26px] md:text-[30px] font-semibold tracking-[-0.02em] m-0 mb-2">{{ t('site.panels.title') }}</h2>
       <p class="text-[15.5px] text-white/75 leading-relaxed m-0 max-w-[620px]">{{ t('site.panels.text') }}</p>
     </div>
-    <router-link :to="target === '/' ? '/login' : target" class="h-12 px-5 rounded-[14px] bg-white text-ink font-semibold text-[15px] inline-flex items-center gap-2 no-underline shrink-0">
+    <router-link :to="target === '/' ? '/login?tab=panels' : target" class="h-12 px-5 rounded-[14px] bg-white text-ink font-semibold text-[15px] inline-flex items-center gap-2 no-underline shrink-0">
       {{ t('site.panels.cta') }} <AppIcon name="arrow_forward" :size="20" />
     </router-link>
   </section>

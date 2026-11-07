@@ -258,10 +258,20 @@ export function useLeaderboard(period: Ref<LeaderboardPeriod>) {
   const ui = useUiStore()
   const board = ref<LeaderboardDto | null>(null)
   const loading = ref(true)
+  let seq = 0
   async function load() {
+    const mine = ++seq
     loading.value = true
-    // la eroare `board` devine null, ca ecranul să arate starea de eroare (nu „nimeni n-a câștigat puncte”)
-    try { board.value = await communityApi.leaderboard(period.value) } catch (e) { board.value = null; ui.error(e) } finally { loading.value = false }
+    // la eroare `board` devine null, ca ecranul să arate starea de eroare (nu „nimeni n-a câștigat puncte”);
+    // un răspuns întârziat (altă perioadă aleasă între timp) se ignoră
+    try {
+      const b = await communityApi.leaderboard(period.value)
+      if (mine === seq) board.value = b
+    } catch (e) {
+      if (mine === seq) { board.value = null; ui.error(e) }
+    } finally {
+      if (mine === seq) loading.value = false
+    }
   }
   watch(period, load)
   return { board, loading, load }

@@ -118,7 +118,7 @@ onMounted(init)
                 <AppIcon name="open_in_new" :size="16" />{{ t('map.googleMaps') }}</a>
               <button v-else type="button" class="h-9 px-3.5 rounded-[12px] bg-ink text-white text-[13.5px] font-semibold flex items-center gap-1.5" @click="showRoute">
                 <AppIcon name="directions" :size="16" />{{ t('map.showRoute') }}</button>
-              <router-link :to="r.item.href" class="h-9 px-3.5 rounded-[12px] bg-white border border-line text-ink text-[13.5px] font-semibold flex items-center no-underline">{{ t('map.open') }}</router-link>
+              <router-link v-if="r.item.kind !== 'place'" :to="r.item.href" class="h-9 px-3.5 rounded-[12px] bg-white border border-line text-ink text-[13.5px] font-semibold flex items-center no-underline">{{ t('map.open') }}</router-link>
             </div>
           </div>
         </div>
@@ -162,7 +162,7 @@ onMounted(init)
             <AppIcon name="open_in_new" :size="16" />{{ t('map.googleMaps') }}</a>
           <button v-else type="button" class="h-9 px-3.5 rounded-[12px] bg-ink text-white text-[13.5px] font-semibold flex items-center gap-1.5" @click="showRoute">
             <AppIcon name="directions" :size="16" />{{ t('map.showRoute') }}</button>
-          <router-link :to="sel.href" class="h-9 px-3.5 rounded-[12px] bg-white border border-line text-ink text-[13.5px] font-semibold flex items-center no-underline">{{ t('map.open') }}</router-link>
+          <router-link v-if="sel.kind !== 'place'" :to="sel.href" class="h-9 px-3.5 rounded-[12px] bg-white border border-line text-ink text-[13.5px] font-semibold flex items-center no-underline">{{ t('map.open') }}</router-link>
         </div>
       </div>
     </section>

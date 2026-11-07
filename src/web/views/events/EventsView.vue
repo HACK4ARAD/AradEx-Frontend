@@ -2,7 +2,7 @@
 // T23 · W5 Evenimente — design/final web `/events`: titlu + număr, în stânga filtrele (Categorie / Preț / Organizator / Distanță),
 // în dreapta căutarea, perioada (Azi / Weekend / 7 zile / Toate), sortarea, grid-ul de carduri și paginarea (9 pe pagină).
 // Sub `lg` filtrele se deschid din butonul „Filtre”. Primește `?q=` (căutarea din Acasă).
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
@@ -21,6 +21,7 @@ const filtersOpen = ref(false)
 // căutarea: după 300 ms de la ultima tastă (sau Enter), păstrată în URL ca linkul să poată fi trimis
 let timer: number | undefined
 watch(text, (v) => { window.clearTimeout(timer); timer = window.setTimeout(() => search(v), 300) })
+onBeforeUnmount(() => window.clearTimeout(timer))
 function search(v: string) {
   window.clearTimeout(timer)
   q.value = v.trim()

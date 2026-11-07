@@ -31,7 +31,9 @@ export function useEventPage(id: Ref<number>) {
   /** Obiectivul legat (T05) pentru „Ghid virtual” și firma organizatoare (T09) pentru „Organizat de …”. */
   const place = shallowRef<PlaceDto | null>(null)
   const biz = shallowRef<BusinessDto | null>(null)
-  watch(e, async (ev) => {
+  // după id, nu după obiect: „Salvează” redesenează detaliul (triggerRef) și nu trebuie să reîncarce firma / obiectivul
+  watch(() => e.value?.id, async () => {
+    const ev = e.value
     place.value = null
     biz.value = null
     if (ev?.placeId) placesApi.get(ev.placeId).then((p) => { if (p.guidePoints.length) place.value = p }).catch(() => {})

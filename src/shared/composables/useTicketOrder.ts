@@ -21,7 +21,8 @@ export function useTicketPick(e: Ref<EventDto | null>) {
   const qty = reactive<Record<TicketKind, number>>({ adult: 1, child: 0 })
 
   // dacă omul se întoarce din plată, păstrăm ce alesese
-  watch(e, (ev) => {
+  watch(() => e.value?.id, () => {
+    const ev = e.value
     if (ev && store.order?.event.id === ev.id) { qty.adult = store.order.adult; qty.child = store.order.child }
   }, { immediate: true })
 

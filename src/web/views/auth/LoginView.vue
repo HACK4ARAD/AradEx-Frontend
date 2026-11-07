@@ -4,17 +4,19 @@
 // + parolă, + „Înregistrează-ți firma”). Cu `?tab=panels` se deschide direct tab-ul panourilor (butonul „Intră în panou” din site).
 // Pagina e în afara WebLayout (fără bara de sus), ca în design. Sub 1100px rămâne doar formularul.
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import LoginForm from '@/shared/components/auth/LoginForm.vue'
 import PhoneLogin from '@/shared/components/auth/PhoneLogin.vue'
-import { DEMO_ENABLED } from '@/shared/composables/useAuthForm'
+import { DEMO_ENABLED, initialLoginTab } from '@/shared/composables/useAuthForm'
+import { routeRoles } from '@/router/guard'
 
 const { t } = useI18n()
 const route = useRoute()
 const panelsForm = ref<InstanceType<typeof LoginForm> | null>(null)
-const tab = ref<'personal' | 'panels'>(route.query.tab === 'panels' ? 'panels' : 'personal')
+const router = useRouter()
+const tab = ref<'personal' | 'panels'>(initialLoginTab(route.query.tab, route.query.next, (p) => routeRoles(router, p)))
 const demoPhones = [
   { label: t('auth.role.VISITOR'), phone: '0799 000 001' },
   { label: t('auth.role.LOCAL'), phone: '0799 000 002' },

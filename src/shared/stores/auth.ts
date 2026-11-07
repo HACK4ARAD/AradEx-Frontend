@@ -6,6 +6,7 @@ import { i18n, setLocale, type Locale } from '@/shared/i18n'
 import type { Role } from '@/shared/types/common'
 import type { AuthResponse, RegisterRequest, UpdateMeRequest, UserDto } from '@/shared/types/auth'
 import { APP } from '@/shared/app'
+import { useTicketOrderStore } from '@/shared/stores/ticketOrder'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserDto | null>(null)
@@ -86,6 +87,8 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
     user.value = null
     tokenStore.set(null)
+    // T23: comanda de bilete în curs (sessionStorage) nu trece la următorul cont din același browser
+    useTicketOrderStore().clear()
   }
 
   /** La pornire: dacă există token, încarcă /me; dacă e invalid/expirat, curăță sesiunea (guard-ul decide apoi ruta). */

@@ -29,7 +29,7 @@ export function useOfferClaim(id: Ref<number>) {
   if (canEarn.value) void pts.load()
   const price = computed(() => offer.value?.pointsPrice ?? 0)
   const pointsOnly = computed(() => !!offer.value && offerBadge(offer.value).kind === 'points')
-  const balance = computed(() => pts.points.value?.balance ?? 0)
+  const balance = computed(() => pts.points.value?.balance ?? auth.user?.pointsBalance ?? 0)
   const enough = computed(() => balance.value >= price.value)
 
   function needLogin(): boolean {
