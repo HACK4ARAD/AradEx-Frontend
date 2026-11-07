@@ -110,7 +110,8 @@ async function manual() {
       <h1 :class="P.H1">{{ t('community.validate.title') }}</h1>
       <div v-if="current" :class="P.SUB">{{ current.title }} · {{ f.dateTime(current.startAt, false) }} · {{ f.timeRange(current.startAt, current.endAt) }} · {{ current.locationName }}</div>
     </div>
-    <div v-if="actions.length" :class="P.SEG">
+    <!-- pe telefon acțiunile se derulează pe orizontală în loc să umple ecranul -->
+    <div v-if="actions.length" :class="[P.SEG, 'max-w-full max-md:flex-nowrap max-md:overflow-x-auto max-md:[scrollbar-width:none]']">
       <button v-for="a in actions" :key="a.id" type="button" :class="P.segBtn(a.id === selected)" @click="selected = a.id">
         {{ t(`community.categoryIcon.${a.category}`) }} {{ a.title.split(' ').slice(0, 2).join(' ') }}
       </button>
@@ -141,7 +142,26 @@ async function manual() {
         <div v-else-if="!visible.length" :class="P.EMPTY">
           <AppIcon name="group" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.validate.empty') }}</b>
         </div>
-        <div v-else class="overflow-x-auto">
+        <template v-else>
+        <!-- telefon: câte un card pe participant, butoanele pe toată lățimea -->
+        <div class="md:hidden flex flex-col">
+          <div v-for="r in visible" :key="r.id" :class="P.MROW">
+            <div class="flex items-center gap-3">
+              <span :class="P.AVATAR">{{ initials(r.user?.displayName) }}</span>
+              <div class="min-w-0 flex-1"><div :class="P.TT">{{ r.user?.displayName }}</div><code :class="P.CODE">{{ r.code }}</code></div>
+            </div>
+            <div class="mt-2">
+              <span :class="[P.PILL, P.PILL_TONE[r.status]]"><i class="w-1.5 h-1.5 rounded-full bg-current" />{{ r.status === 'CONFIRMED' ? t('community.validate.confirmedPts', { n: r.pointsReward }) : t(`community.status.${r.status}`) }}</span>
+              <div v-if="r.confirmedBy && r.confirmedAt" :class="P.TS">{{ t('community.validate.by', { name: r.confirmedBy, at: f.timeRange(r.confirmedAt) }) }}</div>
+            </div>
+            <div v-if="r.status === 'REGISTERED'" class="flex gap-1.5 mt-2.5">
+              <button type="button" :class="[P.BTN_SM_SEC, 'flex-1']" :disabled="busyId === r.id || bulk" @click="reject(r)">{{ t('community.validate.reject') }}</button>
+              <button type="button" :class="[P.BTN_SM_OK, 'flex-1']" :disabled="busyId === r.id || bulk" @click="confirm(r)"><AppIcon name="check" :size="16" />{{ t('community.scan.confirm') }}</button>
+            </div>
+            <button v-else-if="r.status === 'NO_SHOW'" type="button" :class="[P.BTN_SM_SEC, 'w-full mt-2.5']" :disabled="busyId === r.id" @click="confirm(r)">{{ t('community.validate.confirmAnyway') }}</button>
+          </div>
+        </div>
+        <div class="hidden md:block overflow-x-auto">
           <table class="w-full border-collapse min-w-[560px]">
             <thead><tr>
               <th v-for="c in ['who', 'code', 'at', 'status']" :key="c" :class="[P.TH, c === 'at' && 'hidden 2xl:table-cell']">{{ t(`community.validate.cols.${c}`) }}</th>
@@ -168,6 +188,7 @@ async function manual() {
             </tbody>
           </table>
         </div>
+        </template>
       </div>
 
       <div class="flex flex-col gap-3.5">

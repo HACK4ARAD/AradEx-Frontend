@@ -78,7 +78,30 @@ async function save(req: ActionCreate) {
       <div v-else-if="!rows.length" :class="P.EMPTY">
         <AppIcon name="volunteer_activism" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.cityActions.empty') }}</b>
       </div>
-      <div v-else class="overflow-x-auto">
+      <!-- telefon: câte un card pe acțiune (tabelul de 860px nu încape) -->
+      <template v-else>
+      <div class="md:hidden flex flex-col">
+        <div v-for="a in rows" :key="a.id" :class="P.MROW">
+          <div class="flex items-start gap-3 min-w-0">
+            <span :class="P.THUMB" :style="a.imageUrl ? { backgroundImage: `url('${a.imageUrl}')` } : undefined"><AppIcon v-if="!a.imageUrl" name="volunteer_activism" :size="18" /></span>
+            <div class="min-w-0 flex-1">
+              <div :class="P.TT">{{ a.title }}</div>
+              <div :class="P.TS">{{ f.dateTime(a.startAt, false) }} · {{ f.timeRange(a.startAt, a.endAt) }}</div>
+              <div :class="P.TS">{{ t(`community.category.${a.category}`) }} · {{ a.locationName }}</div>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 mt-2.5">
+            <span :class="[P.PILL, P.PILL_TONE[a.status]]"><i class="w-1.5 h-1.5 rounded-full bg-current" />{{ t(`community.actionStatus.${a.status}`) }}</span>
+            <span :class="[P.PILL, 'bg-ok-soft text-ok']">+{{ a.pointsReward }}</span>
+            <span :class="P.TS">{{ a.registeredCount }}/{{ a.capacity }}</span>
+          </div>
+          <div class="flex gap-1.5 mt-2.5">
+            <router-link v-if="a.status === 'PUBLISHED'" :to="{ path: '/city/validate', query: { a: a.id } }" :class="[P.BTN_SM_SEC, 'flex-1']">{{ t('community.cityActions.validate') }}</router-link>
+            <router-link :to="`/city/actions/${a.id}`" :class="[P.BTN_SM_SEC, 'flex-1']">{{ t('community.cityActions.edit') }}</router-link>
+          </div>
+        </div>
+      </div>
+      <div class="hidden md:block overflow-x-auto">
         <table class="w-full border-collapse min-w-[860px]">
           <thead><tr>
             <th v-for="c in ['action', 'when', 'points', 'spots', 'status']" :key="c" :class="P.TH">{{ t(`community.cityActions.cols.${c}`) }}</th>
@@ -105,6 +128,7 @@ async function save(req: ActionCreate) {
           </tbody>
         </table>
       </div>
+      </template>
     </div>
   </template>
 </template>

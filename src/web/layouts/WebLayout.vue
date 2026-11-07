@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppButton } from '@/shared/components'
@@ -54,6 +54,10 @@ const sidebar = computed<NavGroup[] | null>(() => {
   ] })
   return groups
 })
+/** Pe ecrane sub lg (telefon, tabletă) sidebar-ul panourilor e un meniu care se deschide din bara de sus (☰); se închide la navigare. */
+const menuOpen = ref(false)
+watch(() => route.fullPath, () => { menuOpen.value = false })
+
 const isRoot = (to: string) => to === '/city' || to === '/admin' || to === '/business'
 const isActive = (to: string) => route.path === to || (!isRoot(to) && route.path.startsWith(to + '/'))
 
@@ -77,7 +81,10 @@ function toggleLocale() {
 <template>
   <!-- Panouri: sidebar întunecat + topbar cu titlul paginii -->
   <div v-if="sidebar" class="min-h-dvh bg-abg flex">
-    <aside class="w-[256px] shrink-0 bg-side text-sidetx flex flex-col gap-0.5 p-3.5 sticky top-0 h-dvh overflow-y-auto">
+    <!-- sub lg: fundal întunecat în spatele meniului deschis -->
+    <div v-if="menuOpen" class="lg:hidden fixed inset-0 z-30 bg-black/40" aria-hidden="true" @click="menuOpen = false" />
+    <aside class="w-[256px] shrink-0 bg-side text-sidetx flex flex-col gap-0.5 p-3.5 h-dvh overflow-y-auto fixed inset-y-0 left-0 z-40 transition-transform duration-200 lg:sticky lg:top-0 lg:translate-x-0"
+      :class="menuOpen ? 'translate-x-0' : '-translate-x-full'">
       <router-link to="/" class="flex items-center gap-2.5 px-2 py-2 mb-2 no-underline text-white">
         <span class="w-8 h-8 rounded-[10px] bg-accent flex items-center justify-center"><AppIcon name="location_city" :size="18" /></span>
         <span class="font-bold text-[15px]">{{ t('app.name') }}</span>
@@ -101,8 +108,13 @@ function toggleLocale() {
       </div>
     </aside>
     <div class="flex-1 min-w-0 flex flex-col">
-      <header class="h-14 bg-white border-b border-line flex items-center px-7 text-[14px] font-semibold sticky top-0 z-20">{{ route.meta.title }}</header>
-      <main class="flex-1 min-w-0 px-8 py-7 max-w-[1280px] w-full">
+      <header class="h-14 bg-white border-b border-line flex items-center gap-2 px-4 lg:px-7 text-[14px] font-semibold sticky top-0 z-20">
+        <button type="button" class="lg:hidden w-10 h-10 -ml-2 rounded-[10px] flex items-center justify-center" :aria-label="t('nav.menu')" :aria-expanded="menuOpen" @click="menuOpen = true">
+          <AppIcon name="menu" />
+        </button>
+        <span class="truncate">{{ route.meta.title }}</span>
+      </header>
+      <main class="flex-1 min-w-0 px-4 py-5 lg:px-8 lg:py-7 max-w-[1280px] w-full">
         <router-view />
       </main>
     </div>

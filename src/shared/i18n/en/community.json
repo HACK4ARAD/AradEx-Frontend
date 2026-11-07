@@ -263,7 +263,8 @@
       "actions": "Acțiuni",
       "points": "Puncte",
       "last": "Ultima participare"
-    }
+    },
+    "mobileLine": "{n} acțiuni"
   },
   "form": {
     "details": "Detalii",

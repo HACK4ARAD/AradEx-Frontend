@@ -69,7 +69,20 @@ function exportCsv() {
       <div v-else-if="!rows.length" :class="P.EMPTY">
         <AppIcon name="leaderboard" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.leaderboard.empty') }}</b>
       </div>
-      <div v-else class="overflow-x-auto">
+      <template v-else>
+      <!-- telefon: rânduri compacte (loc, nume, puncte; acțiuni și ultima participare dedesubt) -->
+      <div class="md:hidden flex flex-col">
+        <div v-for="r in rows" :key="r.userId" :class="[P.MROW, 'flex items-center gap-3']">
+          <span class="w-7 text-center">{{ medal(r.rank) }}</span>
+          <span :class="P.AVATAR">{{ initials(r.displayName) }}</span>
+          <div class="min-w-0 flex-1">
+            <div :class="P.TT">{{ r.displayName }}</div>
+            <div :class="[P.TS, 'truncate']">{{ t('community.cityBoard.mobileLine', { n: r.actionsCount }) }}<template v-if="r.lastAt"> · {{ f.dateTime(r.lastAt, false) }}</template></div>
+          </div>
+          <b>{{ nf(r.points) }}</b>
+        </div>
+      </div>
+      <div class="hidden md:block overflow-x-auto">
         <table class="w-full border-collapse min-w-[560px]">
           <thead><tr><th v-for="c in ['rank', 'name', 'actions', 'points', 'last']" :key="c" :class="P.TH">{{ t(`community.cityBoard.cols.${c}`) }}</th></tr></thead>
           <tbody>
@@ -83,6 +96,7 @@ function exportCsv() {
           </tbody>
         </table>
       </div>
+      </template>
     </div>
 
     <div class="flex flex-col gap-3.5">

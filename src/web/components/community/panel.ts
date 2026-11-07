@@ -16,7 +16,7 @@ export const TOOLBAR = 'flex flex-wrap items-center gap-2.5 px-3.5 py-3 border-b
 export const COUNT = 'ml-auto text-muted text-[12.5px]'
 
 export const SEG = 'inline-flex flex-wrap gap-0.5 p-[3px] rounded-[10px] bg-soft'
-export const segBtn = (on: boolean) => `h-[30px] px-3 rounded-lg font-semibold text-[13px] ${on ? 'bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]' : 'text-muted'}`
+export const segBtn = (on: boolean) => `h-[30px] px-3 rounded-lg shrink-0 whitespace-nowrap font-semibold text-[13px] ${on ? 'bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]' : 'text-muted'}`
 
 export const TH = 'text-left text-[11.5px] font-semibold text-muted px-3.5 py-2.5 border-b border-line whitespace-nowrap bg-[#FBFBFA] uppercase tracking-[.04em]'
 export const TD = 'px-3.5 py-3 border-b border-line text-[13.5px] align-middle'
@@ -47,7 +47,10 @@ export const FCARD = 'bg-white border border-line rounded-[14px] p-[22px] flex f
 export const FSEC = 'text-[11.5px] font-bold tracking-[.07em] uppercase text-muted pt-1'
 export const chip = (on: boolean) => `h-8 px-3 rounded-full border text-[13px] font-semibold ${on ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-line'}`
 
-export const LROW = 'flex items-center gap-3 py-2.5 border-b border-line last:border-b-0 text-[13.5px]'
+/** Pe telefon (< md) rândurile de tabel devin carduri (`MROW`); tabelul rămâne de la `md` în sus. */
+export const MROW = 'px-3.5 py-3 border-b border-line last:border-b-0'
+
+export const LROW ='flex items-center gap-3 py-2.5 border-b border-line last:border-b-0 text-[13.5px]'
 export const FEED_ROW = 'flex gap-2.5 items-start py-2.5 border-b border-line last:border-b-0 text-[13px]'
 export const FEED_ICON = 'w-7 h-7 rounded-lg bg-soft flex items-center justify-center shrink-0'
 export const EMPTY = 'py-9 px-6 text-center text-muted'

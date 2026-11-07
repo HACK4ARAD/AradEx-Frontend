@@ -62,12 +62,12 @@ const pct = (a: { registeredCount: number; capacity: number }) => Math.min(100, 
         </div>
         <div v-else class="flex flex-col gap-3">
           <router-link v-for="a in data.actions" :key="a.id" :to="{ path: '/city/validate', query: { a: a.id } }"
-            class="grid grid-cols-[minmax(0,1fr)_90px_46px] sm:grid-cols-[minmax(0,1fr)_140px_46px] gap-3 items-center text-[13px] no-underline text-ink">
+            class="grid grid-cols-[minmax(0,1fr)_46px] sm:grid-cols-[minmax(0,1fr)_140px_46px] gap-x-3 gap-y-2 items-center text-[13px] no-underline text-ink">
             <div class="flex items-center gap-3 min-w-0">
               <span :class="P.THUMB" :style="a.imageUrl ? { backgroundImage: `url('${a.imageUrl}')` } : undefined"><AppIcon v-if="!a.imageUrl" name="volunteer_activism" :size="18" /></span>
               <div class="min-w-0"><div :class="[P.TT, 'truncate']">{{ a.title }}</div><div :class="P.TS">{{ f.dateTime(a.startAt, false) }} · {{ t('community.dashboard.toValidate', { n: a.pendingCount }) }}</div></div>
             </div>
-            <div :class="P.BAR"><i class="block h-full bg-ok rounded-[3px]" :style="{ width: `${pct(a)}%` }" /></div>
+            <div :class="[P.BAR, 'col-span-2 order-last sm:col-span-1 sm:order-none']"><i class="block h-full bg-ok rounded-[3px]" :style="{ width: `${pct(a)}%` }" /></div>
             <span :class="P.TS">{{ a.registeredCount }}/{{ a.capacity }}</span>
           </router-link>
         </div>
