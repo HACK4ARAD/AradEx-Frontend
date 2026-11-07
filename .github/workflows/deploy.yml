@@ -1,7 +1,7 @@
-# Deploy PWA pe AWS la push pe main: teste + build Vite -> S3 -> invalidare CloudFront.
+# Deploy PWA pe AWS la push pe main: teste + build Vite -> imagine nginx în ECR -> ECS (rolling, rollback automat).
 # Acces AWS cu cheile utilizatorului IAM aradex-gha-frontend (secretele repo-ului AWS_ACCESS_KEY_ID /
 # AWS_SECRET_ACCESS_KEY, puse de AradEx-Infrastructure/scripts/github-keys.sh; organizația AWS nu permite OIDC).
-# Bucket-ul, distribuția și URL-ul API vin din SSM (/aradex/web/*), scrise de AradEx-Infrastructure/terraform.
+# URL-ul API vine din SSM (/aradex/web/api_url), scris de AradEx-Infrastructure/terraform. Imaginea: deploy/Dockerfile.
 name: Deploy web
 
 on:
@@ -18,11 +18,16 @@ permissions:
 
 env:
   AWS_REGION: eu-north-1
+  ECR_REPOSITORY: aradex-web
+  ECS_CLUSTER: aradex
+  ECS_SERVICE: aradex-web
+  TASK_FAMILY: aradex-web
+  CONTAINER_NAME: web
 
 jobs:
   deploy:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
 
@@ -37,14 +42,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Read deploy config from SSM
-        run: |
-          get() { aws ssm get-parameter --name "/aradex/web/$1" --query Parameter.Value --output text; }
-          {
-            echo "BUCKET=$(get bucket)"
-            echo "DISTRIBUTION_ID=$(get distribution_id)"
-            echo "VITE_API_URL=$(get api_url)"
-          } >> "$GITHUB_ENV"
+      - name: Read API URL from SSM
+        run: echo "VITE_API_URL=$(aws ssm get-parameter --name /aradex/web/api_url --query Parameter.Value --output text)" >> "$GITHUB_ENV"
 
       - run: npm ci
       - run: npm run test
@@ -52,24 +51,34 @@ jobs:
         env:
           VITE_DEMO: "true"
 
-      - name: Upload to S3
-        run: |
-          # Fișierele cu hash: cache lung, fără ștergere (tab-urile deschise le mai cer).
-          aws s3 sync dist/assets "s3://$BUCKET/assets" --cache-control "public, max-age=31536000, immutable"
-          # Restul (img, fonturi, icon-uri): cache scurt; fișierele PWA critice se urcă separat, mai jos.
-          aws s3 sync dist "s3://$BUCKET" --delete \
-            --exclude "assets/*" --exclude "index.html" --exclude "sw.js" --exclude "registerSW.js" \
-            --exclude "manifest.webmanifest" --exclude "workbox-*.js" \
-            --cache-control "public, max-age=3600"
-          # PWA: fără cache, ca update-ul să ajungă imediat.
-          for f in index.html sw.js registerSW.js; do
-            if [ -f "dist/$f" ]; then aws s3 cp "dist/$f" "s3://$BUCKET/$f" --cache-control "no-cache"; fi
-          done
-          if [ -f dist/manifest.webmanifest ]; then
-            aws s3 cp dist/manifest.webmanifest "s3://$BUCKET/manifest.webmanifest" \
-              --cache-control "no-cache" --content-type "application/manifest+json"
-          fi
-          aws s3 cp dist "s3://$BUCKET" --recursive --exclude "*" --include "workbox-*.js" --cache-control "no-cache"
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Invalidate CloudFront
-        run: aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/*" --query Invalidation.Id --output text
+      - id: image
+        name: Build and push image
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          image="$REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::12}"
+          docker build -f deploy/Dockerfile -t "$image" -t "$REGISTRY/$ECR_REPOSITORY:latest" .
+          docker push "$image"
+          docker push "$REGISTRY/$ECR_REPOSITORY:latest"
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+
+      - name: Current task definition
+        run: aws ecs describe-task-definition --task-definition "$TASK_FAMILY" --query taskDefinition > task-definition.json
+
+      - id: taskdef
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.image.outputs.image }}
+
+      - uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.taskdef.outputs.task-definition }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_SERVICE }}
+          wait-for-service-stability: true
+          wait-for-minutes: 10

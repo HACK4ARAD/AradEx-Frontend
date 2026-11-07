@@ -1,0 +1,4 @@
+# Contextul pentru deploy/Dockerfile: doar build-ul și configurația nginx.
+*
+!deploy/
+!dist/
