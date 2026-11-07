@@ -74,3 +74,17 @@ După PR-ul de rutare, un PR separat cu conținutul site-ului:
 
 ## În afara scopului
 Ștergerea fișierelor view nefolosite, build-uri separate (varianta B).
+
+## Revizia 2 (7 nov, după #16/#17): web și mobil complet separate
+Decizia lui Zoltan: web-ul e doar un site de prezentare despre aplicația mobilă (care e produsul principal). Web-ul nu are funcționalitățile aplicației și **nu conține nimic din ea**; backend-ul e același. Înlocuiește alegerea aplicației la pornire.
+- **Două build-uri din același repo.**
+  - `npm run build` (web → `dist/`, deploy pe aradexperience.site) și `npm run build:mobile` (→ `dist-mobile/`, doar pentru Capacitor).
+  - Local: `npm run dev` (web, :5173) și `npm run dev:mobile` (:5174).
+  - Alias-ul Vite `@app` arată spre `src/web/` sau `src/mobile/`, după mod; fiecare are `router.ts`. `import.meta.env.VITE_APP` = `web` | `mobile`.
+- **Rutele** stau în `src/router/web.ts` și `src/router/mobile.ts` (fiecare cu catch-all-ul lui; web-ul păstrează redirectul `/w/…`). Guard-ul comun e în `src/router/guard.ts`.
+- **Dispar:**
+  - `src/router/app.ts`, `?app=`, `?preview=mobile` și redirectul `/m/…`;
+  - butoanele din panouri care deschideau ecrane din aplicație;
+  - PWA-ul de pe web: se publică un service worker care se șterge singur, iar manifestul dispare.
+- **Verificare:** `npm run check:web` caută urme din aplicația mobilă în `dist/` (numele rutelor `m-*`, `MobileLayout`) și pică dacă le găsește; rulează și în `deploy.yml`.
+- **Consecință:** aplicația mobilă nu se mai poate deschide de pe site. Se testează nativ (emulator, telefon) sau local cu `npm run dev:mobile`.

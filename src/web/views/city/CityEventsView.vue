@@ -11,7 +11,6 @@ import { useEventFormat } from '@/shared/composables/useEvents'
 import { bucharestIso, splitBucharest } from '@/shared/composables/useEventForm'
 import { useFormat } from '@/shared/composables/useFormat'
 import { useUiStore } from '@/shared/stores/ui'
-import { mobilePreviewHref } from '@/router/app'
 import { EVENT_CATEGORIES, type EventCategory, type EventCreate, type EventDto, type EventSummary, type TicketType } from '@/shared/types/events'
 
 const route = useRoute()
@@ -236,7 +235,6 @@ const label = 'font-semibold text-[13px]'
                   <router-link :to="`/city/events/${e.id}`" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-[13px] font-semibold inline-flex items-center no-underline text-ink">{{ t('events.city.edit') }}</router-link>
                   <button type="button" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-[13px] font-semibold" @click="hide(e)">{{ t('events.city.hide') }}</button>
                 </template>
-                <a :href="mobilePreviewHref(`/events/${e.id}`)" target="_blank" rel="noopener" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-[13px] font-semibold inline-flex items-center no-underline text-ink">{{ t('events.city.view') }}</a>
               </div></td>
             </tr>
           </tbody>

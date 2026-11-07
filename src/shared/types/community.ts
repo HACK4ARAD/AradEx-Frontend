@@ -11,6 +11,8 @@ export interface RegistrationDto {
   code: string; status: RegistrationStatus; registeredAt: string; confirmedAt?: string
   /** numele celui care a confirmat / respins (Primăria sau voluntarul) */
   confirmedBy?: string
+  /** poza acțiunii (lista din Bilete) */
+  actionImageUrl?: string
   /** doar în listele Primăriei */
   user?: { id: number; displayName: string }
 }

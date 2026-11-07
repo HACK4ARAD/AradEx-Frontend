@@ -1,0 +1,12 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import { MOBILE_LOGINS, mobileRoutes } from '@/router/mobile'
+import { installGuard } from '@/router/guard'
+
+/** Routerul aplicației mobile (build-ul `npm run build:mobile`, împachetat cu Capacitor). */
+export const router = createRouter({
+  history: createWebHistory(),
+  routes: mobileRoutes,
+  scrollBehavior: () => ({ top: 0 }),
+})
+
+installGuard(router, 'm', MOBILE_LOGINS)

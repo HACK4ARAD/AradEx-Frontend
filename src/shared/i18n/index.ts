@@ -8,7 +8,15 @@ const LOCALE_KEY = 'ax.locale'
  * `ro/events.json` → `t('events.…')`). Fiecare story scrie doar în fișierele modulului lui; un fișier nou se încarcă singur.
  */
 type Messages = Record<string, Record<string, unknown>>
-const files = import.meta.glob<Record<string, unknown>>('./*/*.json', { eager: true, import: 'default' })
+type Files = Record<string, Record<string, unknown>>
+// Fiecare build încarcă doar textele lui (VITE_APP și MODE sunt constante la build, deci celelalte glob-uri nu intră în bundle):
+// - web: fără modulele care sunt doar în aplicație (chat, home, map, plan, tickets, transport);
+// - mobil: fără prezentare, Confidențialitate și administrare (site, legal, admin);
+// - testele (vitest) au toate textele, ca să poată testa componentele ambelor aplicații.
+const webFiles = import.meta.glob<Record<string, unknown>>(['./*/*.json', '!./*/{chat,home,map,plan,tickets,transport}.json'], { eager: true, import: 'default' })
+const mobileFiles = import.meta.glob<Record<string, unknown>>(['./*/*.json', '!./*/{site,legal,admin}.json'], { eager: true, import: 'default' })
+const allFiles = import.meta.glob<Record<string, unknown>>('./*/*.json', { eager: true, import: 'default' })
+const files: Files = import.meta.env.MODE === 'test' ? allFiles : import.meta.env.VITE_APP === 'mobile' ? mobileFiles : webFiles
 
 export function loadMessages(locale: Locale): Messages {
   const out: Messages = {}

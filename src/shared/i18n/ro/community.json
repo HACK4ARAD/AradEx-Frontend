@@ -302,6 +302,10 @@
   },
   "tickets": {
     "title": "Acțiuni comunitare",
-    "pending": "Așteaptă validarea pe teren"
+    "pending": "Așteaptă validarea",
+    "confirmed": "+{n} puncte · Prezență confirmată",
+    "rejected": "Respins",
+    "note": "Arată codul la eveniment. Reprezentantul primăriei îl scanează și îți confirmă prezența.",
+    "leave": "Renunț la înscriere"
   }
 }

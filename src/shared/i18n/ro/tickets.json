@@ -67,7 +67,10 @@
     "fullscreen": "Arată pe tot ecranul",
     "calendar": "Calendar",
     "emptyWeb": "Încă nu ai bilete viitoare",
-    "emptyWebText": "Caută evenimente și rezervă."
+    "emptyWebText": "Caută evenimente și rezervă.",
+    "mineSection": "Acțiuni, oferte și recompense",
+    "bookings": "Bilete cumpărate",
+    "emptyPastText": "Nu ai bilete la evenimente trecute."
   },
   "status": {
     "CONFIRMED": "Confirmat",
@@ -87,7 +90,15 @@
     "myRegistration": "Înscrierea mea",
     "sendPhone": "Trimite pe telefon",
     "account": "Contul meu",
-    "sendPhoneSoon": "Deschide aplicația pe telefon: biletul e deja acolo, în Biletele mele."
+    "sendPhoneSoon": "Deschide aplicația pe telefon: biletul e deja acolo, în Biletele mele.",
+    "showAtEntry": "Arată acest cod la intrare. Funcționează și offline.",
+    "directions": "Indicații spre locație",
+    "addCalendar": "Adaugă în calendar",
+    "howWas": "Cum a fost?",
+    "rateSub": "Spune-le și altora cum a fost. Atinge o stea ca să începi.",
+    "seeEvent": "Vezi evenimentul",
+    "rateSoon": "Mulțumim! Recenziile se pot trimite în curând.",
+    "star": "{n} din 5 stele"
   },
   "join": {
     "registered": "Te-ai înscris. Codul QR e în Biletele mele."
@@ -97,5 +108,18 @@
     "already": "Ești deja înscris la acest eveniment.",
     "ended": "Evenimentul s-a încheiat."
   },
-  "loginToBuy": "Conectează-te ca să cumperi bilete."
+  "loginToBuy": "Conectează-te ca să cumperi bilete.",
+  "pill": {
+    "claimed": "Ofertă revendicată",
+    "used": "Cod folosit",
+    "cancelled": "Anulată"
+  },
+  "code": {
+    "title": "Codul tău",
+    "close": "Închide",
+    "demo": "Cod demonstrativ",
+    "note": "Arată codul la casă sau la intrare.",
+    "validUntil": "Valabilă până {d}",
+    "permanent": "Fără dată de expirare"
+  }
 }
