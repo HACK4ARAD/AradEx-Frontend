@@ -50,7 +50,13 @@ function next() {
   <Skeleton v-if="loading && !e" :rows="3" :height="60" />
   <EmptyState v-else-if="notFound || !e" icon="event_busy" :title="t('events.detail.notFound')" />
   <template v-else>
-    <p class="text-muted text-[15px] -mt-1 mb-[18px]">{{ e.title }}<br>{{ e.locationName }} · {{ fmt.when(e) }}</p>
+    <p class="text-muted text-[15px] -mt-1 mb-[18px]">{{ e.title }}<br>{{ e.locationName }}</p>
+    <div class="text-[13px] font-semibold mb-2">{{ t('tickets.pick.dateTime') }}</div>
+    <!-- design/final `.opt.on`: data și ora alese (evenimentele au o singură dată în model) -->
+    <div class="flex items-center justify-between gap-3 w-full min-h-[60px] px-[17px] py-[9px] rounded-[16px] bg-white border-2 border-ink mb-[22px]" role="radio" aria-checked="true">
+      <span><b class="text-[16px]">{{ fmt.dateTime(e.startAt) }}</b><template v-if="left != null && left > 0 && left <= 5"><br><span class="text-muted text-[13px]">{{ t('tickets.pick.lastSpots', { n: left }) }}</span></template></span>
+      <span class="w-[22px] h-[22px] rounded-full border-[7px] border-ink shrink-0" />
+    </div>
     <div class="text-[13px] font-semibold mb-1">{{ t('tickets.pick.label') }}</div>
     <div v-for="ty in types" :key="ty.key" class="flex items-center justify-between gap-3 py-3.5 border-b border-line last:border-b-0">
       <div><div class="text-[15.5px] font-semibold">{{ ty.label }}</div><div class="text-[13px] text-muted mt-0.5">{{ fmt.money(ty.price) }}</div></div>

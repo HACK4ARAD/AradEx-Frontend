@@ -1,11 +1,15 @@
 <script setup lang="ts">
-// T06 · tab-ul Evenimente din Acasă (S1) — design/final `/home` mode „ev”: planificator (vizitator), chips, număr, lista de EventCard.
-import { computed, ref } from 'vue'
+// T06 · tab-ul Evenimente din Acasă (S1) — design/final `/home` mode „ev”: planificator (vizitator), chips, număr, lista de EventCard,
+// apoi „Locuri din Arad” (obiectivele cu ghid din T05, pe orizontală) și „Toate obiectivele și localurile”.
+import { computed, onMounted, ref, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import EventCard from '@/shared/components/events/EventCard.vue'
 import EventFiltersSheet from '@/shared/components/events/EventFiltersSheet.vue'
+import HomePlaceCard from '@/mobile/components/home/HomePlaceCard.vue'
+import { placesApi } from '@/shared/api/places'
+import type { PlaceSummary } from '@/shared/types/places'
 import { periodRange, useEventFilters, useEventList, useSaveEvent } from '@/shared/composables/useEvents'
 import { useAuthStore } from '@/shared/stores/auth'
 import type { EventQuery } from '@/shared/types/events'
@@ -30,6 +34,13 @@ function choose(p: Period) {
   period.value = p
   if (p === 'near') void geo.locate()
 }
+const places = shallowRef<PlaceSummary[]>([])
+onMounted(async () => {
+  try {
+    // design: obiectivele cu ghid din centru, cele mai apropiate primele
+    places.value = (await placesApi.list({ near: geo.near() })).filter((p) => p.guidePointsCount > 0).slice(0, 6)
+  } catch { /* secțiunea rămâne ascunsă */ }
+})
 const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' }, { key: 'today' }, { key: 'weekend' }, { key: 'week' }]
 </script>
 
@@ -58,6 +69,17 @@ const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' 
     <EventCard v-for="e in list" :key="e.id" :event="e" :to="`/m/events/${e.id}`" @toggle-save="saver.toggle(e, '/m/login')" />
   </template>
   <EmptyState v-else icon="event_busy" :title="t('events.empty.title')" :text="t('events.empty.text')" :action="t('events.empty.action')" @action="choose('week'); reload()" />
+
+  <template v-if="places.length">
+    <div class="mt-2.5 mb-2.5">
+      <h2 class="text-[20px] leading-[1.2] font-semibold tracking-[-0.02em] m-0">{{ t('events.home.placesTitle') }}</h2>
+      <p class="text-muted text-[14px] mt-1 mb-0">{{ t('events.home.placesText') }}</p>
+    </div>
+    <div class="flex gap-3 overflow-x-auto -mx-5 px-5 pt-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <HomePlaceCard v-for="p in places" :key="p.id" :place="p" />
+    </div>
+    <router-link to="/m/places" class="mt-1 flex items-center justify-center w-full min-h-[52px] rounded-[16px] bg-white border border-line text-ink text-[16px] font-semibold no-underline">{{ t('events.home.allPlaces') }}</router-link>
+  </template>
 
   <EventFiltersSheet :count="list.length" />
 </template>

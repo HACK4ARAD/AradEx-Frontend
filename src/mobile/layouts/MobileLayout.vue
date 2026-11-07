@@ -29,6 +29,16 @@ const tabs = computed(() => {
   ]
 })
 const hideTabs = computed(() => route.meta.hideTabs === true)
+/** Punctul de pe „Bilete” (design/final): ai bilete viitoare și nu ești pe tab-ul lor. Citit din copia offline a biletelor (T07). */
+const hasUpcomingTickets = computed(() => {
+  void route.fullPath
+  const uid = auth.user?.id
+  if (!uid) return false
+  try {
+    const list = JSON.parse(localStorage.getItem(`ax.tickets.${uid}`) ?? '[]') as { startAt: string; endAt?: string }[]
+    return list.some((x) => new Date(x.endAt ?? x.startAt).getTime() >= Date.now())
+  } catch { return false }
+})
 </script>
 
 <template>
@@ -48,8 +58,9 @@ const hideTabs = computed(() => route.meta.hideTabs === true)
           :class="tab.match(route.path) ? 'bg-accent' : 'bg-ink'">
           <AppIcon :name="tab.icon" :size="28" fill />
         </span>
-        <span v-else class="w-[52px] h-8 rounded-full flex items-center justify-center" :class="tab.match(route.path) ? 'bg-soft' : ''">
+        <span v-else class="relative w-[52px] h-8 rounded-full flex items-center justify-center" :class="tab.match(route.path) ? 'bg-soft' : ''">
           <AppIcon :name="tab.icon" :fill="tab.match(route.path)" />
+          <span v-if="tab.to === '/m/tickets' && hasUpcomingTickets && !tab.match(route.path)" class="absolute top-[3px] right-2 w-[9px] h-[9px] rounded-full bg-accent border-2 border-white" />
         </span>
         <span>{{ tab.label }}</span>
       </router-link>

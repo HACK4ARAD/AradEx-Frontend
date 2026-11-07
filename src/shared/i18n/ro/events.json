@@ -82,7 +82,8 @@
     "noResults": "Niciun rezultat pentru „{q}”",
     "noResultsText": "Elimină un filtru sau încearcă alt cuvânt.",
     "chips": "jazz, copii, Cetate, gratuit, vin, teatru",
-    "clear": "Șterge căutarea"
+    "clear": "Șterge căutarea",
+    "places": "Locuri"
   },
   "sort": {
     "date": "După dată",
@@ -125,7 +126,9 @@
     "verifiedAccount": "cont verificat",
     "businessPage": "Pagina firmei",
     "spotsLeft": "{n} locuri libere",
-    "breadcrumb": "Evenimente"
+    "breadcrumb": "Evenimente",
+    "guide": "Ghid virtual: {name}",
+    "guideSub": "{n} puncte · ~{m} min · citit și audio"
   },
   "web": {
     "title": "Evenimente în Arad",
@@ -207,5 +210,10 @@
       "required": "Scrie un titlu și o descriere.",
       "venueOther": "Alt loc (adresă pe hartă)"
     }
+  },
+  "home": {
+    "placesTitle": "Locuri din Arad",
+    "placesText": "Obiective cu ghid audio, restaurante și cafenele cu păreri de la oameni.",
+    "allPlaces": "Toate obiectivele și localurile"
   }
 }
