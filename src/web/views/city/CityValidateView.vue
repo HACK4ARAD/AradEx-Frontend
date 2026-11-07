@@ -1,13 +1,17 @@
 <script setup lang="ts">
-// T11 · Validare participanți — design/final web `#/city/validate`: acțiunea aleasă (segmente), 4 KPI, tabelul înscrișilor cu
+// T11 · Validare participanți — design/final web `#/city/validate`. Fără `?a=`: cardurile acțiunilor (poză, categorie, zi, loc,
+// ocupare, câți sunt de validat), „Azi și în curând” apoi „Încheiate”. Cu `?a=<id>` (click pe card): 4 KPI, tabelul înscrișilor cu
 // Confirmă / Respinge / Confirmă toți, „Voluntarii care scanează” cu confirmarea manuală după cod, „Clasament · luna”.
 // Scanarea QR NU se face din web (doar din aplicație: Primăria pe /m/panel, voluntarii în T18).
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, Skeleton } from '@/shared/components'
 import ScanResultCard from '@/shared/components/community/ScanResultCard.vue'
 import PanelKpi from '@/web/components/community/PanelKpi.vue'
+import ValidateActionCard from '@/web/components/community/ValidateActionCard.vue'
+import PanelPager from '@/web/components/community/PanelPager.vue'
 import * as P from '@/web/components/community/panel'
 import { useFormat } from '@/shared/composables/useFormat'
 import { initials, useActionRegistrations, useCityCommunity, useLeaderboard, type ScanResult } from '@/shared/composables/useCommunity'
@@ -29,28 +33,59 @@ const code = ref('')
 const manualBusy = ref(false)
 const manualResult = ref<ScanResult | null>(null)
 
-/** Acțiunile publicate, întâi cele de azi / care urmează, apoi ultimele încheiate. */
-const actions = computed(() => {
+/** Acțiunile publicate: cele de azi / care urmează (cele mai apropiate întâi), apoi cele încheiate (cele mai recente întâi). */
+const groups = computed(() => {
   const now = Date.now()
   const pub = city.actions.value.filter((a) => a.status === 'PUBLISHED' || a.status === 'DONE')
-  const upcoming = pub.filter((a) => new Date(a.endAt).getTime() >= now - 864e5).sort((a, b) => a.startAt.localeCompare(b.startAt))
-  const past = pub.filter((a) => !upcoming.includes(a)).sort((a, b) => b.startAt.localeCompare(a.startAt)).slice(0, 4)
-  return [...upcoming, ...past]
+  const upcoming = pub.filter((a) => a.status !== 'DONE' && new Date(a.endAt).getTime() >= now).sort((a, b) => a.startAt.localeCompare(b.startAt))
+  const past = pub.filter((a) => !upcoming.includes(a)).sort((a, b) => b.startAt.localeCompare(a.startAt))
+  return { upcoming, past }
 })
+const actions = computed(() => [...groups.value.upcoming, ...groups.value.past])
+
+/**
+ * Paginare pe secțiune: 12 carduri pe ecran lat (încap în 1–4 coloane), 6 pe ecran îngust. Pagina stă în link (`pu` / `pp`),
+ * ca „← Toate acțiunile” să te ducă înapoi pe aceeași pagină.
+ */
+type Group = 'upcoming' | 'past'
+const PAGE_KEY: Record<Group, string> = { upcoming: 'pu', past: 'pp' }
+const wide = useMediaQuery('(min-width: 1280px)')
+const pageSize = computed(() => (wide.value ? 12 : 6))
+function pageOf(g: Group): number {
+  const pages = Math.max(1, Math.ceil(groups.value[g].length / pageSize.value))
+  return Math.min(pages, Math.max(1, Number(route.query[PAGE_KEY[g]]) || 1))
+}
+function setPage(g: Group, p: number) {
+  router.replace({ query: { ...route.query, [PAGE_KEY[g]]: p > 1 ? String(p) : undefined } })
+  document.getElementById(`validate-${g}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+const shown = (g: Group) => groups.value[g].slice((pageOf(g) - 1) * pageSize.value, pageOf(g) * pageSize.value)
+const cardTo = (id: number) => ({ path: '/city/validate', query: { ...route.query, a: id } })
+const backTo = computed(() => ({ path: '/city/validate', query: { ...route.query, a: undefined } }))
 const current = computed(() => city.actions.value.find((a) => a.id === selected.value))
 const visible = computed(() => regs.items.value.filter((r) => r.status !== 'CANCELLED'))
 
+/** Acțiunea deschisă vine din `?a=`; fără ea (sau cu un id necunoscut) se arată cardurile. */
+function syncSelected() {
+  const q = Number(route.query.a)
+  selected.value = q && actions.value.some((a) => a.id === q) ? q : null
+  manualResult.value = null
+}
 onMounted(async () => {
   await city.loadActions()
   lb.load()
-  const q = Number(route.query.a)
-  selected.value = actions.value.some((a) => a.id === q) ? q : actions.value[0]?.id ?? null
+  syncSelected()
 })
-watch(selected, (id) => { if (id && Number(route.query.a) !== id) router.replace({ query: { ...route.query, a: id } }) })
+watch(() => route.query.a, syncSelected)
 
-/** Ține contorul „Înscriși” la zi fără reîncărcare: o respingere eliberează locul, confirmarea unui NO_SHOW îl ia înapoi. */
-function adjustRegistered(actionId: number, delta: number) {
-  city.actions.value = city.actions.value.map((a) => (a.id === actionId ? { ...a, registeredCount: Math.max(0, a.registeredCount + delta) } : a))
+/**
+ * Ține contoarele acțiunii la zi fără reîncărcare (KPI-ul „Înscriși” și cardul din listă): o respingere eliberează locul,
+ * confirmarea unui NO_SHOW îl ia înapoi, fiecare confirmare nouă scade „de validat” de pe card.
+ */
+function adjustCounts(actionId: number, registered: number, confirmed = 0) {
+  city.actions.value = city.actions.value.map((a) => (a.id === actionId
+    ? { ...a, registeredCount: Math.max(0, a.registeredCount + registered), confirmedCount: Math.max(0, a.confirmedCount + confirmed) }
+    : a))
 }
 
 async function confirm(r: RegistrationDto) {
@@ -58,7 +93,7 @@ async function confirm(r: RegistrationDto) {
   const res = await city.confirm(r.id)
   busyId.value = null
   if (res) {
-    if (r.status === 'NO_SHOW' && !res.alreadyConfirmed) adjustRegistered(r.actionId, 1)
+    if (!res.alreadyConfirmed) adjustCounts(r.actionId, r.status === 'NO_SHOW' ? 1 : 0, 1)
     regs.replace(res)
     ui.toast(t('community.scan.okTitle', { name: res.user?.displayName ?? '', n: res.pointsAwarded }), 'success')
     lb.load()
@@ -70,7 +105,7 @@ async function reject(r: RegistrationDto) {
   const res = await city.reject(r.id)
   busyId.value = null
   if (res) {
-    if (r.status === 'REGISTERED') adjustRegistered(r.actionId, -1)
+    if (r.status === 'REGISTERED') adjustCounts(r.actionId, -1)
     regs.replace(res)
     ui.toast(t('community.validate.rejected', { name: r.user?.displayName ?? '' }))
   }
@@ -83,7 +118,11 @@ async function confirmAll() {
   let ok = 0
   for (const r of pending) {
     const res = await city.confirm(r.id)
-    if (res) { regs.replace(res); ok++ }
+    if (res) {
+      regs.replace(res)
+      if (!res.alreadyConfirmed) adjustCounts(r.actionId, 0, 1)
+      ok++
+    }
   }
   bulk.value = false
   ui.toast(t('community.validate.confirmedMany', { n: ok }), 'success')
@@ -99,6 +138,7 @@ async function manual() {
   if (r.kind !== 'error') {
     code.value = ''
     if (r.result.actionId === selected.value) regs.replace(r.result)
+    if (!r.result.alreadyConfirmed) adjustCounts(r.result.actionId, 0, 1)
     lb.load()
   }
 }
@@ -107,14 +147,12 @@ async function manual() {
 <template>
   <div :class="P.HEAD">
     <div class="min-w-0">
+      <router-link v-if="current" :to="backTo" class="inline-flex items-center gap-1 text-[13px] font-semibold text-muted no-underline hover:text-ink mb-2" data-test="validate-back">
+        <AppIcon name="arrow_back" :size="16" />{{ t('community.validate.back') }}
+      </router-link>
       <h1 :class="P.H1">{{ t('community.validate.title') }}</h1>
       <div v-if="current" :class="P.SUB">{{ current.title }} · {{ f.dateTime(current.startAt, false) }} · {{ f.timeRange(current.startAt, current.endAt) }} · {{ current.locationName }}</div>
-    </div>
-    <!-- pe telefon acțiunile se derulează pe orizontală în loc să umple ecranul -->
-    <div v-if="actions.length" :class="[P.SEG, 'max-w-full max-md:flex-nowrap max-md:overflow-x-auto max-md:[scrollbar-width:none]']">
-      <button v-for="a in actions" :key="a.id" type="button" :class="P.segBtn(a.id === selected)" @click="selected = a.id">
-        {{ t(`community.categoryIcon.${a.category}`) }} {{ a.title.split(' ').slice(0, 2).join(' ') }}
-      </button>
+      <div v-else :class="P.SUB">{{ t('community.validate.pickSub') }}</div>
     </div>
   </div>
 
@@ -123,8 +161,18 @@ async function manual() {
     <AppIcon name="event_busy" :size="34" class="text-[#C9C8C2] block mx-auto mb-2" /><b class="text-ink">{{ t('community.home.empty') }}</b>
     <div class="mt-3"><router-link to="/city/actions/new" :class="P.BTN_SM">{{ t('community.dashboard.newAction') }}</router-link></div>
   </div>
+  <!-- cardurile acțiunilor -->
+  <template v-else-if="!current">
+    <section v-for="g in (['upcoming', 'past'] as const)" v-show="groups[g].length" :id="`validate-${g}`" :key="g" class="mb-7 scroll-mt-20">
+      <h2 class="m-0 mb-3 text-[12px] font-bold tracking-[.07em] uppercase text-muted">{{ t(`community.validate.${g}`) }} · {{ groups[g].length }}</h2>
+      <div class="grid gap-3.5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <ValidateActionCard v-for="a in shown(g)" :key="a.id" :action="a" :to="cardTo(a.id)" />
+      </div>
+      <PanelPager :model-value="pageOf(g)" :total="groups[g].length" :size="pageSize" @update:model-value="setPage(g, $event)" />
+    </section>
+  </template>
   <template v-else>
-    <div v-if="current" class="grid gap-3.5 mb-4 grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-3.5 mb-4 grid-cols-2 xl:grid-cols-4">
       <PanelKpi icon="group" :label="t('community.validate.kpiRegistered')" :value="`${current.registeredCount} / ${current.capacity}`" />
       <PanelKpi icon="check_circle" tone="#2F7D32" :label="t('community.validate.kpiConfirmed')" :value="regs.counts.value.confirmed" :delta="regs.counts.value.confirmed ? t('community.validate.kpiAwarded', { n: regs.counts.value.confirmed * current.pointsReward }) : undefined" />
       <PanelKpi icon="hourglass_top" tone="#8A5A00" :label="t('community.validate.kpiPending')" :value="regs.counts.value.registered" />

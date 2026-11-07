@@ -181,7 +181,20 @@
       "status": "Stare"
     },
     "manualPh": "Confirmă manual după cod: AX-C1-…",
-    "all": "Tot"
+    "all": "Tot",
+    "pickSub": "Alege o acțiune ca să vezi înscrișii, să-i confirmi și să urmărești prezența.",
+    "upcoming": "Azi și în curând",
+    "past": "Încheiate",
+    "today": "Azi",
+    "soon": "Urmează",
+    "ended": "Încheiată",
+    "toValidate": "0 de validat | 1 de validat | {n} de validat",
+    "allValidated": "Toți validați",
+    "noRegs": "Niciun înscris încă",
+    "registeredOf": "{n} / {cap} înscriși",
+    "pointsShort": "+{n} p",
+    "back": "Toate acțiunile",
+    "open": "Deschide validarea pentru {title}"
   },
   "web": {
     "boardMonth": "Clasament · luna aceasta",

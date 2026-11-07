@@ -104,11 +104,7 @@
     "selectPrompt": "Pick a sight from the list.",
     "slugConflict": "Another sight already uses this link name (slug). Choose another one.",
     "deleteConflict": "This sight has events linked to it. Move or delete the events first.",
-    "positionConflict": "That position is taken by another stop. Reload the page and try again.",
-    "importPhotos": "Copy photos to S3 ({n})",
-    "importing": "Copying… {done} copied, {left} left",
-    "importDone": "Done: {done} photos copied to S3.",
-    "importFailed": "{n} photos could not be downloaded and stay on the source site."
+    "positionConflict": "That position is taken by another stop. Reload the page and try again."
   },
   "form": {
     "name": "Name",
@@ -150,7 +146,7 @@
     "photoAdd": "Add a photo",
     "pickFile": "Choose file",
     "photoHint": "JPEG, PNG, WebP or GIF, max 10 MB. You can also drop it here.",
-    "onSite": "On another site: {host}",
+    "onSite": "On another site: {host} · copied to S3 automatically",
     "inApp": "From the app",
     "editLink": "Link",
     "hideLink": "Hide link",

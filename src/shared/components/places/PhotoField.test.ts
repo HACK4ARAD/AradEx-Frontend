@@ -15,7 +15,7 @@ describe('PhotoField', () => {
       url: 'https://api.test/api/v1/media/uploads/ab.jpg', key: 'uploads/ab.jpg', contentType: 'image/jpeg', size: 3,
     })
     const w = mount(PhotoField, { props: { label: 'Poză (URL)', modelValue: 'https://www.visitarad.ro/x.jpg' }, ...opts })
-    expect(w.text()).toContain('Pe alt site: www.visitarad.ro')
+    expect(w.text()).toContain('Pe alt site: www.visitarad.ro · se copiază automat în S3')
     expect(w.find('[data-test="photo-url"]').exists()).toBe(false)
 
     const input = w.find('[data-test="photo-input"]')

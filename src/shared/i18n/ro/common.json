@@ -13,5 +13,9 @@
   "comingSoon": "În lucru — vezi docs/PLAN.md",
   "close": "Închide",
   "scanHint": "Îndreaptă camera spre codul QR",
-  "cameraError": "Nu pot porni camera. Dă voie aplicației să folosească camera sau scrie codul de mână."
+  "cameraError": "Nu pot porni camera. Dă voie aplicației să folosească camera sau scrie codul de mână.",
+  "pagination": "Paginare",
+  "pageRange": "{from}–{to} din {total}",
+  "prevPage": "Pagina anterioară",
+  "nextPage": "Pagina următoare"
 }
