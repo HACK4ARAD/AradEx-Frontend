@@ -107,9 +107,9 @@ const bikesNear = computed(() => BIKE_STATIONS.filter((s) => s.kind === 'dock')
   .map((s) => ({ s, km: distanceKm(geo.origin.value, s) })).sort((a, b) => a.km - b.km).filter((r) => r.km <= 1.5).slice(0, 2))
 const docks = BIKE_STATIONS.filter((s) => s.kind === 'dock').length
 const mapLinks = computed(() => [
-  { key: 'live', icon: 'directions_bus', title: t('transport.more.live'), sub: t('transport.more.liveSub'), to: { path: '/map', query: { travel: 'transit' } } },
-  { key: 'bikes', icon: 'pedal_bike', title: t('transport.more.bikes'), sub: t('transport.more.bikesSub', { n: docks }), to: { path: '/map', query: { travel: 'transit', ...(bikesNear.value[0] ? { focus: `bike:${bikesNear.value[0].s.id}` } : {}) } } },
-  { key: 'parking', icon: 'P', title: t('transport.more.parking'), sub: t('transport.more.parkingSub'), to: { path: '/map', query: { travel: 'car' } } },
+  { key: 'live', emoji: '🚋', title: t('transport.more.live'), sub: t('transport.more.liveSub'), to: { path: '/map', query: { travel: 'transit' } } },
+  { key: 'bikes', emoji: '🚲', title: t('transport.more.bikes'), sub: t('transport.more.bikesSub', { n: docks }), to: { path: '/map', query: { travel: 'transit', ...(bikesNear.value[0] ? { focus: `bike:${bikesNear.value[0].s.id}` } : {}) } } },
+  { key: 'parking', emoji: '🅿️', title: t('transport.more.parking'), sub: t('transport.more.parkingSub'), to: { path: '/map', query: { travel: 'car' } } },
 ])
 const meters = (km: number) => (km < 1 ? `${Math.round(km * 1000)} m` : f.km(km))
 
@@ -200,6 +200,16 @@ onMounted(async () => {
         <AppIcon :name="p.icon" :size="18" />{{ t(`transport.poi.${p.id}.name`) }}</button>
     </div>
 
+    <!-- pe hartă (S7 / W9): liniile live, bicicletele, parcările — dale ca modurile de pe Acasă (design S1: emoji în colț, titlu și subtitlu jos) -->
+    <div class="grid grid-cols-3 gap-2.5 mt-4">
+      <router-link v-for="m in mapLinks" :key="m.key" :to="m.to"
+        class="relative h-[92px] rounded-[20px] border border-line bg-white px-3 pt-3 pb-2.5 flex flex-col justify-end gap-px no-underline text-ink shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.05)]">
+        <span class="absolute top-2.5 right-3 text-[24px] leading-none" aria-hidden="true">{{ m.emoji }}</span>
+        <b class="text-[15.5px] whitespace-nowrap">{{ m.title }}</b>
+        <span class="text-[12.5px] text-muted whitespace-nowrap overflow-hidden text-ellipsis">{{ m.sub }}</span>
+      </router-link>
+    </div>
+
     <h2 class="text-[20px] leading-[1.2] font-semibold tracking-[-0.02em] mt-[22px] mb-2.5">{{ t('transport.nearby') }}</h2>
     <EmptyState v-if="net.error.value" icon="cloud_off" :title="t('transport.loadError')" :action="t('transport.retry')" @action="net.load()" />
     <Skeleton v-else-if="net.loading.value" :rows="2" :height="150" />
@@ -219,18 +229,6 @@ onMounted(async () => {
         </router-link>
       </div>
     </template>
-
-    <!-- pe hartă (S7 / W9): liniile live, bicicletele și parcările — rânduri ca în design (`.card` + `.row-item`) -->
-    <h2 class="text-[20px] leading-[1.2] font-semibold tracking-[-0.02em] mt-5 mb-2.5">{{ t('transport.more.title') }}</h2>
-    <div class="bg-white border border-line rounded-[20px] px-4 shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.05)]">
-      <router-link v-for="m in mapLinks" :key="m.key" :to="m.to" class="no-underline text-ink flex items-center gap-3.5 py-3.5 border-b border-line last:border-b-0">
-        <span class="w-11 h-11 rounded-[12px] bg-soft flex items-center justify-center shrink-0 text-ink">
-          <b v-if="m.icon === 'P'" class="text-[17px]">P</b><AppIcon v-else :name="m.icon" />
-        </span>
-        <span class="flex-1 min-w-0"><b class="block text-[15.5px]">{{ m.title }}</b><span class="block text-[13px] text-muted truncate">{{ m.sub }}</span></span>
-        <AppIcon name="chevron_right" />
-      </router-link>
-    </div>
 
     <div class="flex items-center justify-between gap-3 mt-5 mb-2.5">
       <h2 class="text-[20px] leading-[1.2] font-semibold tracking-[-0.02em] m-0">{{ t('transport.lines') }}</h2>

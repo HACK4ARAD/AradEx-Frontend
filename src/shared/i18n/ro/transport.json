@@ -57,12 +57,12 @@
   "retry": "Reîncearcă",
   "more": {
     "title": "Pe hartă",
-    "live": "Linii și vehicule live",
-    "liveSub": "Tramvaie și autobuze, acum",
+    "live": "Linii live",
+    "liveSub": "în timp real",
     "bikes": "Biciclete",
-    "bikesSub": "{n} stații bike sharing",
-    "parking": "Parcări cu plată",
-    "parkingSub": "Zonele, tarifele și programul"
+    "bikesSub": "{n} stații",
+    "parking": "Parcări",
+    "parkingSub": "zone și tarife"
   },
   "bikesNear": "Biciclete lângă tine",
   "bikeDock": "Stație bike sharing · {km}",
