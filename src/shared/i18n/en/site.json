@@ -1,0 +1,69 @@
+{
+  "nav": {
+    "features": "Features",
+    "community": "Community",
+    "panels": "For businesses & City Hall",
+    "download": "Get the app",
+    "enterPanel": "Open the dashboard"
+  },
+  "hero": {
+    "kicker": "The Arad city app",
+    "title": "All of Arad in one app",
+    "text": "Events with tickets, sights with an audio guide, offers from local businesses and community actions that earn you points. For people visiting the city and for people who live here.",
+    "shots": "Screenshots of the AradExperience app"
+  },
+  "download": {
+    "android": "Android",
+    "ios": "iPhone",
+    "getOn": "Download for",
+    "soon": "Coming soon"
+  },
+  "features": {
+    "title": "What you can do with the app",
+    "events": { "title": "Events and tickets", "text": "What's on today, this weekend or this week. Buy the ticket in the app and get in with the QR code." },
+    "guide": { "title": "Virtual guide", "text": "The Fortress, the Cultural Palace, the Classic Theatre and more, explained stop by stop, in text and audio." },
+    "offers": { "title": "Local offers", "text": "Cafés, producers and wineries in Arad. Claim an offer and get a code to show at the counter." },
+    "community": { "title": "Community and points", "text": "Sign up for City Hall actions, earn points when you're confirmed and spend them at partner businesses." },
+    "transport": { "title": "Public transport", "text": "Tram lines and the full route to where you want to go, with the stops on the map." },
+    "ai": { "title": "AI assistant and day plan", "text": "Ask what to do with the kids this weekend or get a one-day plan for Arad, with times and a route." }
+  },
+  "now": {
+    "title": "Now in Arad",
+    "text": "A few of the events in the app. Details, tickets and directions are in the app.",
+    "empty": "Events show up here as soon as they're published."
+  },
+  "community": {
+    "kicker": "Community",
+    "title": "Do something for the city, earn points",
+    "text": "Tree planting, clean-ups, blood donation. Sign up in the app, show your QR code at the action and spend the points at partner cafés and producers.",
+    "cta": "See the actions",
+    "pageTitle": "Community",
+    "pageText": "Community actions by Arad City Hall: sign up in the app and, once confirmed, earn points you can spend at partner businesses.",
+    "steps": {
+      "1": "Pick an action in the app and sign up.",
+      "2": "Show your QR code at the action; a volunteer or City Hall scans it.",
+      "3": "Get the points and climb this month's leaderboard."
+    },
+    "soonTitle": "The list of actions and the leaderboard will show up here soon",
+    "soonText": "Until then you'll find them in the app, in the Community tab on Home.",
+    "photos": { "plant": "Tree planting", "clean": "Clean-up", "blood": "Blood donation" }
+  },
+  "roles": {
+    "title": "Who it's for",
+    "visitor": { "title": "Visitor", "text": "What to do today, guides at sights, a plan for the day." },
+    "local": { "title": "Local", "text": "Events, offers and points for what you do in the city." },
+    "business": { "title": "Local business", "text": "Offers, events and announcements, code validation." },
+    "city": { "title": "City Hall", "text": "The city agenda, community actions, sights and guides." },
+    "volunteer": { "title": "Volunteer", "text": "Scan participants at actions, right from the app." }
+  },
+  "panels": {
+    "title": "City Hall or a business?",
+    "text": "The web dashboard is for desk work: events, offers, community actions, validations and stats.",
+    "cta": "Open the dashboard"
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "contact": "Contact",
+    "made": "Made at Hack4Arad 2026"
+  }
+}

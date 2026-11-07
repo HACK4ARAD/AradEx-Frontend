@@ -1,0 +1,69 @@
+{
+  "nav": {
+    "features": "Funcții",
+    "community": "Comunitate",
+    "panels": "Pentru firme & Primărie",
+    "download": "Descarcă aplicația",
+    "enterPanel": "Intră în panou"
+  },
+  "hero": {
+    "kicker": "Aplicația orașului Arad",
+    "title": "Tot Aradul într-o aplicație",
+    "text": "Evenimente cu bilete, obiective cu ghid audio, oferte de la firmele locale și acțiuni comunitare care îți aduc puncte. Pentru cei care vizitează orașul și pentru cei care locuiesc aici.",
+    "shots": "Capturi din aplicația AradExperience"
+  },
+  "download": {
+    "android": "Android",
+    "ios": "iPhone",
+    "getOn": "Descarcă pentru",
+    "soon": "În curând"
+  },
+  "features": {
+    "title": "Ce poți face cu aplicația",
+    "events": { "title": "Evenimente și bilete", "text": "Ce se întâmplă azi, în weekend sau săptămâna asta. Cumperi biletul în aplicație și intri cu codul QR." },
+    "guide": { "title": "Ghid virtual", "text": "Cetatea, Palatul Cultural, Teatrul Clasic și alte obiective, explicate punct cu punct, în text și audio." },
+    "offers": { "title": "Oferte locale", "text": "Cafenele, producători și crame din Arad. Revendici oferta și primești un cod pe care îl arăți la casă." },
+    "community": { "title": "Comunitate și puncte", "text": "Te înscrii la acțiunile Primăriei, primești puncte la confirmare și le folosești la firmele partenere." },
+    "transport": { "title": "Transport în comun", "text": "Liniile de tramvai și traseul complet până unde vrei să ajungi, cu stațiile pe hartă." },
+    "ai": { "title": "Asistent AI și plan de vizită", "text": "Întrebi ce poți face cu copiii în weekend sau ceri un program pentru o zi în Arad, cu ore și traseu." }
+  },
+  "now": {
+    "title": "Acum în Arad",
+    "text": "Câteva dintre evenimentele din aplicație. Detaliile, biletele și indicațiile sunt în aplicație.",
+    "empty": "Evenimentele apar aici imediat ce sunt publicate."
+  },
+  "community": {
+    "kicker": "Comunitate",
+    "title": "Faci ceva pentru oraș, primești puncte",
+    "text": "Plantări, curățenie, donare de sânge. Te înscrii din aplicație, arăți codul QR la acțiune, iar punctele le folosești la cafenelele și producătorii parteneri.",
+    "cta": "Vezi acțiunile",
+    "pageTitle": "Comunitate",
+    "pageText": "Acțiunile comunitare ale Primăriei Arad: te înscrii din aplicație, iar după confirmare primești puncte pe care le folosești la firmele partenere.",
+    "steps": {
+      "1": "Alegi o acțiune din aplicație și te înscrii.",
+      "2": "La acțiune arăți codul QR; voluntarul sau Primăria îl scanează.",
+      "3": "Primești punctele și urci în clasamentul lunii."
+    },
+    "soonTitle": "Lista acțiunilor și clasamentul apar aici în curând",
+    "soonText": "Până atunci le găsești în aplicație, în tab-ul Comunitate din Acasă.",
+    "photos": { "plant": "Plantare de copaci", "clean": "Curățenie", "blood": "Donare de sânge" }
+  },
+  "roles": {
+    "title": "Pentru cine",
+    "visitor": { "title": "Vizitator", "text": "Ce faci azi, ghid la obiective, program pentru o zi." },
+    "local": { "title": "Localnic", "text": "Evenimente, oferte și puncte pentru ce faci în oraș." },
+    "business": { "title": "Firmă locală", "text": "Oferte, evenimente și anunțuri, validare de coduri." },
+    "city": { "title": "Primărie", "text": "Agenda orașului, acțiuni comunitare, obiective și ghiduri." },
+    "volunteer": { "title": "Voluntar", "text": "Scanează participanții la acțiuni, direct din aplicație." }
+  },
+  "panels": {
+    "title": "Ești Primărie sau firmă?",
+    "text": "Panoul web e pentru ce se lucrează la birou: evenimente, oferte, acțiuni comunitare, validări și statistici.",
+    "cta": "Intră în panou"
+  },
+  "footer": {
+    "privacy": "Confidențialitate",
+    "contact": "Contact",
+    "made": "Făcut la Hack4Arad 2026"
+  }
+}
