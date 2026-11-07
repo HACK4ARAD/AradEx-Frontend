@@ -104,7 +104,11 @@
     "selectPrompt": "Alege un obiectiv din listă.",
     "slugConflict": "Există deja un obiectiv cu această adresă în link (slug). Alege alta.",
     "deleteConflict": "Obiectivul are evenimente legate de el. Mută sau șterge întâi evenimentele.",
-    "positionConflict": "Poziția e deja ocupată de alt punct. Reîncarcă pagina și încearcă din nou."
+    "positionConflict": "Poziția e deja ocupată de alt punct. Reîncarcă pagina și încearcă din nou.",
+    "importPhotos": "Copiază pozele în S3 ({n})",
+    "importing": "Se copiază… {done} copiate, mai sunt {left}",
+    "importDone": "Gata: {done} poze copiate în S3.",
+    "importFailed": "{n} poze n-au putut fi descărcate și au rămas pe site-ul sursă."
   },
   "form": {
     "name": "Nume",
@@ -138,6 +142,12 @@
       "tags": "Cel mult 12 etichete de câte 30 de caractere",
       "duration": "Între 5 și 1800 de secunde",
       "fix": "Verifică câmpurile marcate."
-    }
+    },
+    "upload": "Încarcă poză",
+    "uploading": "Se încarcă…",
+    "uploaded": "Poza e încărcată. Apasă „Salvează”.",
+    "uploadHint": "JPEG, PNG, WebP sau GIF, max. 10 MB. Se păstrează în S3.",
+    "external": "Poza e pe alt site",
+    "stored": "Poza e în S3"
   }
 }

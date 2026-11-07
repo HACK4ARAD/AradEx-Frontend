@@ -2,6 +2,7 @@
 /** Formularul unui obiectiv (W25). Valorile ca text; conversia + validarea în `usePlaceForm`. Erorile = chei din `places.form.errors`. */
 import { useI18n } from 'vue-i18n'
 import { AppInput } from '@/shared/components'
+import PhotoField from './PhotoField.vue'
 import { PLACE_TYPES } from '@/shared/composables/usePlaces'
 import type { FormErrors, PlaceForm } from '@/shared/composables/usePlaceForm'
 
@@ -36,8 +37,8 @@ const box = 'w-full bg-white border rounded-[14px] px-3.5 text-[15px] outline-no
       <AppInput v-model="form.parkingHint" :label="t('places.form.parkingHint')" />
       <AppInput v-model="form.tags" :label="t('places.form.tags')" placeholder="istorie, familie" :error="err(errors, 'tags')" />
     </div>
-    <div class="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_110px]">
-      <AppInput v-model="form.imageUrl" :label="t('places.form.imageUrl')" placeholder="/img/loc-ca.jpg" />
+    <PhotoField v-model="form.imageUrl" :label="t('places.form.imageUrl')" placeholder="https://…" />
+    <div class="grid gap-3 md:grid-cols-[minmax(0,1fr)_110px]">
       <AppInput v-model="form.imageCredit" :label="t('places.form.imageCredit')" />
       <AppInput v-model="form.rating" :label="t('places.form.rating')" :error="err(errors, 'rating')" />
     </div>

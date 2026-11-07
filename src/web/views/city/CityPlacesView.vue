@@ -14,6 +14,7 @@ import type { FormErrors, GuidePointForm } from '@/shared/composables/usePlaceFo
 import type { GuidePointDto } from '@/shared/types/places'
 import { useUiStore } from '@/shared/stores/ui'
 import { ApiError } from '@/shared/api/client'
+import { isExternalImage, mediaApi } from '@/shared/api/media'
 
 const route = useRoute()
 const router = useRouter()
@@ -70,6 +71,34 @@ async function removePoint(g: GuidePointDto) {
   if (ok) ui.toast(t('places.panel.pointDeleted'), 'success')
 }
 const move = (g: GuidePointDto, dir: -1 | 1) => run(() => c.movePoint(g, dir))
+
+// pozele obiectivelor încă legate de pe alte site-uri (visitarad.ro…) → copiate în S3, câte 15 pe cerere
+const externalPhotos = computed(() => c.items.value.filter((p) => isExternalImage(p.imageUrl)).length)
+const importing = ref<{ done: number; left: number } | null>(null)
+/** Pozele care n-au putut fi descărcate (link stricat la sursă) rămân externe: după un import nu mai arătăm butonul pentru ele. */
+const unreachable = ref(0)
+const showImport = computed(() => !!importing.value || externalPhotos.value > unreachable.value)
+async function importPhotos() {
+  importing.value = { done: 0, left: externalPhotos.value }
+  let failed = 0
+  try {
+    for (;;) {
+      const r = await mediaApi.importPlaces(15)
+      importing.value = { done: importing.value.done + r.imported, left: r.remaining }
+      failed += r.failed
+      if (!r.remaining || !r.imported) break
+    }
+    ui.toast(t('places.panel.importDone', { done: importing.value.done }), 'success')
+    if (failed) ui.toast(t('places.panel.importFailed', { n: failed }), 'error')
+  } catch (e) {
+    ui.error(e)
+  } finally {
+    importing.value = null
+    await c.reloadList()
+    await c.loadPlace()
+    unreachable.value = externalPhotos.value
+  }
+}
 </script>
 
 <template>
@@ -79,7 +108,12 @@ const move = (g: GuidePointDto, dir: -1 | 1) => run(() => c.movePoint(g, dir))
         <h1 class="text-[26px] font-semibold tracking-[-0.02em] m-0">{{ t('places.panel.title') }}</h1>
         <p class="text-muted text-[14px] mt-1 mb-0 max-w-[720px]">{{ t('places.panel.subtitle', { n: c.items.value.length }) }}</p>
       </div>
-      <AppButton icon="add" size="sm" @click="router.push('/city/places/new')">{{ t('places.panel.new') }}</AppButton>
+      <div class="flex flex-wrap gap-2">
+        <AppButton v-if="showImport" variant="secondary" size="sm" icon="cloud_upload" :loading="!!importing" data-test="import-photos" @click="importPhotos">
+          {{ importing ? t('places.panel.importing', importing) : t('places.panel.importPhotos', { n: externalPhotos - unreachable }) }}
+        </AppButton>
+        <AppButton icon="add" size="sm" @click="router.push('/city/places/new')">{{ t('places.panel.new') }}</AppButton>
+      </div>
     </div>
 
     <div class="bg-white rounded-[16px] border border-line grid lg:grid-cols-[320px_minmax(0,1fr)] overflow-hidden">
