@@ -9,6 +9,7 @@ import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import AudioGuideBar from '@/shared/components/places/AudioGuideBar.vue'
 import GuidePointList from '@/shared/components/places/GuidePointList.vue'
 import PlaceInfo from '@/shared/components/places/PlaceInfo.vue'
+import NearestStop from '@/shared/components/transit/NearestStop.vue'
 import { usePlace } from '@/shared/composables/usePlaces'
 import { useAudioGuide } from '@/shared/composables/useAudioGuide'
 import { useFormat } from '@/shared/composables/useFormat'
@@ -79,6 +80,8 @@ const btn = 'flex items-center justify-center gap-2 min-h-[52px] rounded-2xl tex
       <p v-else class="text-muted text-[14px] mt-4">{{ t('places.detail.noGuide') }}</p>
 
       <PlaceInfo :place="place" class="mt-4" />
+      <!-- T22: stația CTP cea mai apropiată de obiectiv + următoarele sosiri -->
+      <NearestStop :lat="place.lat" :lng="place.lng" />
       <p class="text-muted text-[15px] leading-relaxed mt-4">{{ place.description }}</p>
       <p class="text-muted text-[12px] mt-4">{{ t('places.detail.readAloud') }}</p>
     </div>
