@@ -19,7 +19,7 @@ const tabs = computed(() => {
   ]
   const panel = auth.hasRole('BUSINESS', 'CITY_HALL')
   return [
-    { to: '/m', icon: 'calendar_month', label: t('nav.events'), match: (p: string) => p === '/m' || p.startsWith('/m/events') || p.startsWith('/m/offers') || p.startsWith('/m/community') || p.startsWith('/m/places') || p.startsWith('/m/businesses') },
+    { to: '/m', icon: 'calendar_month', label: t('nav.events'), match: (p: string) => p === '/m' || p.startsWith('/m/search') || p.startsWith('/m/events') || p.startsWith('/m/offers') || p.startsWith('/m/community') || p.startsWith('/m/places') || p.startsWith('/m/businesses') },
     { to: '/m/chat', icon: 'chat_bubble', label: t('nav.chat'), match: (p: string) => p.startsWith('/m/chat') },
     { to: '/m/map', icon: 'map', label: t('nav.map'), center: true, match: (p: string) => p.startsWith('/m/map') },
     panel
@@ -33,24 +33,26 @@ const hideTabs = computed(() => route.meta.hideTabs === true)
 
 <template>
   <div class="min-h-dvh bg-bg flex flex-col mx-auto w-full max-w-[480px]">
-    <main class="flex-1 px-5 pt-[max(12px,env(safe-area-inset-top))]" :class="hideTabs ? 'pb-6' : 'pb-28'">
+    <main class="flex-1 px-5 pt-[max(12px,env(safe-area-inset-top))]" :class="hideTabs ? 'pb-10' : 'pb-[120px]'">
       <router-view />
     </main>
 
-    <nav v-if="!hideTabs" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] px-3.5 pb-[max(10px,env(safe-area-inset-bottom))] pointer-events-none">
-      <div class="pointer-events-auto h-[78px] bg-white rounded-[22px] shadow-[0_2px_10px_rgba(0,0,0,0.06)] flex items-center justify-around px-1.5">
-        <router-link v-for="tab in tabs" :key="tab.to" :to="tab.to"
-          class="flex flex-col items-center gap-0.5 w-[62px] text-[11px] no-underline"
-          :class="[tab.center ? 'relative -top-4' : '', tab.match(route.path) ? 'text-ink font-semibold' : 'text-muted']">
-          <span v-if="tab.center" class="w-[54px] h-[54px] rounded-full bg-ink text-white flex items-center justify-center shadow-[0_0_0_5px_var(--color-bg)]">
-            <AppIcon :name="tab.icon" :size="24" />
-          </span>
-          <template v-else>
-            <AppIcon :name="tab.icon" :size="22" />
-            <span>{{ tab.label }}</span>
-          </template>
-        </router-link>
-      </div>
+    <!-- design/final `.nav`: bară albă rotundă, plutitoare; tab-ul activ are „bula” gri și icon plin; Harta e cercul negru din mijloc -->
+    <div v-if="!hideTabs" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] h-[110px] pointer-events-none z-30 bg-gradient-to-t from-bg from-40% to-transparent" />
+    <nav v-if="!hideTabs" :aria-label="t('nav.aria')" class="fixed left-1/2 -translate-x-1/2 bottom-[max(22px,env(safe-area-inset-bottom))] w-[calc(100%-32px)] max-w-[448px] z-[35] h-[68px] grid items-center px-1.5 rounded-full bg-white border border-line shadow-[0_10px_30px_rgba(17,17,17,.10)]"
+      :class="tabs.length === 3 ? 'grid-cols-3' : 'grid-cols-5'">
+      <router-link v-for="tab in tabs" :key="tab.to" :to="tab.to" :aria-current="tab.match(route.path) ? 'page' : undefined"
+        class="relative flex flex-col items-center gap-0.5 min-h-14 pt-[5px] text-[11px] leading-[1.15] text-center no-underline"
+        :class="[tab.center ? '-mt-[30px] text-ink font-semibold' : tab.match(route.path) ? 'text-ink font-bold' : 'text-muted font-medium']">
+        <span v-if="tab.center" class="w-[62px] h-[62px] rounded-full flex items-center justify-center text-white border-[5px] border-bg shadow-[0_10px_22px_rgba(17,17,17,.22)]"
+          :class="tab.match(route.path) ? 'bg-accent' : 'bg-ink'">
+          <AppIcon :name="tab.icon" :size="28" fill />
+        </span>
+        <span v-else class="w-[52px] h-8 rounded-full flex items-center justify-center" :class="tab.match(route.path) ? 'bg-soft' : ''">
+          <AppIcon :name="tab.icon" :fill="tab.match(route.path)" />
+        </span>
+        <span>{{ tab.label }}</span>
+      </router-link>
     </nav>
   </div>
 </template>

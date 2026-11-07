@@ -1,1 +1,12 @@
-{}
+{
+  "onlyHere": "Doar în AradExperience",
+  "adult": "Adult",
+  "child": "Copil (3–12 ani)",
+  "less": "Scade",
+  "more": "Crește",
+  "total": "Total",
+  "continueToPay": "Continuă spre plată",
+  "webPayNote": "Plată demonstrativă. Biletul apare în „Contul meu › Bilete” cu cod QR.",
+  "freeEntry": "Intrare liberă",
+  "externalNote": "Biletele cumpărate acolo nu apar în aplicație."
+}

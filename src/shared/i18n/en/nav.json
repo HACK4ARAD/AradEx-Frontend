@@ -23,5 +23,9 @@
   "volMessages": "Messages",
   "points": "Points",
   "settings": "Settings",
-  "account": "My account"
+  "account": "My account",
+  "aria": "Navigation",
+  "myTickets": "My tickets",
+  "pointsAndRegistrations": "Points & registrations",
+  "myOffers": "My offers"
 }

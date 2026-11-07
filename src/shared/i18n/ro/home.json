@@ -5,5 +5,6 @@
   "week": "Următoarele 7 zile",
   "popular": "Populare",
   "planCta": "Ești în vizită? Planifică-ți ziua",
-  "planCtaSub": "Spune cât timp ai → program cu obiective, ore și traseu"
+  "planCtaSub": "Spune cât timp ai → program cu obiective, ore și traseu",
+  "todayCount": "{n} azi"
 }
