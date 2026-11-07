@@ -181,7 +181,20 @@
       "status": "Stare"
     },
     "manualPh": "Confirmă manual după cod: AX-C1-…",
-    "all": "Tot"
+    "all": "Tot",
+    "pickSub": "Pick an action to see who signed up, confirm them and follow attendance.",
+    "upcoming": "Today and upcoming",
+    "past": "Finished",
+    "today": "Today",
+    "soon": "Upcoming",
+    "ended": "Finished",
+    "toValidate": "0 to confirm | 1 to confirm | {n} to confirm",
+    "allValidated": "All confirmed",
+    "noRegs": "No sign-ups yet",
+    "registeredOf": "{n} / {cap} signed up",
+    "pointsShort": "+{n} p",
+    "back": "All actions",
+    "open": "Open confirmation for {title}"
   },
   "web": {
     "boardMonth": "Clasament · luna aceasta",
