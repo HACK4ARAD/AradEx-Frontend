@@ -41,8 +41,11 @@ defineExpose({
 .ax-pin--place { background: #111; }
 .ax-pin--offer { background: #E0A400; }
 .ax-pin--action { background: #3B6D11; }
-.ax-pin--stop { background: #fff; border-color: #1D5FD1; width: 18px; height: 18px; }
-.ax-pin--vehicle { background: #1D5FD1; }
+.ax-pin--stop { background: #fff; border-color: var(--pin, #1D5FD1); width: 18px; height: 18px; }
+/* vehiculul: în culoarea liniei când o știm (harta traseului, T19), altfel albastrul transportului */
+.ax-pin--vehicle { background: var(--pin, #1D5FD1); }
+/* steagul destinației din harta traseului (T19): ligatura Material Symbols „flag” pe negru */
+.ax-pin--dest { background: #111; font: 400 15px 'Material Symbols Outlined'; font-feature-settings: 'liga'; font-variation-settings: 'FILL' 1; }
 /* stratul „Parcări”: „P” pe alb, marginea în culoarea zonei (`--pin`, din MapMarker.color) */
 .ax-pin--parking { width: 22px; height: 22px; border-radius: 7px; background: #fff; color: #111; border-color: var(--pin, #111); font-size: 11.5px; }
 /* stațiile de biciclete: eticheta e ligatura Material Symbols „pedal_bike” */

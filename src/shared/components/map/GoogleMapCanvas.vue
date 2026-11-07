@@ -72,9 +72,11 @@ let meMarker: HtmlMarker | null = null
 function drawLines() {
   if (!map.value) return
   for (const l of transitLines) l.setMap(null)
-  transitLines = (props.lines ?? []).map((l) => new google.maps.Polyline({
-    map: map.value, path: l.path.map(([lat, lng]) => ({ lat, lng })), strokeColor: l.color, strokeWeight: l.weight ?? LINE_WEIGHT, strokeOpacity: l.opacity ?? LINE_OPACITY, clickable: false, zIndex: 1,
-  }))
+  transitLines = (props.lines ?? []).map((l) => new google.maps.Polyline(l.dash
+    // punctată (mersul pe jos, T19): puncte rotunde repetate, ca dashArray „1 8” din Leaflet
+    ? { map: map.value, path: l.path.map(([lat, lng]) => ({ lat, lng })), strokeOpacity: 0, clickable: false, zIndex: 2,
+        icons: [{ icon: { path: google.maps.SymbolPath.CIRCLE, scale: (l.weight ?? LINE_WEIGHT) / 2, strokeOpacity: 0, fillColor: l.color, fillOpacity: l.opacity ?? 1 }, offset: '0', repeat: '9px' }] }
+    : { map: map.value, path: l.path.map(([lat, lng]) => ({ lat, lng })), strokeColor: l.color, strokeWeight: l.weight ?? LINE_WEIGHT, strokeOpacity: l.opacity ?? LINE_OPACITY, clickable: false, zIndex: 1 }))
 }
 
 function drawMarkers() {
@@ -97,6 +99,15 @@ function drawRoute() {
     : { path, map: map.value, strokeColor: '#1D5FD1', strokeWeight: 5, strokeOpacity: 0.9, zIndex: 10 })
   const bounds = new google.maps.LatLngBounds()
   path.forEach((p) => bounds.extend(p))
+  const pad = fitInsets(props.insets, el.value?.clientHeight ?? 0)
+  map.value.fitBounds(bounds, { top: pad.top, bottom: pad.bottom, left: 40, right: 40 })
+}
+
+/** Încadrează punctele din `fit` (doar când nu e un traseu, care se încadrează singur). */
+function drawFit() {
+  if (!map.value || (props.route && props.route.length > 1) || !props.fit || props.fit.length < 2) return
+  const bounds = new google.maps.LatLngBounds()
+  props.fit.forEach(([lat, lng]) => bounds.extend({ lat, lng }))
   const pad = fitInsets(props.insets, el.value?.clientHeight ?? 0)
   map.value.fitBounds(bounds, { top: pad.top, bottom: pad.bottom, left: 40, right: 40 })
 }
@@ -131,6 +142,7 @@ onMounted(async () => {
     drawMarkers()
     drawMe()
     drawRoute()
+    drawFit()
   } catch {
     emit('failed')
   }
@@ -151,6 +163,7 @@ watch(() => [props.markers, props.selectedId], drawMarkers)
 watch(() => props.lines, drawLines)
 watch(() => [props.route, props.routeApproximate], drawRoute)
 watch(() => props.me, drawMe)
+watch(() => props.fit, drawFit)
 
 function zoomBy(delta: number) { const z = map.value?.getZoom(); if (map.value && z != null) map.value.setZoom(z + delta) }
 function flyTo(p: GeoPoint, zoom = 16) { map.value?.panTo(p); map.value?.setZoom(zoom) }

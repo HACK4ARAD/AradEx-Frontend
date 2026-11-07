@@ -11,7 +11,8 @@
     "distance": "{distance} on foot",
     "lines": "Lines {lines}",
     "noLive": "No live data right now",
-    "noArrivals": "No arrivals coming up"
+    "noArrivals": "No arrivals coming up",
+    "howTo": "Directions"
   },
   "card": {
     "stop": "CTP stop",
