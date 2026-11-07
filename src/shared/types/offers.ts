@@ -15,6 +15,8 @@ export interface OfferSummary {
 export interface RedemptionDto {
   id: number; code: string; offerId: number; offerTitle: string; businessName: string; pointsSpent: number
   status: RedemptionStatus; issuedAt: string; usedAt?: string
+  /** Poza ofertei și „valabilă până” — rândul din Biletele mele și „Codul tău”. */
+  offerImageUrl?: string; validUntil?: string
 }
 export interface OfferDto extends OfferSummary {
   description: string; validFrom: string; status: ContentStatus; viewsCount: number; redemptionsCount: number
