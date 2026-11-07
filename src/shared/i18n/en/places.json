@@ -2,8 +2,6 @@
   "list": {
     "title": "Places in Arad",
     "subtitle": "{n} sights with a written and audio guide, with real opening hours and prices.",
-    "webTitle": "Sights with a virtual guide",
-    "webSubtitle": "{n} places in Arad and the county, with a written and audio guide · real opening hours and prices",
     "all": "All",
     "nearMe": "Near me",
     "locating": "Finding you…",
@@ -51,16 +49,13 @@
     "next": "Next stop",
     "directions": "Directions",
     "plan": "Add to my plan",
-    "googleMaps": "Open in Google Maps",
     "share": "Share",
     "linkCopied": "Link copied.",
-    "about": "About",
     "readAloud": "Texts written to be read aloud (Romanian for now).",
     "noGuide": "The guide for this place is in progress.",
     "notFound": "This place doesn't exist",
     "notFoundText": "It may have been removed from the list.",
-    "backToList": "All sights",
-    "breadcrumb": "Sights"
+    "backToList": "All sights"
   },
   "audio": {
     "play": "Play",
@@ -69,7 +64,8 @@
     "voice": "text-to-speech voice",
     "noVoice": "No voice for this language on this device; reading may sound odd.",
     "unsupported": "This device can't read aloud here. Read the text below.",
-    "speed": "Speed {r}×"
+    "speed": "Speed {r}×",
+    "failed": "Couldn't read aloud on this device ({code}). Read the text below."
   },
   "panel": {
     "title": "Sights & guides",

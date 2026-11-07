@@ -11,6 +11,8 @@ export function useTts() {
   const speaking = ref(false)
   const progress = ref(0)
   const rate = ref(1)
+  /** Codul ultimei erori de citire (`SpeechSynthesisErrorEvent.error`, ex. `synthesis-failed`), null dacă a mers. */
+  const error = ref<string | null>(null)
   const voices = ref<SpeechSynthesisVoice[]>(supported ? synth!.getVoices() : [])
   let current: SpeechSynthesisUtterance | null = null
   let onEnd: (() => void) | null = null
@@ -45,10 +47,17 @@ export function useTts() {
       onEnd = null
       cb?.()
     }
-    u.onerror = () => { if (current === u) { current = null; speaking.value = false } }
+    u.onerror = (e) => {
+      if (current !== u) return
+      current = null
+      speaking.value = false
+      const code = (e as SpeechSynthesisErrorEvent).error
+      if (code !== 'interrupted' && code !== 'canceled') error.value = code || 'unknown'
+    }
     current = u
     onEnd = done ?? null
     progress.value = 0
+    error.value = null
     speaking.value = true
     synth!.speak(u)
     return true
@@ -69,7 +78,7 @@ export function useTts() {
 
   onBeforeUnmountSafe(() => { stop(); synth?.removeEventListener?.('voiceschanged', loadVoices) })
 
-  return { supported, speaking, progress, rate, voices, hasVoice, speak, stop, cycleRate }
+  return { supported, speaking, progress, rate, voices, error, hasVoice, speak, stop, cycleRate }
 }
 
 /** onBeforeUnmount doar dacă suntem într-un component (testele apelează composable-ul și direct). */

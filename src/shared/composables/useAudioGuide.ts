@@ -56,7 +56,7 @@ export function useAudioGuide(points: Ref<GuidePointDto[]>, lang: Ref<string>) {
 
   return {
     index, current, playing, total, elapsed, hasVoice,
-    supported: tts.supported, rate: tts.rate, cycleRate: tts.cycleRate, stop: tts.stop,
+    supported: tts.supported, error: tts.error, rate: tts.rate, cycleRate: tts.cycleRate, stop: tts.stop,
     toggle, pick, next,
   }
 }

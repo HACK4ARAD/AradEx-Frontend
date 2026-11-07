@@ -70,6 +70,8 @@ async function removePoint(g: GuidePointDto) {
   if (ok) ui.toast(t('places.panel.pointDeleted'), 'success')
 }
 const move = (g: GuidePointDto, dir: -1 | 1) => run(() => c.movePoint(g, dir))
+/** „Vezi ca vizitator” = ecranul E3 din aplicație (ghidul nu are pagină publică pe web), în tab nou. */
+const openInApp = (id: number) => window.open(router.resolve(`/m/places/${id}`).href, '_blank', 'noopener')
 </script>
 
 <template>
@@ -110,7 +112,7 @@ const move = (g: GuidePointDto, dir: -1 | 1) => run(() => c.movePoint(g, dir))
           <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
             <h2 class="text-[20px] font-semibold m-0">{{ isNew ? t('places.panel.new') : c.place.value?.name }}</h2>
             <div class="flex flex-wrap gap-2">
-              <AppButton v-if="c.place.value" size="sm" variant="ghost" icon="visibility" @click="router.push(`/w/places/${c.place.value.id}`)">{{ t('places.panel.viewAsVisitor') }}</AppButton>
+              <AppButton v-if="c.place.value" size="sm" variant="ghost" icon="visibility" @click="openInApp(c.place.value.id)">{{ t('places.panel.viewAsVisitor') }}</AppButton>
               <AppButton size="sm" :loading="c.saving.value" @click="save">{{ isNew ? t('places.panel.create') : t('places.panel.save') }}</AppButton>
             </div>
           </div>

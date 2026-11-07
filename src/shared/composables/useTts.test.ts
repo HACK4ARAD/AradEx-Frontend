@@ -57,6 +57,18 @@ describe('useTts', () => {
     expect(done).toHaveBeenCalledOnce()
   })
 
+  it('keeps the error code when the device cannot read, but not for a cancel', () => {
+    const tts = useTts()
+    tts.speak('x', 'ro-RO')
+    ;(spoken[0].onerror as unknown as (e: { error: string }) => void)({ error: 'synthesis-failed' })
+    expect(tts.error.value).toBe('synthesis-failed')
+    expect(tts.speaking.value).toBe(false)
+    tts.speak('y', 'ro-RO')
+    expect(tts.error.value).toBeNull()
+    ;(spoken[1].onerror as unknown as (e: { error: string }) => void)({ error: 'interrupted' })
+    expect(tts.error.value).toBeNull()
+  })
+
   it('reports no support when the browser has no speechSynthesis', () => {
     Reflect.deleteProperty(window, 'speechSynthesis')
     const tts = useTts()

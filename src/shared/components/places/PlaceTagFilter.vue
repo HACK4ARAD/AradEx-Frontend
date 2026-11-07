@@ -1,21 +1,18 @@
 <script setup lang="ts">
-/** Chips-urile de etichete din W7 / „Locuri din Arad” + „Lângă mine” (cere GPS-ul la tap). */
+/** Chips-urile de etichete din „Locuri din Arad” (design: `.chips` cu `.chip.sm`, rândul trece de marginile ecranului). */
 import { useI18n } from 'vue-i18n'
-import { AppChip } from '@/shared/components'
 import { PLACE_TAG_FILTERS } from '@/shared/composables/usePlaces'
 
-defineProps<{ located?: boolean; locating?: boolean }>()
 const tag = defineModel<string | null>({ default: null })
-defineEmits<{ locate: [] }>()
 const { t } = useI18n()
+const chip = 'shrink-0 min-h-9 px-3 rounded-full border text-[13px] whitespace-nowrap transition-colors'
+const on = 'bg-ink text-white border-ink font-semibold'
+const off = 'bg-white text-ink border-line font-medium'
 </script>
 
 <template>
-  <div class="flex gap-2 overflow-x-auto md:flex-wrap -mx-1 px-1 pb-1 [scrollbar-width:none]">
-    <AppChip :active="tag === null" @click="tag = null">{{ t('places.list.all') }}</AppChip>
-    <AppChip v-for="k in PLACE_TAG_FILTERS" :key="k" :active="tag === k" @click="tag = tag === k ? null : k">{{ t(`places.tag.${k}`) }}</AppChip>
-    <AppChip :active="located" :icon="locating ? 'progress_activity' : 'near_me'" class="shrink-0" @click="$emit('locate')">
-      {{ locating ? t('places.list.locating') : t('places.list.nearMe') }}
-    </AppChip>
+  <div class="flex gap-2 overflow-x-auto -mx-5 px-5 py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <button type="button" :class="[chip, tag === null ? on : off]" @click="tag = null">{{ t('places.list.all') }}</button>
+    <button v-for="k in PLACE_TAG_FILTERS" :key="k" type="button" :class="[chip, tag === k ? on : off]" @click="tag = k">{{ t(`places.tag.${k}`) }}</button>
   </div>
 </template>

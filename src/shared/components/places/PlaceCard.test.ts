@@ -21,12 +21,6 @@ describe('PlaceCard', () => {
     expect(w.findComponent(RouterLinkStub).props('to')).toBe('/m/places/8')
   })
 
-  it('tile: guide minutes, no exterior badge and no distance when missing', () => {
-    const w = mount(PlaceCard, { props: { place: place({ exteriorOnly: false, guidePointsCount: 1, guideMinutes: 2 }), to: '/w/places/8', variant: 'tile' }, ...opts })
-    expect(w.text()).toContain('1 punct · 2 min')
-    expect(w.text()).not.toContain('exterior')
-    expect(w.text()).not.toContain('km')
-  })
 
   it('hides the guide badge when a place has no guide points', () => {
     const w = mount(PlaceCard, { props: { place: place({ guidePointsCount: 0, guideMinutes: 0 }), to: '/m/places/8' }, ...opts })
