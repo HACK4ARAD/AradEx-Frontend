@@ -13,6 +13,7 @@ const KNOWN_ERRORS: Record<string, string> = {
   'This code belongs to another business': 'offers.codes.errOther',
   'Code cancelled': 'offers.codes.errCancelled',
   'This offer is not valid today': 'offers.redeem.errUnavailable',
+  insufficient_points: 'offers.redeem.errPoints',
 }
 export function knownErrorKey(e: unknown): string | null {
   return e instanceof Error ? KNOWN_ERRORS[e.message] ?? null : null
@@ -66,17 +67,20 @@ export function useOffer(id: Ref<number | null>, translate: (key: string) => str
     } finally { loading.value = false }
   }
 
-  /** Revendică; dacă există deja un cod activ (409), reîncarcă oferta ca să-l arate. Întoarce codul sau null. */
-  async function redeem(okMessage: string): Promise<RedemptionDto | null> {
+  /**
+   * Revendică (cu `withPoints`, T11: plătește cu puncte); dacă există deja un cod activ (409), reîncarcă oferta ca să-l arate.
+   * Întoarce codul sau null. La 409 `insufficient_points` nu se emite niciun cod.
+   */
+  async function redeem(okMessage: string, withPoints = false): Promise<RedemptionDto | null> {
     if (!offer.value) return null
     redeeming.value = true
     try {
-      const r = await offersApi.redeem(offer.value.id)
+      const r = await offersApi.redeem(offer.value.id, withPoints)
       offer.value = { ...offer.value, myRedemption: r, redemptionsCount: offer.value.redemptionsCount + 1 }
       ui.toast(okMessage, 'success')
       return r
     } catch (e) {
-      if (statusOf(e) === 409) { await load(); if (offer.value?.myRedemption?.status === 'ISSUED') return offer.value.myRedemption }
+      if (statusOf(e) === 409 && knownErrorKey(e) !== 'offers.redeem.errPoints') { await load(); if (offer.value?.myRedemption?.status === 'ISSUED') return offer.value.myRedemption }
       const key = knownErrorKey(e)
       if (key) ui.toast(translate(key), 'error')
       else ui.error(e)

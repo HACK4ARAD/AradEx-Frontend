@@ -11,7 +11,7 @@ export interface OfferSummary {
   localProduct: boolean; validUntil?: string; pointsPrice?: number; imageUrl?: string; distanceKm?: number; rating?: number
   category: OfferCategory
 }
-/** Codul `AX-O{offerId}-XXXXXX`; QR-ul conține exact codul. `pointsSpent` e 0 până la T11. */
+/** Codul `AX-O{offerId}-XXXXXX`; QR-ul conține exact codul. `pointsSpent` = punctele plătite (T11), 0 la revendicarea gratuită. */
 export interface RedemptionDto {
   id: number; code: string; offerId: number; offerTitle: string; businessName: string; pointsSpent: number
   status: RedemptionStatus; issuedAt: string; usedAt?: string

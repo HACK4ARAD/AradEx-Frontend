@@ -7,7 +7,11 @@ import { AppIcon, AppSheet } from '@/shared/components'
 import CodeCard from './CodeCard.vue'
 import StatusPill from './StatusPill.vue'
 
-export interface CodeView { title: string; sub: string; code: string; note?: string; pill?: { tone: 'off' | 'ok' | 'pending' | 'no' | 'new'; label: string } }
+/** `action` (T11): un buton sub notă, ex. „Renunț la înscriere” (prototipul IA, `canLeave`) la o acțiune comunitară în așteptare. */
+export interface CodeView {
+  title: string; sub: string; code: string; note?: string; pill?: { tone: 'off' | 'ok' | 'pending' | 'no' | 'new'; label: string }
+  action?: { label: string; onClick: () => void; busy?: boolean }
+}
 const props = defineProps<{ item: CodeView | null }>()
 const emit = defineEmits<{ close: [] }>()
 const { t } = useI18n()
@@ -27,6 +31,7 @@ const open = computed({ get: () => !!props.item, set: (v: boolean) => { if (!v) 
       <StatusPill v-if="item.pill" :tone="item.pill.tone" :label="item.pill.label" />
       <CodeCard :code="item.code" />
       <div class="flex gap-2.5 text-[14px] leading-[1.45] text-muted"><AppIcon name="info" :size="20" />{{ item.note ?? t('tickets.code.note') }}</div>
+      <button v-if="item.action" type="button" class="min-h-[52px] rounded-[16px] border border-line bg-white text-[16px] font-semibold disabled:opacity-50" :disabled="item.action.busy" @click="item.action.onClick">{{ item.action.label }}</button>
     </div>
   </AppSheet>
 </template>
