@@ -29,7 +29,7 @@ const mode = ref<TravelMode>('foot')
 const directions = ref<Directions | null>(null)
 const mapRef = ref<InstanceType<typeof MapView> | null>(null)
 
-const { items, loading, load } = useMapData(period)
+const { items, loading, load, ensure } = useMapData(period)
 
 const visible = computed(() => filterItems(items.value, kind.value, target.value))
 const markers = computed<MapMarker[]>(() => visible.value.map((i) => ({ id: i.key, lat: i.lat, lng: i.lng, kind: i.kind })))
@@ -40,17 +40,26 @@ const initials = computed(() => (auth.user?.displayName ?? '').split(' ').map((w
 const periods: MapPeriod[] = ['today', 'weekend', 'week']
 const kinds: ('all' | MapKind)[] = ['all', 'event', 'place', 'offer', 'action']
 
+// fiecare cerere de traseu are un număr; un răspuns întârziat (alt pin, alt mod, card închis) se ignoră
+let routeSeq = 0
+
 async function showRoute() {
-  if (!sel.value) return
-  target.value = sel.value.key
+  const to = sel.value
+  if (!to) return
+  const seq = ++routeSeq
+  const m = mode.value
+  target.value = to.key
   directions.value = null
+  const stale = () => seq !== routeSeq || target.value !== to.key
   const from = await geo.locate()
-  directions.value = await fetchDirections(from, sel.value, mode.value)
+  if (stale()) return
+  const d = await fetchDirections(from, to, m)
+  if (!stale()) directions.value = d
 }
 
 function select(id: string | null) {
   selected.value = id
-  if (id !== target.value) { target.value = null; directions.value = null }
+  if (id !== target.value) { routeSeq++; target.value = null; directions.value = null }
 }
 
 async function myLocation() {
@@ -59,11 +68,14 @@ async function myLocation() {
 }
 
 watch(mode, () => { if (routing.value) void showRoute() })
+// pinul selectat a dispărut (altă perioadă): închidem cardul și traseul, să nu rămână o linie fără destinație
+watch(sel, (s) => { if (!s && selected.value) select(null) })
 
 onMounted(async () => {
   await load()
   if (!target.value) return
-  if (sel.value) await showRoute()
+  // ținta poate fi în afara perioadei afișate (un bilet de săptămâna viitoare): ensure o aduce și o ține pe hartă
+  if (await ensure(target.value)) { selected.value = target.value; await showRoute() }
   else { ui.toast(t('map.notFound'), 'info'); target.value = null; selected.value = null }
 })
 </script>
@@ -73,7 +85,7 @@ onMounted(async () => {
   <div class="fixed inset-0 mx-auto w-full max-w-[480px] z-0">
     <MapView ref="mapRef" :markers="markers" :selected-id="selected" :route="directions?.line ?? null"
       :route-approximate="directions?.approximate" :me="geo.isFallback.value ? null : geo.position.value"
-      :insets="{ top: 240, bottom: 430 }" @select="select" />
+      :insets="{ top: 170, bottom: routing ? 480 : 330 }" @select="select" />
 
     <div class="absolute left-0 right-0 top-0 z-[500] px-4 pt-[max(12px,env(safe-area-inset-top))] flex flex-col gap-2.5 pointer-events-none">
       <div class="flex gap-2.5 pointer-events-auto">
@@ -98,7 +110,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="absolute right-4 z-[500] flex flex-col gap-2" :class="sel ? 'bottom-[300px]' : 'bottom-[130px]'">
+    <div class="absolute right-4 z-[500] flex flex-col gap-2" :class="!sel ? 'bottom-[130px]' : routing ? 'bottom-[456px]' : 'bottom-[300px]'">
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomIn')" @click="mapRef?.zoomBy(1)"><AppIcon name="add" /></button>
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomOut')" @click="mapRef?.zoomBy(-1)"><AppIcon name="remove" /></button>
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center text-[#1D5FD1]" :aria-label="t('map.myLocation')" @click="myLocation"><AppIcon name="my_location" fill /></button>

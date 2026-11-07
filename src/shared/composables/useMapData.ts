@@ -6,6 +6,7 @@ import { offersApi } from '@/shared/api/offers'
 import { businessApi } from '@/shared/api/business'
 import { communityApi } from '@/shared/api/community'
 import { periodRange, useEventFormat } from '@/shared/composables/useEvents'
+import type { EventSummary } from '@/shared/types/events'
 
 /**
  * T08 · pinii hărții: evenimentele din perioadă, obiectivele, firmele cu oferte (ofertele n-au coordonate, firmele da)
@@ -50,21 +51,49 @@ export function useMapData(period: Ref<MapPeriod>) {
   const fmt = useEventFormat()
   const events = shallowRef<MapItem[]>([])
   const others = shallowRef<MapItem[]>([])
+  /** ținta `?to=event:N` adusă separat (de ex. un bilet de săptămâna viitoare, în afara perioadei afișate) */
+  const pinned = shallowRef<MapItem[]>([])
   const items = shallowRef<MapItem[]>([])
   const loading = ref(false)
+  let eventsSeq = 0
 
   function merge() {
-    items.value = [...events.value, ...others.value]
+    const base = [...events.value, ...others.value]
+    const have = new Set(base.map((i) => i.key))
+    items.value = [...base, ...pinned.value.filter((i) => !have.has(i.key))]
+  }
+
+  function eventItem(e: Pick<EventSummary, 'id' | 'lat' | 'lng' | 'title' | 'locationName' | 'imageUrl' | 'startAt' | 'endAt'>): MapItem {
+    return { key: `event:${e.id}`, kind: 'event', lat: e.lat, lng: e.lng, title: e.title,
+      sub: `${fmt.when(e)} · ${e.locationName}`, imageUrl: e.imageUrl, href: `/events/${e.id}` }
   }
 
   async function loadEvents() {
+    const seq = ++eventsSeq
+    let next: MapItem[] = []
     try {
       const page = await eventsApi.list({ ...periodRange(period.value), size: 100 })
-      events.value = page.content.filter((e) => e.lat != null && e.lng != null).map((e) => ({
-        key: `event:${e.id}`, kind: 'event' as const, lat: e.lat, lng: e.lng, title: e.title,
-        sub: `${fmt.when(e)} · ${e.locationName}`, imageUrl: e.imageUrl, href: `/events/${e.id}`,
-      }))
-    } catch { events.value = [] }
+      next = page.content.filter((e) => e.lat != null && e.lng != null).map(eventItem)
+    } catch { /* fără evenimente; restul pinilor rămân */ }
+    if (seq !== eventsSeq) return false
+    events.value = next
+    return true
+  }
+
+  /** Se asigură că ținta e pe hartă; un eveniment din afara perioadei se aduce cu `eventsApi.get`. */
+  async function ensure(key: string): Promise<boolean> {
+    const found = items.value.find((i) => i.key === key)
+    // un eveniment găsit se fixează și el, ca să nu dispară la schimbarea perioadei (Azi → Weekend)
+    if (found) { if (found.kind === 'event') pinned.value = [...pinned.value, found]; return true }
+    const m = /^event:(\d+)$/.exec(key)
+    if (!m) return false
+    try {
+      const e = await eventsApi.get(Number(m[1]))
+      if (e.lat == null || e.lng == null) return false
+      pinned.value = [...pinned.value, eventItem(e)]
+      merge()
+      return true
+    } catch { return false }
   }
 
   async function loadOthers() {
@@ -105,7 +134,7 @@ export function useMapData(period: Ref<MapPeriod>) {
     loading.value = false
   }
 
-  watch(period, async () => { await loadEvents(); merge() })
+  watch(period, async () => { if (await loadEvents()) merge() })
 
-  return { items, loading, load }
+  return { items, loading, load, ensure }
 }
