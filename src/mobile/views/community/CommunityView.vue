@@ -1,10 +1,18 @@
 <script setup lang="ts">
-// T11 · Comunitate (același conținut ca HomeCommunityTab). Fișierul e al story-ului T11: înlocuiește placeholder-ul cu ecranul din design/final.
-import { useRoute } from 'vue-router'
-import PlaceholderScreen from '@/shared/components/ui/PlaceholderScreen.vue'
-const route = useRoute()
+// T11 · /m/community — același conținut ca tab-ul Comunitate din Acasă (S1d), ca pagină separată (link-uri din hartă, profil, notificări).
+import { useI18n } from 'vue-i18n'
+import { AppIcon } from '@/shared/components'
+import HomeCommunityTab from '@/mobile/components/home/HomeCommunityTab.vue'
+import { useBack } from '@/shared/composables/useBack'
+
+const { t } = useI18n()
+const back = useBack('/m')
 </script>
 
 <template>
-  <PlaceholderScreen :title="String(route.meta.title ?? '')" :screen="route.meta.screen" :task="route.meta.task" />
+  <div class="flex items-center gap-2 pt-1">
+    <button class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center" :aria-label="t('common.back')" @click="back"><AppIcon name="arrow_back" /></button>
+    <h1 class="text-[28px] font-semibold tracking-[-0.025em] m-0">{{ t('community.title') }}</h1>
+  </div>
+  <HomeCommunityTab />
 </template>
