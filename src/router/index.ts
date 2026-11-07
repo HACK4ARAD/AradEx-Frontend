@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { Capacitor } from '@capacitor/core'
 import type { Role } from '@/shared/types/api'
 import { useAuthStore } from '@/shared/stores/auth'
 import { landingFor } from '@/shared/composables/useAuthForm'
@@ -85,8 +86,9 @@ const web: RouteRecordRaw = {
   ],
 }
 
-/** `/` → /m pe ecrane înguste, /w pe desktop; `?ui=m|w` forțează și se ține minte. */
+/** `/` → /m pe ecrane înguste, /w pe desktop; `?ui=m|w` forțează și se ține minte. Aplicația nativă (Capacitor) e mereu /m. */
 function preferredUi(query: Record<string, unknown>): 'm' | 'w' {
+  if (Capacitor.isNativePlatform()) return 'm'
   const forced = query.ui
   if (forced === 'm' || forced === 'w') {
     try { localStorage.setItem(UI_KEY, forced) } catch { /* ignore */ }
