@@ -4,7 +4,7 @@
 import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import type { GeoPoint } from '@/shared/types/common'
 import { ARAD_CENTER } from '@/shared/composables/useGeo'
-import { GOOGLE_MAP_ID, loadGoogleMaps } from '@/shared/composables/useGoogleMaps'
+import { GOOGLE_MAP_ID, loadGoogleMaps, markGoogleUnavailable, onGoogleUnavailable } from '@/shared/composables/useGoogleMaps'
 import { fitInsets, meElement, pinElement, type MapProps } from './types'
 
 const props = withDefaults(defineProps<MapProps>(),
@@ -60,7 +60,13 @@ function drawMe() {
   meMarker = props.me ? new Marker({ map: map.value, position: props.me, content: meElement(), zIndex: 900 }) : null
 }
 
+/** Cât așteptăm primele dale ale hărții; peste atât (rețea, cheie refuzată fără semnal) trecem pe Leaflet. */
+const TILES_TIMEOUT_MS = 10000
+let stopWatching: (() => void) | null = null
+let tilesTimer: ReturnType<typeof setTimeout> | null = null
+
 onMounted(async () => {
+  stopWatching = onGoogleUnavailable(() => emit('failed'))
   try {
     await loadGoogleMaps()
     const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary
@@ -72,6 +78,8 @@ onMounted(async () => {
       disableDefaultUI: true, clickableIcons: false, gestureHandling: 'greedy',
     })
     map.value.addListener('click', () => emit('select', null))
+    tilesTimer = setTimeout(() => markGoogleUnavailable(), TILES_TIMEOUT_MS)
+    google.maps.event.addListenerOnce(map.value, 'tilesloaded', () => { if (tilesTimer) clearTimeout(tilesTimer); tilesTimer = null })
     drawLines()
     drawMarkers()
     drawMe()
@@ -82,6 +90,8 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  stopWatching?.()
+  if (tilesTimer) clearTimeout(tilesTimer)
   for (const m of markers) m.map = null
   routeLine?.setMap(null)
   for (const l of transitLines) l.setMap(null)
