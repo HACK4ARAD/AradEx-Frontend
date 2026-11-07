@@ -1,1 +1,22 @@
-{}
+{
+  "title": "Chat",
+  "sub": "I find events and answer questions about them. I don't take payments.",
+  "greeting": "Hi! Tell me what you feel like doing, when and with whom.",
+  "starters": [
+    "What can I do with kids this weekend?",
+    "Which concerts are on this week?",
+    "How do I get to the Fortress?",
+    "Plan my Saturday"
+  ],
+  "placeholder": "Ask a question…",
+  "send": "Send",
+  "newChat": "New chat",
+  "typing": "The assistant is typing",
+  "offline": "Offline answer: the assistant isn't available right now, here are events from the app.",
+  "retry": "Try again",
+  "errors": {
+    "tooMany": "You sent many messages in a minute. Try again in a bit.",
+    "network": "Couldn't reach the server. Check your connection.",
+    "generic": "I couldn't answer right now."
+  }
+}

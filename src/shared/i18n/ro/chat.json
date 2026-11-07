@@ -1,1 +1,22 @@
-{}
+{
+  "title": "Chat",
+  "sub": "Găsesc evenimente și răspund la întrebări despre ele. Nu fac plăți.",
+  "greeting": "Bună! Spune-mi ce ai chef să faci, când și cu cine.",
+  "starters": [
+    "Ce pot face cu copiii în weekend?",
+    "Ce concerte sunt săptămâna asta?",
+    "Cum ajung la Cetate?",
+    "Fă-mi un itinerariu de sâmbătă"
+  ],
+  "placeholder": "Scrie o întrebare…",
+  "send": "Trimite",
+  "newChat": "Chat nou",
+  "typing": "Asistentul scrie",
+  "offline": "Răspuns offline: asistentul nu e disponibil acum, ți-am arătat evenimente din aplicație.",
+  "retry": "Încearcă din nou",
+  "errors": {
+    "tooMany": "Ai trimis multe mesaje într-un minut. Mai încearcă puțin mai târziu.",
+    "network": "Nu am putut contacta serverul. Verifică conexiunea.",
+    "generic": "Nu am putut răspunde acum."
+  }
+}
