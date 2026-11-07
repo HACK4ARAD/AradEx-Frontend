@@ -8,6 +8,7 @@ import { useI18n } from 'vue-i18n'
 import { AppButton, AppIcon, AppInput, EmptyState, Skeleton } from '@/shared/components'
 import PlaceForm from '@/shared/components/places/PlaceForm.vue'
 import GuidePointSheet from '@/shared/components/places/GuidePointSheet.vue'
+import GoogleLinkCard from '@/web/components/google/GoogleLinkCard.vue'
 import { useCityPlaces } from '@/shared/composables/useCityPlaces'
 import { clock, pointSeconds } from '@/shared/composables/useAudioGuide'
 import type { FormErrors, GuidePointForm } from '@/shared/composables/usePlaceForm'
@@ -149,6 +150,8 @@ const move = (g: GuidePointDto, dir: -1 | 1) => run(() => c.movePoint(g, dir))
                 </tbody>
               </table>
             </div>
+            <!-- T17: legătura obiectivului cu pagina lui de pe Google (rating + recenzii în aplicație) -->
+            <GoogleLinkCard kind="place" :place-id="c.place.value.id" class="mt-7" />
             <div class="mt-8 pt-4 border-t border-line">
               <AppButton size="sm" variant="ghost" icon="delete" class="!text-bad" @click="removePlace">{{ t('places.panel.delete') }}</AppButton>
             </div>

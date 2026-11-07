@@ -1,0 +1,33 @@
+{
+  "title": "On Google",
+  "ratings": "no ratings | one rating | {n} ratings",
+  "openMaps": "View on Google Maps",
+  "allReviews": "All reviews on Google",
+  "more": "More",
+  "less": "Less",
+  "stars": "{n} out of 5 stars",
+  "noReviews": "No written reviews on Google yet.",
+  "link": {
+    "title": "Google listing",
+    "sub": "The Google rating and reviews are shown in the app, with “Powered by Google”. Read-only: nothing is written to Google.",
+    "subPlace": "The ID is found automatically from the name and coordinates when someone opens the sight in the app; you can correct it here.",
+    "label": "Google Place ID",
+    "placeholder": "e.g. ChIJ7VFfQACZRUcRXFuEhkS_zss",
+    "help": "Where do I find the ID?",
+    "save": "Save",
+    "unlink": "Unlink",
+    "saved": "The Google link was saved.",
+    "unlinked": "The Google link was removed.",
+    "invalid": "A Google ID only has letters, digits, “_” and “-”.",
+    "notLinked": "Not linked to Google",
+    "notConfigured": "The Google key isn't set on the server: reviews don't show in the app yet.",
+    "unavailable": "Google isn't responding right now; the rating shows up once it's back.",
+    "inApp": "How it looks in the app"
+  },
+  "panel": {
+    "title": "Reviews",
+    "sub": "What customers say about your business on Google. Reviews left in the app come with event reviews.",
+    "empty": "Link your business to its Google listing to see the rating and reviews here.",
+    "emptyTitle": "No reviews to show"
+  }
+}

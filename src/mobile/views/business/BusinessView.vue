@@ -8,6 +8,7 @@ import AnnouncementItem from '@/shared/components/business/AnnouncementItem.vue'
 import BusinessContact from '@/shared/components/business/BusinessContact.vue'
 import PublicEventRow from '@/shared/components/business/PublicEventRow.vue'
 import OfferCard from '@/shared/components/offers/OfferCard.vue'
+import GoogleReviews from '@/shared/components/google/GoogleReviews.vue'
 import { directionsUrl, useBusinessPage } from '@/shared/composables/useBusiness'
 import { useBack } from '@/shared/composables/useBack'
 
@@ -69,6 +70,9 @@ const maps = computed(() => (b.value ? directionsUrl(b.value.lat, b.value.lng, b
           <AnnouncementItem v-for="a in data.announcements" :key="a.id" :announcement="a" />
         </div>
       </template>
+
+      <!-- T17: ratingul și recenziile Google, doar dacă firma și-a legat pagina de pe Google -->
+      <GoogleReviews kind="business" :id="b.id" />
 
       <div class="mt-6"><BusinessContact :business="b" /></div>
     </template>
