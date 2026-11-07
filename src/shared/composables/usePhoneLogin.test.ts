@@ -52,6 +52,30 @@ describe('usePhoneLogin', () => {
     expect(api.otpRequest).not.toHaveBeenCalled()
   })
 
+  it('a code sent seconds ago (e.g. after a logout) → straight to the code step, with a note, no error', async () => {
+    api.otpRequest.mockResolvedValue({ retryAfterSeconds: 42, alreadySent: true })
+    const f = usePhoneLogin()
+    f.phone.value = '0744 123 456'
+    await f.send()
+    expect(f.step.value).toBe('code')
+    expect(f.error.value).toBe('')
+    expect(f.info.value).toBe('auth.phone.alreadySent')
+    expect(f.cooldown.value).toBe(42)
+  })
+
+  it('same number again while the cooldown runs → back to the code step instead of an error', async () => {
+    api.otpRequest.mockResolvedValue({ retryAfterSeconds: 60 })
+    const f = usePhoneLogin()
+    f.phone.value = '0744 123 456'
+    await f.send()
+    f.restart()
+    await f.send()
+    expect(api.otpRequest).toHaveBeenCalledTimes(1)
+    expect(f.step.value).toBe('code')
+    expect(f.error.value).toBe('')
+    expect(f.info.value).toBe('auth.phone.alreadySent')
+  })
+
   it('send → code step with cooldown and the demo code', async () => {
     api.otpRequest.mockResolvedValue({ retryAfterSeconds: 60, demoCode: '482913' })
     const f = usePhoneLogin()
