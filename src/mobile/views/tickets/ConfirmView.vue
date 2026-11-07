@@ -27,12 +27,12 @@ const day = computed(() => {
   <Skeleton v-if="loading && !ticket" :rows="2" :height="120" class="pt-10" />
   <div v-else-if="ticket" class="min-h-[calc(100dvh-60px)] flex flex-col">
     <div class="relative w-[92px] h-[92px] rounded-full border-2 border-ink flex items-center justify-center mx-auto mt-[60px] mb-[26px] after:content-[''] after:absolute after:top-1 after:right-1 after:w-3 after:h-3 after:rounded-full after:bg-accent">
-      <AppIcon name="check" :size="44" />
+      <AppIcon name="check" />
     </div>
     <h1 class="text-center text-[30px] leading-[1.08] font-semibold tracking-[-0.035em] m-0">{{ paid ? t('tickets.confirm.paid') : t('tickets.confirm.free') }}</h1>
     <p class="text-center font-semibold mt-4 mb-0 text-[16px]">{{ ticket.eventTitle }}</p>
     <p class="text-center text-muted mt-2.5 mb-0 text-[15px] leading-[1.45]">
-      {{ t(n === 1 ? 'tickets.confirm.textOne' : 'tickets.confirm.text', { tickets: t('tickets.count', n), day, time: f.timeRange(ticket.startAt) }) }}
+      {{ t(paid ? 'tickets.confirm.text' : 'tickets.confirm.textOne', { tickets: t('tickets.count', n), day, time: f.timeRange(ticket.startAt) }) }}
     </p>
     <p v-if="ticket.email" class="text-center text-muted mt-2 mb-0 text-[13.5px]">{{ t('tickets.confirm.copy', { email: ticket.email }) }}</p>
     <div class="mt-auto pt-10 pb-2 flex flex-col">

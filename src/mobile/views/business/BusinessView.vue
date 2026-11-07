@@ -7,6 +7,7 @@ import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import AnnouncementItem from '@/shared/components/business/AnnouncementItem.vue'
 import BusinessContact from '@/shared/components/business/BusinessContact.vue'
 import PublicEventRow from '@/shared/components/business/PublicEventRow.vue'
+import OfferCard from '@/shared/components/offers/OfferCard.vue'
 import { directionsUrl, useBusinessPage } from '@/shared/composables/useBusiness'
 import { useBack } from '@/shared/composables/useBack'
 
@@ -48,6 +49,13 @@ const maps = computed(() => (b.value ? directionsUrl(b.value.lat, b.value.lng, b
           <AppIcon name="call" :size="18" />{{ t('business.public.call') }}
         </a>
       </div>
+
+      <template v-if="data.offers.length">
+        <h3 class="text-[18px] font-semibold mt-6 mb-2.5">{{ t('business.public.offers') }}</h3>
+        <div class="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1">
+          <OfferCard v-for="o in data.offers" :key="o.id" :offer="o" :to="`/offers/${o.id}`" compact class="w-[230px] shrink-0" />
+        </div>
+      </template>
 
       <h3 class="text-[18px] font-semibold mt-6 mb-2.5">{{ t('business.public.events') }}</h3>
       <div v-if="data.events.length" class="flex flex-col gap-2.5">

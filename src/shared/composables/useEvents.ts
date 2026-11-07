@@ -70,11 +70,15 @@ export function useEventFormat() {
   }
 
   /** Evenimentul e în desfășurare acum → „Acum · până la 17:00”. */
-  function liveUntil(e: Pick<EventSummary, 'startAt' | 'endAt'>): string | null {
+  function liveUntil(e: Pick<EventSummary, 'startAt' | 'endAt'>, nowMs = Date.now()): string | null {
     if (!e.endAt) return null
-    const now = Date.now()
-    if (new Date(e.startAt).getTime() <= now && now <= new Date(e.endAt).getTime() && sameDay(e.startAt, e.endAt)) return f.timeRange(e.endAt)
-    return null
+    const start = new Date(e.startAt).getTime(), end = new Date(e.endAt).getTime()
+    if (nowMs < start || nowMs > end) return null
+    if (sameDay(e.startAt, e.endAt)) return f.timeRange(e.endAt)
+    // pe mai multe zile (ex. expoziție zilnic 09:00–17:00): „acum” doar între ora de deschidere și cea de închidere a zilei
+    const hm = (ms: number) => new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(ms))
+    const nowHm = hm(nowMs)
+    return nowHm >= hm(start) && nowHm <= hm(end) ? f.timeRange(e.endAt) : null
   }
 
   /** „🔥 Popular · 86 participă” / „26 au salvat”. */

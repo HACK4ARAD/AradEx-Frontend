@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // T06 · evenimentele de pe landing (W1): chips Azi / Weekend / 7 zile / Popular + grid de EventCardWeb din GET /events.
+// T20 (P1) transformă landing-ul în site de prezentare și decide dacă grid-ul rămâne (ca vitrină, fără pagini de detaliu pe web).
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { EmptyState, Skeleton } from '@/shared/components'
@@ -29,5 +30,4 @@ const chips: { key: P; label: () => string }[] = [
     <EventCardWeb v-for="e in items" :key="e.id" :event="e" />
   </div>
   <EmptyState v-else icon="event_busy" :title="t('events.empty.title')" :text="t('events.empty.text')" />
-  <router-link to="/events" class="inline-flex mt-4 h-10 px-4 rounded-[12px] border border-line bg-white font-semibold text-[14px] items-center no-underline text-ink">{{ t('events.web.title') }} →</router-link>
 </template>
