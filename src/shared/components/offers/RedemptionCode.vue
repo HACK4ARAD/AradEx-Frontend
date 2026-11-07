@@ -5,8 +5,8 @@ import QrCode from '@/shared/components/qr/QrCode.vue'
 import { useFormat } from '@/shared/composables/useFormat'
 import type { RedemptionDto } from '@/shared/types/offers'
 
-/** Codul revendicat: QR (doar codul text) + codul mare + „Arată codul la casă”; dacă e folosit, spune când. */
-defineProps<{ redemption: RedemptionDto; pointsLater?: boolean; size?: number }>()
+/** Codul revendicat: QR (doar codul text) + codul mare + „Arată codul la casă”; dacă e folosit, spune când; dacă a fost plătit cu puncte (T11), câte. */
+defineProps<{ redemption: RedemptionDto; size?: number }>()
 const { t } = useI18n()
 const f = useFormat()
 </script>
@@ -23,8 +23,8 @@ const f = useFormat()
     <div class="rounded-[14px] bg-white p-3 flex items-start gap-2 text-[13.5px] text-muted">
       <AppIcon name="info" :size="20" /><span>{{ t('offers.redeem.hint') }}</span>
     </div>
-    <div v-if="pointsLater" class="rounded-[14px] bg-green-soft text-green p-3 flex items-start gap-2 text-[13.5px]">
-      <AppIcon name="stars" :size="20" /><span>{{ t('offers.redeem.pointsLater') }}</span>
+    <div v-if="redemption.pointsSpent > 0" class="rounded-[14px] bg-green-soft text-green p-3 flex items-start gap-2 text-[13.5px]">
+      <AppIcon name="stars" :size="20" /><span>{{ t('offers.redeem.paid', { n: redemption.pointsSpent }) }}</span>
     </div>
   </div>
 </template>

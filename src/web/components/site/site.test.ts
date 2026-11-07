@@ -1,9 +1,19 @@
-import { describe, expect, it } from 'vitest'
-import { mount, RouterLinkStub } from '@vue/test-utils'
+import { describe, expect, it, vi } from 'vitest'
+import { flushPromises, mount, RouterLinkStub } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { i18n } from '@/shared/i18n'
 import DownloadButtons from './DownloadButtons.vue'
 import SiteFeatures from './SiteFeatures.vue'
 import CommunityView from '@/web/views/community/CommunityView.vue'
+
+// T11: W12 citește acțiunile și clasamentul din API (publice)
+vi.mock('@/shared/api/community', () => ({
+  communityApi: {
+    actions: vi.fn(async () => [{ id: 1, title: 'Plantăm copaci pe Faleza Mureșului', category: 'ENVIRONMENT', startAt: '2026-11-08T10:00:00+02:00', endAt: '2026-11-08T13:00:00+02:00',
+      locationName: 'Faleza Mureșului', lat: 46.17, lng: 21.32, pointsReward: 50, capacity: 40, registeredCount: 18, goingPreview: [] }]),
+    leaderboard: vi.fn(async () => ({ period: 'month', entries: [{ rank: 1, userId: 6, displayName: 'Mihai R.', points: 190, actionsCount: 3 }] })),
+  },
+}))
 
 const opts = { global: { plugins: [i18n], stubs: { RouterLink: RouterLinkStub } } }
 
@@ -31,9 +41,14 @@ describe('DownloadButtons', () => {
 })
 
 describe('CommunityView (web, read-only)', () => {
-  it('shows the coming-soon state with the download buttons until the community API exists', () => {
-    const w = mount(CommunityView, opts)
+  it('lists the upcoming actions and the month board, read-only, with the download buttons', async () => {
+    setActivePinia(createPinia())
+    const w = mount(CommunityView, { global: { ...opts.global, plugins: [i18n, createPinia()] } })
+    await flushPromises()
     expect(w.text()).toContain('Comunitate')
+    expect(w.text()).toContain('Plantăm copaci pe Faleza Mureșului')
+    expect(w.text()).toContain('Mihai R.')
+    expect(w.text()).not.toContain('Mă înscriu')
     expect(w.findComponent(DownloadButtons).exists()).toBe(true)
   })
 })
