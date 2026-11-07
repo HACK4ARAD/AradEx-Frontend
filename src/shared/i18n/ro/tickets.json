@@ -20,6 +20,10 @@
     "soldOut": "Nu mai sunt bilete.",
     "continue": "Continuă spre plată",
     "ended": "Evenimentul s-a încheiat.",
+    "paymentUsed": "Plata asta a fost deja folosită pentru un bilet.",
+    "paymentMismatch": "Plata nu se potrivește cu comanda. Încearcă din nou.",
+    "paymentIncomplete": "Plata nu s-a finalizat. Verifică datele cardului.",
+    "paymentUnavailable": "Plata cu cardul nu e disponibilă acum. Încearcă din nou peste puțin timp.",
     "dateTime": "Data și ora",
     "lastSpots": "Ultimele {n} bilete"
   },
@@ -38,7 +42,10 @@
     "badEmail": "Introdu o adresă de e-mail validă.",
     "drawerTitle": "Plată demonstrativă",
     "drawerNote": "Nu se procesează bani. Prin plată accepți condițiile organizatorului.",
-    "confirmedToast": "Rezervarea e confirmată. Am trimis o copie pe e-mail."
+    "confirmedToast": "Rezervarea e confirmată. Am trimis o copie pe e-mail.",
+    "stripeTitle": "Plată cu cardul",
+    "stripeTestNote": "Mod de test Stripe: nu se încasează bani. Card de test: 4242 4242 4242 4242, orice dată din viitor, orice CVC.",
+    "stripeLoadError": "Nu am putut încărca plata cu cardul. Verifică conexiunea și încearcă din nou."
   },
   "confirm": {
     "paid": "Rezervarea e confirmată",

@@ -20,6 +20,10 @@
     "soldOut": "No tickets left.",
     "continue": "Continue to payment",
     "ended": "The event has ended.",
+    "paymentUsed": "This payment was already used for a ticket.",
+    "paymentMismatch": "The payment doesn't match the order. Please try again.",
+    "paymentIncomplete": "The payment didn't go through. Check the card details.",
+    "paymentUnavailable": "Card payment isn't available right now. Try again in a moment.",
     "dateTime": "Date and time",
     "lastSpots": "Last {n} tickets"
   },
@@ -38,7 +42,10 @@
     "badEmail": "Enter a valid email address.",
     "drawerTitle": "Demo payment",
     "drawerNote": "No money is processed. By paying you accept the organiser's terms.",
-    "confirmedToast": "Your booking is confirmed. We emailed you a copy."
+    "confirmedToast": "Your booking is confirmed. We emailed you a copy.",
+    "stripeTitle": "Card payment",
+    "stripeTestNote": "Stripe test mode: no money is charged. Test card: 4242 4242 4242 4242, any future date, any CVC.",
+    "stripeLoadError": "We couldn't load the card payment. Check your connection and try again."
   },
   "confirm": {
     "paid": "Your booking is confirmed",

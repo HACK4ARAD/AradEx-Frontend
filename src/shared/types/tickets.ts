@@ -10,4 +10,8 @@ export interface TicketDto {
   priceAdult?: number; priceChild?: number; total: number; status: TicketStatus; email?: string; createdAt: string; usedAt?: string
 }
 /** `email` opțional (T21: conturile cu telefon) */
-export interface TicketRequest { qtyAdult: number; qtyChild: number; email?: string }
+export interface TicketRequest { qtyAdult: number; qtyChild: number; email?: string; /** Stripe (modul de test): PaymentIntent-ul plătit */ paymentIntentId?: string }
+
+/** POST /events/{id}/tickets/payment: STRIPE = Payment Element cu `clientSecret` (modul de test), DEMO = plata demonstrativă. */
+export type PaymentMode = 'STRIPE' | 'DEMO'
+export interface TicketPaymentDto { mode: PaymentMode; amount: number; currency?: string; paymentIntentId?: string; clientSecret?: string; publishableKey?: string }
