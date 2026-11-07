@@ -1,17 +1,15 @@
-import { computed, onMounted, reactive, ref, watch, type Ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ticketsApi } from '@/shared/api/tickets'
-import { paymentsApi } from '@/shared/api/payments'
 import { ApiError } from '@/shared/api/client'
-import type { CardResult } from '@/shared/composables/useStripe'
-import type { CheckoutDto } from '@/shared/types/payments'
-import type { TicketDto } from '@/shared/types/tickets'
+import { STRIPE_APPEARANCE, loadStripe, type StripeElement, type StripeElements, type StripeInstance } from '@/shared/composables/useStripe'
 import { cacheTicket, orderTotal, useTicketErrors } from '@/shared/composables/useTickets'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useTicketOrderStore } from '@/shared/stores/ticketOrder'
 import { useUiStore } from '@/shared/stores/ui'
 import type { EventDto } from '@/shared/types/events'
+import type { PaymentMode } from '@/shared/types/tickets'
 
 export type TicketKind = 'adult' | 'child'
 /** Câte bilete de un fel se pot alege într-o comandă. */
@@ -54,30 +52,14 @@ export function useTicketPick(e: Ref<EventDto | null>) {
 }
 
 /**
- * Starea plății cu cardul (T25): `checking` = întrebăm backend-ul; `off` = fără chei Stripe (sau comandă gratuită) → plata
- * demonstrativă din T07; `on` = formularul de card Stripe în mod test, cu PaymentIntent-ul comenzii; `error` = comanda nu se
- * poate plăti (ex. locuri epuizate), butonul rămâne oprit.
- */
-export type CardState = 'checking' | 'off' | 'on' | 'error'
-
-/** Mesajele backend-ului la plata cu cardul → cheile i18n (restul trec prin `useTicketErrors`). */
-export function cardErrorKey(err: unknown): string | null {
-  if (!(err instanceof ApiError)) return null
-  const d = err.problem?.detail ?? ''
-  if (err.status === 409 && /refunded/i.test(d)) return 'tickets.checkout.stripe.refunded'
-  if (err.status === 409 && /not completed/i.test(d)) return 'tickets.checkout.stripe.processing'
-  if (err.status === 503 || err.status === 502) return 'tickets.checkout.stripe.unavailable'
-  return null
-}
-
-/**
- * T07 · plata (S5 / W6): comanda din store, e-mailul pentru bilete, apoi biletul. T25: dacă backend-ul are cheile Stripe de test,
- * plata trece prin formularul de card Stripe (`pay(confirmCard)` primește `confirm()` din `StripeCardForm`); altfel rămâne
- * plata demonstrativă (POST /events/{id}/tickets).
+ * T07 · plata (S5 / W6): comanda din store, e-mailul pentru bilete, apoi plata și confirmarea. La deschidere serverul spune cum
+ * se plătește (`POST /events/{id}/tickets/payment`): **STRIPE** (modul de test) → Payment Element-ul Stripe se montează în
+ * `cardEl`, „Plătește” confirmă cardul la Stripe (fără redirect) și biletul se cere cu `paymentIntentId`, verificat de server;
+ * **DEMO** (fără chei Stripe) → plata demonstrativă de până acum (card salvat / nou, fără bani).
  */
 export function useCheckout() {
   const router = useRouter()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const auth = useAuthStore()
   const ui = useUiStore()
   const store = useTicketOrderStore()
@@ -92,57 +74,72 @@ export function useCheckout() {
     { label: t('tickets.childShort'), qty: order.value.child, price: order.value.event.priceChild ?? 0 },
   ].filter((l) => l.qty > 0))
 
-  const card = reactive<{ state: CardState; publishableKey: string; session: CheckoutDto | null }>({ state: 'checking', publishableKey: '', session: null })
+  /** null = se pregătește plata; 'STRIPE' / 'DEMO' după răspunsul serverului */
+  const mode = ref<PaymentMode | null>(null)
+  const prepareError = ref<string | null>(null)
+  /** containerul în care se montează Payment Element (view-ul pune `ref="cardEl"`) */
+  const cardEl = ref<HTMLElement | null>(null)
+  /** ref-ul de template pentru container: `:ref="setCardEl"` */
+  const setCardEl = (el: unknown) => { cardEl.value = el instanceof HTMLElement ? el : null }
+  const cardReady = ref(false)
+  let stripe: StripeInstance | null = null
+  let elements: StripeElements | null = null
+  let element: StripeElement | null = null
 
-  onMounted(async () => {
+  async function prepare() {
     const o = order.value
-    if (!o || total.value <= 0) { card.state = 'off'; return }
+    if (!o) return
+    mode.value = null
+    prepareError.value = null
+    cardReady.value = false
     try {
-      const cfg = await paymentsApi.config()
-      if (!cfg.enabled || !cfg.publishableKey) { card.state = 'off'; return }
-      card.publishableKey = cfg.publishableKey
-      card.session = await paymentsApi.checkout(o.event.id, { qtyAdult: o.adult, qtyChild: o.child })
-      card.state = 'on'
+      const p = await ticketsApi.preparePayment(o.event.id, { qtyAdult: o.adult, qtyChild: o.child })
+      if (p.mode !== 'STRIPE' || !p.clientSecret || !p.publishableKey) { mode.value = 'DEMO'; return }
+      stripe = await loadStripe(p.publishableKey)
+      elements = stripe.elements({ clientSecret: p.clientSecret, locale: locale.value === 'en' ? 'en' : 'ro', appearance: STRIPE_APPEARANCE })
+      mode.value = 'STRIPE'
+      await nextTick()
+      element?.destroy()
+      element = elements.create('payment', { layout: 'tabs' })
+      element.on('ready', () => { cardReady.value = true })
+      if (cardEl.value) element.mount(cardEl.value)
     } catch (err) {
-      card.state = 'error'
-      const key = cardErrorKey(err)
-      ui.toast(key ? t(key) : errorText(err), 'error')
+      prepareError.value = err instanceof ApiError ? errorText(err) : t('tickets.checkout.stripeLoadError')
     }
-  })
-
-  function validEmail(): boolean {
-    // T21: e-mailul e opțional (conturile cu telefon); dacă e completat, trebuie să fie valid
-    if (email.value.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim())) { ui.toast(t('tickets.checkout.badEmail'), 'error'); return false }
-    return true
   }
+  onMounted(prepare)
+  onBeforeUnmount(() => { element?.destroy(); element = null })
 
-  async function done(ticket: TicketDto) {
+  async function issue(o: NonNullable<typeof order.value>, paymentIntentId?: string) {
+    const ticket = await ticketsApi.buy(o.event.id, { qtyAdult: o.adult, qtyChild: o.child, email: email.value.trim() || undefined, paymentIntentId })
     if (auth.user) cacheTicket(auth.user.id, ticket)
     store.clear()
     await router.replace(`/confirm/${ticket.code}`)
   }
 
-  /** `confirmCard` = `confirm()` din `StripeCardForm`, când plata cu cardul e pornită. */
-  async function pay(confirmCard?: () => Promise<CardResult>) {
+  async function pay() {
     const o = order.value
-    if (!o || paying.value || card.state === 'checking' || card.state === 'error') return
-    if (!validEmail()) return
+    if (!o || paying.value || !mode.value) return
+    // T21: e-mailul e opțional (conturile cu telefon); dacă e completat, trebuie să fie valid
+    if (email.value.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim())) { ui.toast(t('tickets.checkout.badEmail'), 'error'); return }
     paying.value = true
     try {
-      if (card.state === 'on') {
-        if (!confirmCard) return
-        const r = await confirmCard()
-        if (!r.ok) { if (r.message) ui.toast(r.message, 'error'); return }
-        await done(await paymentsApi.confirm(r.paymentIntentId, { email: email.value.trim() || undefined }))
+      if (mode.value === 'STRIPE') {
+        if (!stripe || !elements) return
+        const submitted = await elements.submit()
+        if (submitted.error) { ui.toast(submitted.error.message ?? t('tickets.errors.paymentIncomplete'), 'error'); return }
+        const res = await stripe.confirmPayment({ elements, redirect: 'if_required', confirmParams: { return_url: window.location.href } })
+        if (res.error) { ui.toast(res.error.message ?? t('tickets.errors.paymentIncomplete'), 'error'); return }
+        if (res.paymentIntent?.status !== 'succeeded') { ui.toast(t('tickets.errors.paymentIncomplete'), 'error'); return }
+        await issue(o, res.paymentIntent.id)
       } else {
-        await done(await ticketsApi.buy(o.event.id, { qtyAdult: o.adult, qtyChild: o.child, email: email.value.trim() || undefined }))
+        await issue(o)
       }
     } catch (err) {
-      const key = cardErrorKey(err)
-      ui.toast(key ? t(key) : errorText(err), 'error')
+      ui.toast(errorText(err), 'error')
     } finally {
       paying.value = false
     }
   }
-  return { order, email, method, paying, total, lines, card, pay }
+  return { order, email, method, paying, total, lines, pay, mode, prepareError, prepare, setCardEl, cardReady }
 }

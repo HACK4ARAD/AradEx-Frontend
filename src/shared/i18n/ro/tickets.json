@@ -9,7 +9,6 @@
   "total": "Total",
   "continueToPay": "Continuă spre plată",
   "webPayNote": "Plată demonstrativă. Biletul apare în „Contul meu › Bilete” cu cod QR.",
-  "webPayNoteCard": "Plată cu cardul prin Stripe, în mod test (nu se încasează bani). Biletul apare în „Contul meu › Bilete” cu cod QR.",
   "freeEntry": "Intrare liberă",
   "externalNote": "Biletele cumpărate acolo nu apar în aplicație.",
   "count": "0 bilete | 1 bilet | {n} bilete",
@@ -21,6 +20,10 @@
     "soldOut": "Nu mai sunt bilete.",
     "continue": "Continuă spre plată",
     "ended": "Evenimentul s-a încheiat.",
+    "paymentUsed": "Plata asta a fost deja folosită pentru un bilet.",
+    "paymentMismatch": "Plata nu se potrivește cu comanda. Încearcă din nou.",
+    "paymentIncomplete": "Plata nu s-a finalizat. Verifică datele cardului.",
+    "paymentUnavailable": "Plata cu cardul nu e disponibilă acum. Încearcă din nou peste puțin timp.",
     "dateTime": "Data și ora",
     "lastSpots": "Ultimele {n} bilete"
   },
@@ -40,7 +43,9 @@
     "drawerTitle": "Plată demonstrativă",
     "drawerNote": "Nu se procesează bani. Prin plată accepți condițiile organizatorului.",
     "confirmedToast": "Rezervarea e confirmată. Am trimis o copie pe e-mail.",
-    "stripe": {"title": "Card (Stripe · mod test)", "loading": "Se încarcă formularul de card…", "loadError": "Formularul de card nu s-a putut încărca. Verifică conexiunea și reîncearcă.", "notReady": "Formularul de card nu e gata încă.", "testNote": "Mod test Stripe: nu se încasează bani. Folosește cardul de test {card}, orice dată din viitor, orice CVC.", "processing": "Plata se procesează încă. Biletul apare în Biletele mele imediat ce Stripe o confirmă.", "refunded": "Locurile s-au epuizat între timp: plata a fost returnată automat.", "unavailable": "Plata cu cardul nu e disponibilă acum. Reîncearcă în câteva minute.", "note": "Plata cu cardul se face prin Stripe, în mod test. Prin plată accepți condițiile organizatorului."}
+    "stripeTitle": "Plată cu cardul",
+    "stripeTestNote": "Mod de test Stripe: nu se încasează bani. Card de test: 4242 4242 4242 4242, orice dată din viitor, orice CVC.",
+    "stripeLoadError": "Nu am putut încărca plata cu cardul. Verifică conexiunea și încearcă din nou."
   },
   "confirm": {
     "paid": "Rezervarea e confirmată",

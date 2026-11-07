@@ -9,7 +9,6 @@
   "total": "Total",
   "continueToPay": "Continue to payment",
   "webPayNote": "Demo payment. The ticket appears under “My account › Tickets” with a QR code.",
-  "webPayNoteCard": "Card payment through Stripe, in test mode (no money is charged). The ticket appears under “My account › Tickets” with a QR code.",
   "freeEntry": "Free entry",
   "externalNote": "Tickets bought there don't appear in the app.",
   "count": "0 tickets | 1 ticket | {n} tickets",
@@ -21,6 +20,10 @@
     "soldOut": "No tickets left.",
     "continue": "Continue to payment",
     "ended": "The event has ended.",
+    "paymentUsed": "This payment was already used for a ticket.",
+    "paymentMismatch": "The payment doesn't match the order. Please try again.",
+    "paymentIncomplete": "The payment didn't go through. Check the card details.",
+    "paymentUnavailable": "Card payment isn't available right now. Try again in a moment.",
     "dateTime": "Date and time",
     "lastSpots": "Last {n} tickets"
   },
@@ -40,7 +43,9 @@
     "drawerTitle": "Demo payment",
     "drawerNote": "No money is processed. By paying you accept the organiser's terms.",
     "confirmedToast": "Your booking is confirmed. We emailed you a copy.",
-    "stripe": {"title": "Card (Stripe · test mode)", "loading": "Loading the card form…", "loadError": "The card form could not load. Check your connection and try again.", "notReady": "The card form isn't ready yet.", "testNote": "Stripe test mode: no money is charged. Use the test card {card}, any future date, any CVC.", "processing": "The payment is still processing. Your ticket appears in My tickets as soon as Stripe confirms it.", "refunded": "The spots sold out in the meantime: your payment was refunded automatically.", "unavailable": "Card payment isn't available right now. Try again in a few minutes.", "note": "Card payment goes through Stripe, in test mode. By paying you accept the organiser's terms."}
+    "stripeTitle": "Card payment",
+    "stripeTestNote": "Stripe test mode: no money is charged. Test card: 4242 4242 4242 4242, any future date, any CVC.",
+    "stripeLoadError": "We couldn't load the card payment. Check your connection and try again."
   },
   "confirm": {
     "paid": "Your booking is confirmed",

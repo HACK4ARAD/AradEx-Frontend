@@ -4,7 +4,6 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { usePaymentMode } from '@/shared/composables/usePaymentMode'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import TicketQtyRows from '@/shared/components/tickets/TicketQtyRows.vue'
 import { useEventDetail } from '@/shared/composables/useEventDetail'
@@ -14,7 +13,6 @@ import { useTicketPick } from '@/shared/composables/useTicketOrder'
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-const { cardOn } = usePaymentMode()
 const fmt = useEventFormat()
 const id = computed(() => Number(route.params.id))
 const { event: e, loading, notFound, reload } = useEventDetail(id)
@@ -55,7 +53,7 @@ const alert = 'flex gap-2 items-start px-3 py-2.5 rounded-[12px] bg-bad-soft tex
       <button type="button" class="w-full min-h-12 mt-4 rounded-[14px] bg-ink text-white text-[15px] font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-45" :disabled="blocked" @click="next">
         <AppIcon name="lock" :size="20" />{{ t('tickets.pick.continue') }}
       </button>
-      <p class="text-muted text-[12px] text-center mt-2 mb-0">{{ cardOn ? t('tickets.webPayNoteCard') : t('tickets.webPayNote') }}</p>
+      <p class="text-muted text-[12px] text-center mt-2 mb-0">{{ t('tickets.webPayNote') }}</p>
     </div>
   </div>
 </template>
