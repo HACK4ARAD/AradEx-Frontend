@@ -1,1 +1,23 @@
-{}
+{
+  "search": "Caută pe hartă",
+  "period": { "today": "Azi", "weekend": "Weekend", "week": "7 zile" },
+  "kind": { "all": "Toate", "event": "Evenimente", "place": "Obiective", "offer": "Oferte", "action": "Acțiuni" },
+  "kindLabel": { "event": "Eveniment", "place": "Obiectiv", "offer": "Firmă parteneră", "action": "Acțiune comunitară" },
+  "guide": "Ghid virtual · {n} puncte",
+  "offers": "nicio ofertă | o ofertă | {n} oferte",
+  "points": "puncte",
+  "showRoute": "Arată traseul",
+  "open": "Deschide",
+  "googleMaps": "Google Maps",
+  "foot": "Pe jos",
+  "car": "Cu mașina",
+  "routeInfo": "{min} min · {km}",
+  "approximate": "Traseu aproximativ (în linie dreaptă)",
+  "fromCenter": "De la centrul Aradului: permite locația ca să pornești de unde ești.",
+  "zoomIn": "Mărește",
+  "zoomOut": "Micșorează",
+  "myLocation": "Locația mea",
+  "close": "Închide",
+  "notFound": "Locul nu mai e pe hartă (s-a încheiat sau a fost scos).",
+  "loading": "Se încarcă harta…"
+}
