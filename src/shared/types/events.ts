@@ -12,10 +12,12 @@ export interface EventSummary {
   lat: number; lng: number; imageUrl?: string; ticketType: TicketType; priceFrom?: number; isHot: boolean; isDemo: boolean
   participantsCount: number; organizerName: string; organizerType: OrganizerType; distanceKm?: number; saved?: boolean
   ratingAvg?: number; ratingCount: number
+  /** Locurile (null / lipsă = fără limită): cardul arată „Gratuit · înscriere” și „Bilete epuizate”. */
+  capacity?: number; spotsLeft?: number
 }
 export interface EventDto extends EventSummary {
   description: string; address?: string; placeId?: number; organizerBusinessId?: number
-  priceAdult?: number; priceChild?: number; externalUrl?: string; capacity?: number; spotsLeft?: number
+  priceAdult?: number; priceChild?: number; externalUrl?: string
   savesCount: number; status: EventStatus; imageCredit?: string
 }
 /** GET /events — listele se trimit ca CSV (`category=CONCERT,THEATRE`). Fără `from`: doar ce nu s-a terminat. */

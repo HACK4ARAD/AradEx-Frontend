@@ -30,13 +30,12 @@ export function useEventDetail(id: Ref<number>) {
   return { event, loading, notFound, error, reload: load }
 }
 
-/** „Trimite”: meniul nativ de distribuire sau, unde nu există, linkul copiat. */
+/** „Trimite”: meniul nativ de distribuire; dacă nu există sau nu merge (WebView, desktop fără share), linkul se copiază. */
 export async function shareLink(title: string, url: string): Promise<'shared' | 'copied' | 'none'> {
-  try {
-    if (navigator.share) { await navigator.share({ title, url }); return 'shared' }
-    await navigator.clipboard.writeText(url)
-    return 'copied'
-  } catch {
-    return 'none'
+  if (navigator.share) {
+    try { await navigator.share({ title, url }); return 'shared' } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return 'none' // omul a închis meniul
+    }
   }
+  try { await navigator.clipboard.writeText(url); return 'copied' } catch { return 'none' }
 }
