@@ -14,15 +14,26 @@ const auth = useAuthStore()
 const ui = useUiStore()
 const { t, locale } = useI18n()
 
-// Site-ul de prezentare (T20): secțiunile prezentării + Comunitate; paginile publice ale aplicației sunt doar în aplicația mobilă
-const topNav = computed(() => [
-  { to: '/#features', label: t('site.nav.features') },
-  { to: '/community', label: t('site.nav.community') },
-  { to: '/#panels', label: t('site.nav.panels') },
-])
+// Site-ul de prezentare (T20): secțiunile prezentării + Comunitate. T23: un cont personal conectat (Vizitator / Localnic)
+// vede în schimb paginile aplicației: evenimente, hartă, oferte, comunitate, contul meu.
+const personal = computed(() => auth.user?.role === 'VISITOR' || auth.user?.role === 'LOCAL')
+const topNav = computed(() => personal.value
+  ? [
+      { to: '/', label: t('nav.personal.home') },
+      { to: '/events', label: t('nav.personal.events') },
+      { to: '/map', label: t('nav.personal.map') },
+      { to: '/offers', label: t('nav.personal.offers') },
+      { to: '/community', label: t('nav.personal.community') },
+      { to: '/account', label: t('nav.personal.account') },
+    ]
+  : [
+      { to: '/#features', label: t('site.nav.features') },
+      { to: '/community', label: t('site.nav.community') },
+      { to: '/#panels', label: t('site.nav.panels') },
+    ])
 /** Titlul paginii din bara panoului, în limba curentă (se recalculează și când se schimbă limba). */
 const pageTitle = computed(() => { void locale.value; return routeTitle(route) })
-const navActive = (to: string) => !to.includes('#') && route.path.startsWith(to)
+const navActive = (to: string) => !to.includes('#') && (to === '/' ? route.path === '/' : route.path.startsWith(to))
 
 type NavItem = { to: string; icon: string; label: string }
 type NavGroup = { title?: string; items: NavItem[] }
@@ -136,8 +147,8 @@ function toggleLocale() {
       <router-link to="/" class="font-bold text-[16px] flex items-center gap-2 no-underline text-ink shrink-0">
         <span class="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {{ t('app.name') }}
       </router-link>
-      <nav class="hidden md:flex gap-1 text-[14px] font-medium">
-        <router-link v-for="n in topNav" :key="n.to" :to="n.to" class="no-underline h-9 px-3 rounded-[10px] inline-flex items-center"
+      <nav class="hidden gap-1 text-[14px] font-medium" :class="personal ? 'lg:flex' : 'md:flex'">
+        <router-link v-for="n in topNav" :key="n.to" :to="n.to" class="no-underline h-9 px-3 rounded-[10px] inline-flex items-center whitespace-nowrap"
           :class="navActive(n.to) ? 'bg-soft text-ink font-semibold' : 'text-muted hover:text-ink'">{{ n.label }}</router-link>
       </nav>
       <div class="ml-auto flex items-center gap-2 md:gap-2.5 min-w-0">
@@ -145,18 +156,23 @@ function toggleLocale() {
           {{ locale === 'ro' ? 'RO' : 'EN' }}
         </button>
         <router-link v-if="panelLink" :to="panelLink.to" class="text-[14px] font-semibold no-underline text-ink">{{ panelLink.label }}</router-link>
-        <AppButton v-if="!auth.isLoggedIn" variant="ghost" size="sm" @click="router.push('/login')">{{ t('site.nav.enterPanel') }}</AppButton>
+        <AppButton v-if="!auth.isLoggedIn" variant="ghost" size="sm" @click="router.push('/login')">{{ t('site.nav.login') }}</AppButton>
         <template v-else>
           <span class="w-8 h-8 rounded-full bg-ink text-white text-[12px] font-bold flex items-center justify-center">{{ auth.user?.displayName.charAt(0) }}</span>
-          <span class="text-[14px] font-semibold hidden md:inline">{{ auth.user?.displayName }}</span>
-          <span class="text-[12px] text-muted hidden lg:inline">· {{ t(`auth.role.${auth.user?.role}`) }}</span>
+          <span class="text-[14px] font-semibold hidden xl:inline whitespace-nowrap">{{ auth.user?.displayName }}</span>
+          <span class="text-[12px] text-muted hidden xl:inline whitespace-nowrap">· {{ t(`auth.role.${auth.user?.role}`) }}</span>
           <AppButton variant="ghost" size="sm" icon="logout" @click="logout">{{ t('nav.logout') }}</AppButton>
         </template>
-        <router-link to="/#download" class="hidden sm:inline-flex h-10 px-4 rounded-[12px] bg-ink text-white text-[14px] font-semibold items-center gap-1.5 no-underline shrink-0">
+        <router-link v-if="!personal" to="/#download" class="hidden sm:inline-flex h-10 px-4 rounded-[12px] bg-ink text-white text-[14px] font-semibold items-center gap-1.5 no-underline shrink-0">
           <AppIcon name="download" :size="18" /> {{ t('site.nav.download') }}
         </router-link>
       </div>
     </header>
+    <!-- T23: pe telefon, navigația contului personal e un rând care se derulează sub bară -->
+    <nav v-if="personal" class="lg:hidden flex gap-1 overflow-x-auto px-3 py-2 bg-white border-b border-line sticky top-16 z-10 [scrollbar-width:none] text-[14px] font-medium">
+      <router-link v-for="n in topNav" :key="n.to" :to="n.to" class="no-underline h-9 px-3 rounded-[10px] inline-flex items-center whitespace-nowrap"
+        :class="navActive(n.to) ? 'bg-soft text-ink font-semibold' : 'text-muted'">{{ n.label }}</router-link>
+    </nav>
     <main class="flex-1 min-w-0 px-4 md:px-8 py-5 md:py-7 max-w-[1280px] mx-auto w-full">
       <router-view />
     </main>

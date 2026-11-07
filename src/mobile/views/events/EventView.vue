@@ -1,23 +1,16 @@
 <script setup lang="ts">
 // T06 · S3 Detaliu eveniment — design/final `/event/:id`: hero cu poză + credit, categorie + Popular, tipul de bilete, dată, loc, organizator,
 // descriere, „Trimite / Raportează”, bara de jos cu preț și acțiunea principală.
-import { computed, onMounted, ref, shallowRef, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/components'
 import EventImage from '@/shared/components/events/EventImage.vue'
 import NearestStop from '@/shared/components/transit/NearestStop.vue'
 import { googleCalendarUrl, useEventFormat, useSaveEvent } from '@/shared/composables/useEvents'
-import { shareLink, useEventDetail } from '@/shared/composables/useEventDetail'
+import { useEventPage } from '@/shared/composables/useEventPage'
 import { useBack } from '@/shared/composables/useBack'
 import { useUiStore } from '@/shared/stores/ui'
-import { useAuthStore } from '@/shared/stores/auth'
-import { ticketsApi } from '@/shared/api/tickets'
-import { placesApi } from '@/shared/api/places'
-import { businessApi } from '@/shared/api/business'
-import type { PlaceDto } from '@/shared/types/places'
-import type { BusinessDto } from '@/shared/types/business'
-import { cacheTicket, useMyTickets, useTicketErrors } from '@/shared/composables/useTickets'
 
 const route = useRoute()
 const router = useRouter()
@@ -27,42 +20,10 @@ const back = useBack('/')
 const fmt = useEventFormat()
 const saver = useSaveEvent()
 const id = computed(() => Number(route.params.id))
-const { event: e, loading, notFound, reload } = useEventDetail(id)
+/** Detaliul + obiectivul cu ghid (T05) + firma (T09) + biletul meu și înscrierea gratuită (T07): logica e comună cu web-ul (W6). */
+const { event: e, loading, notFound, reload, place, biz, myTicket, ended, joining, joinFree, share } = useEventPage(id)
 const extSheet = ref(false)
-const auth = useAuthStore()
-const mine = useMyTickets()
-const errorText = useTicketErrors()
-const joining = ref(false)
-/** Obiectivul legat (T05) pentru rândul „Ghid virtual” și firma organizatoare (T09) pentru „Organizat de …”. */
-const place = shallowRef<PlaceDto | null>(null)
-const biz = shallowRef<BusinessDto | null>(null)
-watch(e, async (ev) => {
-  place.value = null
-  biz.value = null
-  if (ev?.placeId) placesApi.get(ev.placeId).then((p) => { if (p.guidePoints.length) place.value = p }).catch(() => {})
-  if (ev?.organizerBusinessId) businessApi.page(ev.organizerBusinessId).then((b) => { biz.value = b.business }).catch(() => {})
-}, { immediate: true })
-onMounted(() => { if (auth.isLoggedIn) void mine.load() })
-/** T07: biletul / înscrierea mea la acest eveniment (pentru „Ești înscris · vezi codul”). */
-const myTicket = computed(() => mine.upcoming.value.find((x) => x.eventId === id.value) ?? null)
 
-/** T07: „Înscrie-te · gratuit” — înscriere directă (fără S4/S5), apoi S6. */
-async function joinFree() {
-  if (!e.value || joining.value) return
-  if (!auth.user) { await router.push({ path: '/login', query: { next: route.fullPath } }); return }
-  joining.value = true
-  try {
-    const tk = await ticketsApi.buy(e.value.id, { qtyAdult: 1, qtyChild: 0, email: auth.user.email })
-    cacheTicket(auth.user.id, tk)
-    await router.push(`/confirm/${tk.code}`)
-  } catch (err) {
-    ui.toast(errorText(err), 'error')
-  } finally {
-    joining.value = false
-  }
-}
-
-const ended = computed(() => !!e.value && new Date(e.value.endAt ?? e.value.startAt).getTime() < Date.now())
 const dur = computed(() => (e.value ? fmt.durationMin(e.value) : null))
 const info = computed(() => {
   const v = e.value
@@ -75,11 +36,6 @@ const info = computed(() => {
 })
 const showPrice = computed(() => !!e.value && (e.value.ticketType === 'IN_APP' || (e.value.ticketType === 'EXTERNAL' && !!e.value.priceFrom)))
 
-async function share() {
-  if (!e.value) return
-  const r = await shareLink(e.value.title, window.location.href)
-  if (r === 'copied') ui.toast(t('events.detail.shareCopied'))
-}
 function openExternal() {
   if (e.value?.externalUrl) window.open(e.value.externalUrl, '_blank', 'noopener')
   extSheet.value = false

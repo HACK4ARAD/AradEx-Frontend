@@ -3,59 +3,28 @@
 // („Arată codul la casă”). Dacă am deja un cod activ, butonul devine „Arată codul”.
 // T11 — plata cu puncte (design/final `offer`): oferta doar pe puncte are un singur buton verde „Plătește cu N de puncte”;
 // oferta normală cu `pointsPrice` are în plus butonul „N p”; ambele estompate dacă soldul nu ajunge (la apăsare, toast cu câte puncte ai și câte îți trebuie).
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppButton, AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/components'
 import OfferDetailBody from '@/shared/components/offers/OfferDetailBody.vue'
 import RedemptionCode from '@/shared/components/offers/RedemptionCode.vue'
 import { useBack } from '@/shared/composables/useBack'
-import { useOffer } from '@/shared/composables/useOffers'
-import { offerBadge } from '@/shared/composables/useOfferForm'
-import { earnsPoints, usePoints } from '@/shared/composables/useCommunity'
+import { useOfferClaim } from '@/shared/composables/useOfferClaim'
 import { useAuthStore } from '@/shared/stores/auth'
-import { useUiStore } from '@/shared/stores/ui'
 
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const auth = useAuthStore()
-const ui = useUiStore()
 const back = useBack('/offers')
 const id = computed(() => Number(route.params.id))
-const { offer, loading, notFound, error, redeeming, reload, redeem } = useOffer(id, t)
+// revendicarea + plata cu puncte sunt comune cu web-ul: shared/composables/useOfferClaim
+const { offer, loading, notFound, error, redeeming, reload, active, canEarn, price, pointsOnly, enough, pay, claim } = useOfferClaim(id)
 const sheet = ref(false)
-const active = computed(() => (offer.value?.myRedemption?.status === 'ISSUED' ? offer.value.myRedemption : null))
 
-/* T11: punctele mele, ca butoanele de plată să știe dacă îmi ajung */
-const pts = usePoints()
-const canEarn = computed(() => earnsPoints(auth.role))
-onMounted(() => { if (canEarn.value) void pts.load() })
-const price = computed(() => offer.value?.pointsPrice ?? 0)
-const pointsOnly = computed(() => !!offer.value && offerBadge(offer.value).kind === 'points')
-const balance = computed(() => pts.points.value?.balance ?? 0)
-const enough = computed(() => balance.value >= price.value)
-
-async function onPay() {
-  if (!auth.isLoggedIn) {
-    ui.toast(t('offers.redeem.login'))
-    router.push({ path: '/login', query: { next: route.fullPath } })
-    return
-  }
-  if (!canEarn.value) { ui.toast(t('offers.redeem.pointsLocalsOnly')); return }
-  if (!enough.value) { ui.toast(t('offers.redeem.notEnough', { have: balance.value, n: price.value }), 'error'); return }
-  if (await redeem(t('offers.redeem.paidDone', { n: price.value }), true)) { sheet.value = true; void pts.load() }
-}
-
-async function onRedeem() {
-  if (!auth.isLoggedIn) {
-    ui.toast(t('offers.redeem.login'))
-    router.push({ path: '/login', query: { next: route.fullPath } })
-    return
-  }
-  if (active.value) { sheet.value = true; return }
-  if (await redeem(t('offers.redeem.done'))) sheet.value = true
-}
+async function onPay() { if (await pay()) sheet.value = true }
+async function onRedeem() { if (await claim()) sheet.value = true }
 </script>
 
 <template>

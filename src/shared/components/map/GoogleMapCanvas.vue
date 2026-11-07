@@ -8,7 +8,7 @@ import { GOOGLE_MAP_ID, loadGoogleMaps } from '@/shared/composables/useGoogleMap
 import { fitInsets, meElement, pinElement, type MapProps } from './types'
 
 const props = withDefaults(defineProps<MapProps>(),
-  { selectedId: null, route: null, routeApproximate: false, me: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
+  { selectedId: null, route: null, routeApproximate: false, me: null, center: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
 const emit = defineEmits<{ select: [id: string | null]; failed: [] }>()
 
 const el = ref<HTMLDivElement | null>(null)
@@ -56,7 +56,7 @@ onMounted(async () => {
     const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary
     ;({ AdvancedMarkerElement: Marker } = (await google.maps.importLibrary('marker')) as google.maps.MarkerLibrary)
     if (!el.value) return
-    const center = props.me ?? ARAD_CENTER
+    const center = props.center ?? props.me ?? ARAD_CENTER
     map.value = new Map(el.value, {
       center, zoom: props.zoom, mapId: GOOGLE_MAP_ID,
       disableDefaultUI: true, clickableIcons: false, gestureHandling: 'greedy',

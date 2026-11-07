@@ -1,15 +1,26 @@
 <script setup lang="ts">
-// W0 — Conectare pe web (design/final/web.html → /login): stânga panou de prezentare, dreapta login-ul panourilor (Primărie,
-// firme, Admin) + „Înregistrează-ți firma”. T21: conturile personale intră doar în aplicația mobilă, cu telefon + cod OTP.
+// W0 — Conectare pe web (design/final/web.html → /login): stânga panou de prezentare, dreapta două tab-uri:
+// „Cont personal” (T23: Vizitator / Localnic cu telefon + cod OTP, ca în aplicație) și „Panouri” (Primărie, firme, Admin cu e-mail
+// + parolă, + „Înregistrează-ți firma”). Cu `?tab=panels` se deschide direct tab-ul panourilor (butonul „Intră în panou” din site).
 // Pagina e în afara WebLayout (fără bara de sus), ca în design. Sub 1100px rămâne doar formularul.
 import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import LoginForm from '@/shared/components/auth/LoginForm.vue'
-import { DEMO_ENABLED } from '@/shared/composables/useAuthForm'
+import PhoneLogin from '@/shared/components/auth/PhoneLogin.vue'
+import { DEMO_ENABLED, initialLoginTab } from '@/shared/composables/useAuthForm'
+import { routeRoles } from '@/router/guard'
 
 const { t } = useI18n()
+const route = useRoute()
 const panelsForm = ref<InstanceType<typeof LoginForm> | null>(null)
+const router = useRouter()
+const tab = ref<'personal' | 'panels'>(initialLoginTab(route.query.tab, route.query.next, (p) => routeRoles(router, p)))
+const demoPhones = [
+  { label: t('auth.role.VISITOR'), phone: '0799 000 001' },
+  { label: t('auth.role.LOCAL'), phone: '0799 000 002' },
+]
 
 const panels = [
   { email: 'primaria@demo.ro', icon: 'account_balance', bg: 'bg-ink', title: 'auth.panels.cityTitle', desc: 'auth.panels.cityDesc' },
@@ -53,6 +64,18 @@ function pick(email: string) {
           <span class="w-2.5 h-2.5 rounded-full bg-accent" /> {{ t('app.name') }}
         </router-link>
 
+        <div class="self-start inline-flex p-1 rounded-[14px] bg-soft max-w-full" role="tablist">
+          <button v-for="k in (['personal', 'panels'] as const)" :key="k" type="button" role="tab" :aria-selected="tab === k"
+            class="h-9 px-3.5 rounded-[10px] text-[13.5px] text-left" :class="tab === k ? 'bg-white font-semibold shadow-sm' : 'text-muted'"
+            @click="tab = k">{{ t(`auth.tabs.${k}`) }}</button>
+        </div>
+
+        <template v-if="tab === 'personal'">
+          <PhoneLogin ui="w" :demo-phones="demoPhones" />
+          <p class="text-muted text-[12.5px] m-0 mt-1">{{ t('auth.personalWeb') }}</p>
+        </template>
+
+        <template v-else>
         <LoginForm ref="panelsForm" ui="w" />
         <div v-if="DEMO_ENABLED" class="text-[13px] text-muted mt-1">{{ t('auth.panels.pick') }}</div>
         <button v-for="p in (DEMO_ENABLED ? panels : [])" :key="p.email" type="button"
@@ -64,8 +87,9 @@ function pick(email: string) {
           </span>
         </button>
         <div class="flex gap-2.5 items-start px-3.5 py-3 rounded-xl bg-[#F1F1EC] text-muted text-[12.5px] leading-normal">
-          <AppIcon name="smartphone" :size="18" /><span>{{ t('auth.panels.personal') }}</span>
+          <AppIcon name="badge" :size="18" /><span>{{ t('auth.panels.volunteers') }}</span>
         </div>
+        </template>
 
         <router-link to="/" class="self-center inline-flex items-center gap-1 text-[13px] text-muted no-underline mt-2">
           <AppIcon name="arrow_back" :size="16" /> {{ t('auth.backToSite') }}

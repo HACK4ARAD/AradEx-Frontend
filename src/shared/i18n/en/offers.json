@@ -127,5 +127,18 @@
   "claimed": {
     "title": "Claimed offers",
     "paid": "paid with {n} p"
+  },
+  "web": {
+    "title": "Offers from businesses in Arad",
+    "sub": "Claim here, show the code at the till. Some are paid with points from community actions.",
+    "points": "You have {points}. Offers marked “With points” can be paid for right here.",
+    "back": "All offers",
+    "mine": "My offers",
+    "claimTitle": "Claim the offer",
+    "claimText": "You get a QR code to show at the till from your phone. The business validates it only once.",
+    "balance": "You have {points}.",
+    "mineEmpty": "No claimed offers",
+    "mineEmptyText": "Browse the offers from partner businesses in Arad.",
+    "browse": "See offers"
   }
 }

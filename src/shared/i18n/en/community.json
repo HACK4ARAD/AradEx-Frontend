@@ -201,7 +201,18 @@
     "inApp": "You sign up from the AradExperience app",
     "boardTitle": "Leaderboard for {month}",
     "ctaTitle": "You sign up from the app",
-    "ctaText": "Download AradExperience, pick an action in the Community tab and show the QR code on site."
+    "ctaText": "Download AradExperience, pick an action in the Community tab and show the QR code on site.",
+    "register": "Sign up",
+    "myQr": "My QR",
+    "confirmed": "Confirmed +{n}",
+    "details": "Details",
+    "allBoard": "Full leaderboard",
+    "visitorTitle": "Actions are for locals",
+    "visitorText": "If you live in Arad you can sign up from the action page. Points are spent on partners' \"With points\" offers.",
+    "filterAll": "All",
+    "backToCommunity": "Community",
+    "full": "Fully booked",
+    "ended": "Ended"
   },
   "pointsType": {
     "EARN_ACTION": "Community action",
@@ -321,5 +332,17 @@
     "rejected": "Rejected",
     "note": "Show the code at the event. The City Hall representative scans it and confirms your attendance.",
     "leave": "Leave this action"
+  },
+  "account": {
+    "title": "Points & sign-ups",
+    "registrations": "My sign-ups",
+    "emptyTitle": "No sign-ups yet",
+    "emptyText": "Sign up for an action in Community and you get a QR code.",
+    "toCommunity": "See actions",
+    "history": "Points history",
+    "historyEmpty": "You have not earned any points yet.",
+    "qr": "QR",
+    "leaderboard": "Leaderboard",
+    "loadError": "We could not load your points."
   }
 }

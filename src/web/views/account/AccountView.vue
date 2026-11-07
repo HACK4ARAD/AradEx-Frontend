@@ -14,7 +14,6 @@ const menu = computed(() => [
   { to: '/account/saved', icon: 'bookmark', label: t('nav.saved') },
   ...(auth.user?.role === 'LOCAL' || auth.user?.role === 'ADMIN' ? [{ to: '/account/points', icon: 'volunteer_activism', label: t('nav.pointsAndRegistrations') }] : []),
   { to: '/account/offers', icon: 'sell', label: t('nav.myOffers') },
-  { to: '/account/itineraries', icon: 'auto_awesome', label: t('nav.itineraries') },
   { to: '/account/settings', icon: 'settings', label: t('nav.settings') },
 ])
 </script>

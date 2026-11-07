@@ -10,5 +10,15 @@
   "language": "App language",
   "roleRow": "Account role",
   "roleHint": "The role comes from the account and only an administrator can change it.",
-  "loggedOut": "You signed out."
+  "loggedOut": "You signed out.",
+  "settings": {
+    "title": "Settings",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "role": "Account role",
+    "language": "Language",
+    "logout": "Log out",
+    "logoutText": "You will be logged out on this device."
+  }
 }

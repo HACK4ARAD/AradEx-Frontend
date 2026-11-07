@@ -19,6 +19,8 @@ export interface MapProps {
   /** traseul e o estimare (linie dreaptă): se desenează punctat */
   routeApproximate?: boolean
   me?: GeoPoint | null
+  /** centrul inițial (implicit: `me`, altfel centrul Aradului), de ex. pinul firmei pe pagina ei */
+  center?: GeoPoint | null
   zoom?: number
   /** cât acoperă UI-ul ecranului peste hartă (sus / jos, px), ca traseul încadrat să rămână vizibil */
   insets?: { top: number; bottom: number }

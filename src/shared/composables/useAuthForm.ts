@@ -105,3 +105,16 @@ export function landingFor(role: Role, ui: Ui, next: unknown, rolesOf: (path: st
   }
   return homeFor(role, ui)
 }
+
+const PANEL_ROLES: Role[] = ['BUSINESS', 'CITY_HALL', 'ADMIN']
+
+/**
+ * T23 · tab-ul cu care se deschide W0: `?tab=` dacă e dat; altfel „Panouri” când `?next=` e o pagină de panou
+ * (sesiune expirată pe `/city/...`: angajatul nu trebuie să ajungă la login-ul cu telefon), altfel „Cont personal”.
+ */
+export function initialLoginTab(tab: unknown, next: unknown, rolesOf: (path: string) => Role[] | undefined | null): 'personal' | 'panels' {
+  if (tab === 'panels' || tab === 'personal') return tab
+  const target = safeNext(next)
+  const roles = target ? rolesOf(target) : null
+  return roles?.length && roles.every((r) => PANEL_ROLES.includes(r)) ? 'panels' : 'personal'
+}

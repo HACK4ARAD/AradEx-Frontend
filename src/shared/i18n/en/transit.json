@@ -12,5 +12,13 @@
     "lines": "Lines {lines}",
     "noLive": "No live data right now",
     "noArrivals": "No arrivals coming up"
+  },
+  "layer": "Transit",
+  "card": {
+    "stop": "CTP stop",
+    "vehicle": "Live now",
+    "delay": "{n} min late",
+    "onTime": "On time",
+    "nextStop": "Next stop: {name}"
   }
 }

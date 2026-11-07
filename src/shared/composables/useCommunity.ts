@@ -68,6 +68,36 @@ export const spotsLeft = (a: Pick<ActionSummary, 'capacity' | 'registeredCount'>
 /** O înscriere activă (nu anulată / respinsă). */
 export const isActiveRegistration = (r?: RegistrationDto) => !!r && (r.status === 'REGISTERED' || r.status === 'CONFIRMED')
 
+/** Starea înscrierii pentru eticheta din liste (Contul meu, Bilete): ton + cheia i18n. */
+export function registrationPill(r: Pick<RegistrationDto, 'status'>): { tone: 'ok' | 'no' | 'pending'; key: string } {
+  if (r.status === 'CONFIRMED') return { tone: 'ok', key: 'community.tickets.confirmed' }
+  if (r.status === 'NO_SHOW') return { tone: 'no', key: 'community.tickets.rejected' }
+  if (r.status === 'CANCELLED') return { tone: 'no', key: 'community.status.CANCELLED' }
+  return { tone: 'pending', key: 'community.tickets.pending' }
+}
+
+/** Link Google Calendar fără login (FEATURES §2): ore în UTC, format YYYYMMDDTHHMMSSZ. */
+export function actionCalendarUrl(a: Pick<ActionDto, 'title' | 'startAt' | 'endAt' | 'locationName' | 'description'>): string {
+  const z = (iso: string) => new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+  const q = new URLSearchParams({ action: 'TEMPLATE', text: a.title, dates: `${z(a.startAt)}/${z(a.endAt)}`, location: a.locationName, details: a.description })
+  return `https://calendar.google.com/calendar/render?${q.toString()}`
+}
+
+/** Harta aplicației (T08), cu traseul spre acțiune. */
+export const actionMapTo = (id: number) => ({ path: '/map', query: { to: `action:${id}` } })
+
+/**
+ * Pune (sau scoate, cu `reg` gol) înscrierea mea pe acțiunea din listă și ajustează numărul de înscriși,
+ * ca lista să se actualizeze fără reîncărcare după „Mă înscriu” / „Anulează”.
+ */
+export function applyRegistration<T extends ActionSummary>(list: T[], actionId: number, reg?: RegistrationDto): T[] {
+  return list.map((a) => {
+    if (a.id !== actionId) return a
+    const delta = (isActiveRegistration(reg) ? 1 : 0) - (isActiveRegistration(a.myRegistration) ? 1 : 0)
+    return { ...a, myRegistration: reg, registeredCount: Math.max(0, a.registeredCount + delta) }
+  })
+}
+
 // ---------------------------------------------------------------- localnic / public
 
 export function useActions() {
@@ -75,6 +105,8 @@ export function useActions() {
   const actions = ref<ActionSummary[]>([])
   const loading = ref(true)
   const error = ref<unknown>(null)
+  /** acțiunea la care rulează acum o înscriere / anulare din listă (web, Comunitate) */
+  const busyId = ref<number | null>(null)
 
   async function load() {
     loading.value = true
@@ -88,7 +120,38 @@ export function useActions() {
       loading.value = false
     }
   }
-  return { actions, loading, error, load }
+
+  /** Mă înscriu direct din listă: întoarce înscrierea (cu codul pentru QR) sau null la eroare. */
+  async function register(id: number): Promise<RegistrationDto | null> {
+    busyId.value = id
+    try {
+      const r = await communityApi.register(id)
+      actions.value = applyRegistration(actions.value, id, r)
+      return r
+    } catch (e) {
+      ui.error(e)
+      if (e instanceof ApiError && e.status === 409) void load()   // poate s-a umplut între timp
+      return null
+    } finally {
+      busyId.value = null
+    }
+  }
+
+  async function cancel(id: number): Promise<boolean> {
+    busyId.value = id
+    try {
+      await communityApi.cancel(id)
+      actions.value = applyRegistration(actions.value, id, undefined)
+      return true
+    } catch (e) {
+      ui.error(e)
+      return false
+    } finally {
+      busyId.value = null
+    }
+  }
+
+  return { actions, loading, error, busyId, load, register, cancel }
 }
 
 export function useAction(id: Ref<number>) {
@@ -152,11 +215,26 @@ export function useMyRegistrations() {
   const ui = useUiStore()
   const items = ref<RegistrationDto[]>([])
   const loading = ref(true)
+  const cancelling = ref(false)
   async function load() {
     loading.value = true
     try { items.value = await communityApi.myRegistrations() } catch (e) { ui.error(e) } finally { loading.value = false }
   }
-  return { items, loading, load }
+  /** Renunț la înscriere (web, Contul meu · Puncte): scoate înscrierea din listă; false la eroare. */
+  async function cancel(actionId: number): Promise<boolean> {
+    cancelling.value = true
+    try {
+      await communityApi.cancel(actionId)
+      items.value = items.value.filter((r) => r.actionId !== actionId)
+      return true
+    } catch (e) {
+      ui.error(e)
+      return false
+    } finally {
+      cancelling.value = false
+    }
+  }
+  return { items, loading, cancelling, load, cancel }
 }
 
 export function usePoints() {
@@ -180,10 +258,20 @@ export function useLeaderboard(period: Ref<LeaderboardPeriod>) {
   const ui = useUiStore()
   const board = ref<LeaderboardDto | null>(null)
   const loading = ref(true)
+  let seq = 0
   async function load() {
+    const mine = ++seq
     loading.value = true
-    // la eroare `board` devine null, ca ecranul să arate starea de eroare (nu „nimeni n-a câștigat puncte”)
-    try { board.value = await communityApi.leaderboard(period.value) } catch (e) { board.value = null; ui.error(e) } finally { loading.value = false }
+    // la eroare `board` devine null, ca ecranul să arate starea de eroare (nu „nimeni n-a câștigat puncte”);
+    // un răspuns întârziat (altă perioadă aleasă între timp) se ignoră
+    try {
+      const b = await communityApi.leaderboard(period.value)
+      if (mine === seq) board.value = b
+    } catch (e) {
+      if (mine === seq) { board.value = null; ui.error(e) }
+    } finally {
+      if (mine === seq) loading.value = false
+    }
   }
   watch(period, load)
   return { board, loading, load }

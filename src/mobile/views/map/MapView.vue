@@ -1,83 +1,34 @@
 <script setup lang="ts">
 // T08 · S7 — harta (design/final mobile „Hartă”): pe tot ecranul, căutare, Azi / Weekend / 7 zile, tipuri, pinii aplicației;
 // pin → card jos cu „Arată traseul” (OSRM, pe jos / mașină) și „Deschide”. `?to=event:5` (din „Indicații”) deschide direct traseul.
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
-import MapView, { type MapMarker } from '@/shared/components/map/MapView.vue'
-import { filterItems, parseTarget, useMapData, type MapKind, type MapPeriod } from '@/shared/composables/useMapData'
-import { fetchDirections, googleMapsUrl, type Directions, type TravelMode } from '@/shared/composables/useDirections'
-import { useGeo } from '@/shared/composables/useGeo'
+import TransitPinCard from '@/shared/components/transit/TransitPinCard.vue'
+import MapView from '@/shared/components/map/MapView.vue'
+import { MAP_KINDS as kinds, MAP_PERIODS as periods, useMapScreen } from '@/shared/composables/useMapScreen'
+import { googleMapsUrl } from '@/shared/composables/useDirections'
 import { useFormat } from '@/shared/composables/useFormat'
 import { useAuthStore } from '@/shared/stores/auth'
-import { useUiStore } from '@/shared/stores/ui'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
-const ui = useUiStore()
 const f = useFormat()
-const geo = useGeo()
 
-const period = ref<MapPeriod>('today')
-const kind = ref<'all' | MapKind>('all')
-const target = ref<string | null>(parseTarget(route.query.to))
-const selected = ref<string | null>(target.value)
-const mode = ref<TravelMode>('foot')
-const directions = ref<Directions | null>(null)
+// starea (perioadă, tip, pin, traseu cu routeSeq, ținta din `?to=`) e comună cu harta de pe web: shared/composables/useMapScreen
+const { geo, period, kind, selected, mode, directions, items, loading, markers, sel, selTransit, transit, routing, showRoute, select, init } = useMapScreen(route.query.to)
 const mapRef = ref<InstanceType<typeof MapView> | null>(null)
-
-const { items, loading, load, ensure } = useMapData(period)
-
-const visible = computed(() => filterItems(items.value, kind.value, target.value))
-const markers = computed<MapMarker[]>(() => visible.value.map((i) => ({ id: i.key, lat: i.lat, lng: i.lng, kind: i.kind })))
-const sel = computed(() => items.value.find((i) => i.key === selected.value) ?? null)
-const routing = computed(() => !!sel.value && target.value === sel.value.key)
 const initials = computed(() => (auth.user?.displayName ?? '').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase())
-
-const periods: MapPeriod[] = ['today', 'weekend', 'week']
-const kinds: ('all' | MapKind)[] = ['all', 'event', 'place', 'offer', 'action']
-
-// fiecare cerere de traseu are un număr; un răspuns întârziat (alt pin, alt mod, card închis) se ignoră
-let routeSeq = 0
-
-async function showRoute() {
-  const to = sel.value
-  if (!to) return
-  const seq = ++routeSeq
-  const m = mode.value
-  target.value = to.key
-  directions.value = null
-  const stale = () => seq !== routeSeq || target.value !== to.key
-  const from = await geo.locate()
-  if (stale()) return
-  const d = await fetchDirections(from, to, m)
-  if (!stale()) directions.value = d
-}
-
-function select(id: string | null) {
-  selected.value = id
-  if (id !== target.value) { routeSeq++; target.value = null; directions.value = null }
-}
 
 async function myLocation() {
   const p = await geo.locate()
   mapRef.value?.flyTo(p, 16)
 }
 
-watch(mode, () => { if (routing.value) void showRoute() })
-// pinul selectat a dispărut (altă perioadă): închidem cardul și traseul, să nu rămână o linie fără destinație
-watch(sel, (s) => { if (!s && selected.value) select(null) })
-
-onMounted(async () => {
-  await load()
-  if (!target.value) return
-  // ținta poate fi în afara perioadei afișate (un bilet de săptămâna viitoare): ensure o aduce și o ține pe hartă
-  if (await ensure(target.value)) { selected.value = target.value; await showRoute() }
-  else { ui.toast(t('map.notFound'), 'info'); target.value = null; selected.value = null }
-})
+onMounted(init)
 </script>
 
 <template>
@@ -107,10 +58,14 @@ onMounted(async () => {
         <button v-for="k in kinds" :key="k" type="button" :aria-pressed="kind === k"
           class="h-9 px-3.5 rounded-full text-[13.5px] whitespace-nowrap shadow-[0_2px_8px_rgba(0,0,0,.1)]"
           :class="kind === k ? 'bg-ink text-white font-semibold' : 'bg-white/95 text-ink'" @click="kind = k">{{ t(`map.kind.${k}`) }}</button>
+        <button type="button" :aria-pressed="transit.on.value"
+          class="h-9 px-3.5 rounded-full text-[13.5px] whitespace-nowrap shadow-[0_2px_8px_rgba(0,0,0,.1)] inline-flex items-center gap-1"
+          :class="transit.on.value ? 'bg-[#1D5FD1] text-white font-semibold' : 'bg-white/95 text-ink'" @click="transit.on.value = !transit.on.value">
+          <AppIcon name="tram" :size="16" />{{ t('transit.layer') }}</button>
       </div>
     </div>
 
-    <div class="absolute right-4 z-[500] flex flex-col gap-2" :class="!sel ? 'bottom-[130px]' : routing ? 'bottom-[456px]' : 'bottom-[300px]'">
+    <div class="absolute right-4 z-[500] flex flex-col gap-2" :class="!sel && !selTransit ? 'bottom-[130px]' : routing ? 'bottom-[456px]' : 'bottom-[300px]'">
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomIn')" @click="mapRef?.zoomBy(1)"><AppIcon name="add" /></button>
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomOut')" @click="mapRef?.zoomBy(-1)"><AppIcon name="remove" /></button>
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center text-[#1D5FD1]" :aria-label="t('map.myLocation')" @click="myLocation"><AppIcon name="my_location" fill /></button>
@@ -119,7 +74,8 @@ onMounted(async () => {
     <div v-if="loading && !items.length" class="absolute left-1/2 -translate-x-1/2 top-[180px] z-[500] px-3.5 py-2 rounded-full bg-white/95 text-[13px] text-muted shadow">{{ t('map.loading') }}</div>
 
     <!-- cardul pinului selectat, deasupra tab bar-ului -->
-    <div v-if="sel" class="absolute left-4 right-4 bottom-[110px] z-[600] bg-white rounded-[20px] p-4 shadow-[0_10px_30px_rgba(17,17,17,.18)]">
+    <TransitPinCard v-if="selTransit" :pick="selTransit" :stops="transit.stops.value" class="absolute left-4 right-4 bottom-[110px] z-[600]" @close="select(null)" />
+    <div v-else-if="sel" class="absolute left-4 right-4 bottom-[110px] z-[600] bg-white rounded-[20px] p-4 shadow-[0_10px_30px_rgba(17,17,17,.18)]">
       <div class="flex gap-3 items-start">
         <div class="w-16 h-16 rounded-[14px] shrink-0 bg-soft bg-cover bg-center" :style="sel.imageUrl ? { backgroundImage: `url('${sel.imageUrl}')` } : undefined" />
         <div class="flex-1 min-w-0">

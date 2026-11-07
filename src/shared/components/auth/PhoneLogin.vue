@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// T21 · S12 pentru conturile personale: telefon → cod OTP → (număr nou) nume + Vizitator / Localnic.
+// T21 · S12 (mobil) și W0 „Cont personal” (web, T23) pentru conturile personale: telefon → cod OTP → (număr nou) nume + Vizitator / Localnic.
 // Logica e în usePhoneLogin; aici doar ecranul. Numerele de demo 0799000xxx primesc codul pe ecran, fără SMS.
 import { computed, nextTick, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -10,10 +10,12 @@ import { DEMO_ENABLED, landingFor } from '@/shared/composables/useAuthForm'
 import { usePhoneLogin } from '@/shared/composables/usePhoneLogin'
 import type { UserDto } from '@/shared/types/auth'
 
-defineProps<{
+const props = withDefaults(defineProps<{
   /** numerele demo afișate ca scurtături (doar în dev / VITE_DEMO) */
   demoPhones?: { label: string; phone: string }[]
-}>()
+  /** aplicația: după login, fiecare rol merge acasă la el în aplicația curentă */
+  ui?: 'm' | 'w'
+}>(), { demoPhones: () => [], ui: 'm' })
 
 const { t } = useI18n()
 const router = useRouter()
@@ -28,7 +30,7 @@ const errorText = computed(() => (f.error.value ? t(f.error.value) : ''))
 async function done(u: UserDto | null) {
   if (!u) return
   ui.toast(t('auth.welcome', { name: u.displayName.split(' ')[0] }), 'success')
-  await router.replace(landingFor(u.role, 'm', route.query.next, (p) => { const r = router.resolve(p); return r.name ? r.meta.roles : null }))
+  await router.replace(landingFor(u.role, props.ui, route.query.next, (p) => { const r = router.resolve(p); return r.name ? r.meta.roles : null }))
 }
 
 async function send() {

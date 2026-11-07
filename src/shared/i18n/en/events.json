@@ -216,5 +216,22 @@
     "placesText": "Landmarks with an audio guide, restaurants and cafés with reviews from people.",
     "allPlaces": "All landmarks and venues",
     "plannerSub": "How much time you have → a plan with sights, times and a route"
+  },
+  "personalHome": {
+    "greeting": "Hi, {name}",
+    "title": "What's on in Arad?",
+    "searchPh": "Search events, concerts, shows…",
+    "search": "Search",
+    "filters": "Filters",
+    "allEvents": "All events",
+    "loadError": "We could not load the events.",
+    "mapCount": "{n} places on the map · today",
+    "openMap": "Open the map",
+    "communityTitle": "Community",
+    "communityText": "City Hall actions that earn points for locals. Points are spent at partner businesses.",
+    "allActions": "All actions",
+    "noActions": "No actions scheduled right now.",
+    "offersTitle": "Offers in Arad",
+    "allOffers": "All offers"
   }
 }

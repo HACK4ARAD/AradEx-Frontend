@@ -1,5 +1,6 @@
 import type { RouteLocation, RouteLocationRaw, RouteRecordRaw } from 'vue-router'
 import type { Logins } from './guard'
+import type { Role } from '@/shared/types/common'
 
 /** Linkurile vechi de panou (`/w/city/…`, de exemplu din bookmark-uri) duc la aceeași cale fără prefix. */
 function stripPrefix(to: RouteLocation): RouteLocationRaw {
@@ -11,8 +12,11 @@ function stripPrefix(to: RouteLocation): RouteLocationRaw {
  * Web-ul (build-ul `npm run build`, aradexperience.site) = site-ul de prezentare al aplicației mobile + panourile (Primărie,
  * firme, Admin), fără prefix în URL. Nu conține nimic din aplicația mobilă (build separat, `npm run build:mobile`).
  */
-/** Login-ul panourilor (W0). */
+/** Login-ul (W0): conturile personale (telefon + cod) și panourile. */
 export const WEB_LOGINS: Logins = { names: ['w-login'] }
+
+/** T23: paginile aplicației pe web, pentru conturile personale conectate (Adminul are voie peste tot). */
+const PERSONAL: Role[] = ['VISITOR', 'LOCAL']
 
 export const webRoutes: RouteRecordRaw[] = [
   // W0: pagină întreagă, fără WebLayout (ca în design/final/web.html)
@@ -23,6 +27,31 @@ export const webRoutes: RouteRecordRaw[] = [
     children: [
       { path: '', name: 'w-landing', component: () => import('@/web/views/home/LandingView.vue'), meta: { title: 'Acasă', screen: 'W1', task: 'T20' } },
       { path: 'community', name: 'w-community', component: () => import('@/web/views/community/CommunityView.vue'), meta: { title: 'Comunitate', screen: 'W12', task: 'T11' } },
+      { path: 'community/actions/:id', name: 'w-action', component: () => import('@/web/views/community/ActionView.vue'), meta: { title: 'Acțiune comunitară', screen: 'W12', task: 'T23' } },
+      { path: 'community/leaderboard', name: 'w-leaderboard', component: () => import('@/web/views/community/LeaderboardView.vue'), meta: { title: 'Clasament', screen: 'W12', task: 'T23' } },
+      { path: 'businesses/:id', name: 'w-business-page', component: () => import('@/web/views/business/BusinessView.vue'), meta: { title: 'Firmă', screen: 'W15', task: 'T23' } },
+      // T23 · web-ul pentru conturile personale conectate (ca în aplicație): evenimente + bilete, hartă, oferte, contul meu
+      { path: 'events', name: 'w-events', component: () => import('@/web/views/events/EventsView.vue'), meta: { title: 'Evenimente', screen: 'W5', task: 'T23', roles: PERSONAL } },
+      { path: 'events/:id', name: 'w-event', component: () => import('@/web/views/events/EventView.vue'), meta: { title: 'Eveniment', screen: 'W6', task: 'T23', roles: PERSONAL } },
+      { path: 'events/:id/tickets', name: 'w-event-tickets', component: () => import('@/web/views/tickets/TicketPickView.vue'), meta: { title: 'Alege biletele', screen: 'W6', task: 'T23', roles: PERSONAL } },
+      { path: 'checkout', name: 'w-checkout', component: () => import('@/web/views/tickets/CheckoutView.vue'), meta: { title: 'Plată', screen: 'W6', task: 'T23', roles: PERSONAL } },
+      { path: 'confirm/:code', name: 'w-confirm', component: () => import('@/web/views/tickets/ConfirmView.vue'), meta: { title: 'Rezervarea e confirmată', screen: 'W6', task: 'T23', roles: PERSONAL } },
+      { path: 'tickets', redirect: '/account/tickets' },
+      { path: 'tickets/:code', name: 'w-ticket', component: () => import('@/web/views/tickets/TicketView.vue'), meta: { title: 'Bilet', screen: 'W14', task: 'T23', roles: PERSONAL } },
+      { path: 'map', name: 'w-map', component: () => import('@/web/views/map/MapView.vue'), meta: { title: 'Hartă', screen: 'W9', task: 'T23', roles: PERSONAL } },
+      { path: 'offers', name: 'w-offers', component: () => import('@/web/views/offers/OffersView.vue'), meta: { title: 'Oferte', screen: 'W11', task: 'T23', roles: PERSONAL } },
+      { path: 'offers/:id', name: 'w-offer', component: () => import('@/web/views/offers/OfferView.vue'), meta: { title: 'Ofertă', screen: 'W11', task: 'T23', roles: PERSONAL } },
+      {
+        path: 'account', component: () => import('@/web/views/account/AccountView.vue'), meta: { roles: PERSONAL, screen: 'W14', task: 'T23' },
+        children: [
+          { path: '', redirect: '/account/tickets' },
+          { path: 'tickets', name: 'w-account-tickets', component: () => import('@/web/views/account/AccountTicketsView.vue'), meta: { title: 'Biletele mele' } },
+          { path: 'saved', name: 'w-account-saved', component: () => import('@/web/views/account/AccountSavedView.vue'), meta: { title: 'Salvate' } },
+          { path: 'points', name: 'w-account-points', component: () => import('@/web/views/account/AccountPointsView.vue'), meta: { title: 'Puncte & înscrieri' } },
+          { path: 'offers', name: 'w-account-offers', component: () => import('@/web/views/account/AccountOffersView.vue'), meta: { title: 'Ofertele mele' } },
+          { path: 'settings', name: 'w-account-settings', component: () => import('@/web/views/account/AccountSettingsView.vue'), meta: { title: 'Setări' } },
+        ],
+      },
       { path: 'privacy', name: 'w-privacy', component: () => import('@/web/views/legal/PrivacyView.vue'), meta: { title: 'Confidențialitate', task: 'T20' } },
       // Panou firmă (W4): o rută + un view pe secțiune; `:sub?` = new / :id pentru formulare
       {

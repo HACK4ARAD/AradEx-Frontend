@@ -9,7 +9,7 @@ import { ARAD_CENTER } from '@/shared/composables/useGeo'
 import { fitInsets, type MapMarker, type MapProps } from './types'
 
 const props = withDefaults(defineProps<MapProps>(),
-  { selectedId: null, route: null, routeApproximate: false, me: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
+  { selectedId: null, route: null, routeApproximate: false, me: null, center: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
 
 const emit = defineEmits<{ select: [id: string | null] }>()
 
@@ -68,7 +68,7 @@ function drawMe() {
 
 onMounted(() => {
   if (!el.value) return
-  const center = props.me ?? ARAD_CENTER
+  const center = props.center ?? props.me ?? ARAD_CENTER
   map.value = L.map(el.value, { zoomControl: false, attributionControl: true }).setView([center.lat, center.lng], props.zoom)
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 16,

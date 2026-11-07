@@ -4,7 +4,8 @@
     "community": "Community",
     "panels": "For businesses & City Hall",
     "download": "Get the app",
-    "enterPanel": "Open the dashboard"
+    "enterPanel": "Open the dashboard",
+    "login": "Sign in"
   },
   "hero": {
     "kicker": "The Arad city app",
@@ -20,12 +21,30 @@
   },
   "features": {
     "title": "What you can do with the app",
-    "events": { "title": "Events and tickets", "text": "What's on today, this weekend or this week. Buy the ticket in the app and get in with the QR code." },
-    "guide": { "title": "Virtual guide", "text": "The Fortress, the Cultural Palace, the Classic Theatre and more, explained stop by stop, in text and audio." },
-    "offers": { "title": "Local offers", "text": "Cafés, producers and wineries in Arad. Claim an offer and get a code to show at the counter." },
-    "community": { "title": "Community and points", "text": "Sign up for City Hall actions, earn points when you're confirmed and spend them at partner businesses." },
-    "transport": { "title": "Public transport", "text": "Tram lines and the full route to where you want to go, with the stops on the map." },
-    "ai": { "title": "AI assistant and day plan", "text": "Ask what to do with the kids this weekend or get a one-day plan for Arad, with times and a route." }
+    "events": {
+      "title": "Events and tickets",
+      "text": "What's on today, this weekend or this week. Buy the ticket in the app and get in with the QR code."
+    },
+    "guide": {
+      "title": "Virtual guide",
+      "text": "The Fortress, the Cultural Palace, the Classic Theatre and more, explained stop by stop, in text and audio."
+    },
+    "offers": {
+      "title": "Local offers",
+      "text": "Cafés, producers and wineries in Arad. Claim an offer and get a code to show at the counter."
+    },
+    "community": {
+      "title": "Community and points",
+      "text": "Sign up for City Hall actions, earn points when you're confirmed and spend them at partner businesses."
+    },
+    "transport": {
+      "title": "Public transport",
+      "text": "Tram lines and the full route to where you want to go, with the stops on the map."
+    },
+    "ai": {
+      "title": "AI assistant and day plan",
+      "text": "Ask what to do with the kids this weekend or get a one-day plan for Arad, with times and a route."
+    }
   },
   "now": {
     "title": "Now in Arad",
@@ -46,15 +65,34 @@
     },
     "soonTitle": "The list of actions and the leaderboard will show up here soon",
     "soonText": "Until then you'll find them in the app, in the Community tab on Home.",
-    "photos": { "plant": "Tree planting", "clean": "Clean-up", "blood": "Blood donation" }
+    "photos": {
+      "plant": "Tree planting",
+      "clean": "Clean-up",
+      "blood": "Blood donation"
+    }
   },
   "roles": {
     "title": "Who it's for",
-    "visitor": { "title": "Visitor", "text": "What to do today, guides at sights, a plan for the day." },
-    "local": { "title": "Local", "text": "Events, offers and points for what you do in the city." },
-    "business": { "title": "Local business", "text": "Offers, events and announcements, code validation." },
-    "city": { "title": "City Hall", "text": "The city agenda, community actions, sights and guides." },
-    "volunteer": { "title": "Volunteer", "text": "Scan participants at actions, right from the app." }
+    "visitor": {
+      "title": "Visitor",
+      "text": "What to do today, guides at sights, a plan for the day."
+    },
+    "local": {
+      "title": "Local",
+      "text": "Events, offers and points for what you do in the city."
+    },
+    "business": {
+      "title": "Local business",
+      "text": "Offers, events and announcements, code validation."
+    },
+    "city": {
+      "title": "City Hall",
+      "text": "The city agenda, community actions, sights and guides."
+    },
+    "volunteer": {
+      "title": "Volunteer",
+      "text": "Scan participants at actions, right from the app."
+    }
   },
   "panels": {
     "title": "City Hall or a business?",

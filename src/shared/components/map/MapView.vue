@@ -10,7 +10,7 @@ import type { MapApi, MapProps } from './types'
 export type { MapMarker } from './types'
 
 const props = withDefaults(defineProps<MapProps>(),
-  { selectedId: null, route: null, routeApproximate: false, me: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
+  { selectedId: null, route: null, routeApproximate: false, me: null, center: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
 const emit = defineEmits<{ select: [id: string | null] }>()
 
 const GoogleMapCanvas = defineAsyncComponent(() => import('./GoogleMapCanvas.vue'))

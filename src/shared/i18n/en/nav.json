@@ -53,7 +53,24 @@
     "w-admin": "Administration",
     "w-admin-content": "Content & moderation",
     "w-admin-users": "Users",
-    "w-admin-settings": "Settings"
+    "w-admin-settings": "Settings",
+    "w-action": "Community action",
+    "w-leaderboard": "Leaderboard",
+    "w-business-page": "Business",
+    "w-events": "Events",
+    "w-event": "Event",
+    "w-event-tickets": "Choose tickets",
+    "w-checkout": "Payment",
+    "w-confirm": "Booking confirmed",
+    "w-ticket": "Ticket",
+    "w-map": "Map",
+    "w-offers": "Offers",
+    "w-offer": "Offer",
+    "w-account-tickets": "My tickets",
+    "w-account-saved": "Saved",
+    "w-account-points": "Points & sign-ups",
+    "w-account-offers": "My offers",
+    "w-account-settings": "Settings"
   },
   "sidebar": {
     "groups": {
@@ -89,5 +106,13 @@
       "settings": "Settings"
     },
     "language": "Language: English (tap for Romanian)"
+  },
+  "personal": {
+    "home": "Home",
+    "events": "Events",
+    "map": "Map",
+    "offers": "Offers",
+    "community": "Community",
+    "account": "My account"
   }
 }

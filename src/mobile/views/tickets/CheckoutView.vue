@@ -1,51 +1,16 @@
 <script setup lang="ts">
 // T07 · S5 Plată — design/final `/checkout`: comanda, e-mailul pentru bilete, metoda (card salvat / nou), plată demonstrativă.
-import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState } from '@/shared/components'
-import { ticketsApi } from '@/shared/api/tickets'
 import { useEventFormat } from '@/shared/composables/useEvents'
-import { cacheTicket, orderTotal, useTicketErrors } from '@/shared/composables/useTickets'
+import { useCheckout } from '@/shared/composables/useTicketOrder'
 import { useBack } from '@/shared/composables/useBack'
-import { useAuthStore } from '@/shared/stores/auth'
-import { useTicketOrderStore } from '@/shared/stores/ticketOrder'
-import { useUiStore } from '@/shared/stores/ui'
 
-const router = useRouter()
 const { t } = useI18n()
 const fmt = useEventFormat()
-const auth = useAuthStore()
-const ui = useUiStore()
-const store = useTicketOrderStore()
-const errorText = useTicketErrors()
-const o = computed(() => store.order)
+/** Logica comună cu web-ul (W6): comanda, e-mailul, metoda, plata demonstrativă → confirmarea. */
+const { order: o, email, method, paying, total, lines, pay } = useCheckout()
 const back = useBack(o.value ? `/events/${o.value.event.id}/tickets` : '/')
-const email = ref(auth.user?.email ?? '')
-const method = ref<'saved' | 'new'>('saved')
-const paying = ref(false)
-const total = computed(() => (o.value ? orderTotal(o.value.adult, o.value.child, o.value.event.priceAdult, o.value.event.priceChild) : 0))
-const lines = computed(() => !o.value ? [] : [
-  { label: t('tickets.adult'), qty: o.value.adult, price: o.value.event.priceAdult ?? 0 },
-  { label: t('tickets.childShort'), qty: o.value.child, price: o.value.event.priceChild ?? 0 },
-].filter((l) => l.qty > 0))
-
-async function pay() {
-  if (!o.value || paying.value) return
-  // T21: emailul e opțional (conturile cu telefon); dacă e completat, trebuie să fie valid
-  if (email.value.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim())) { ui.toast(t('tickets.checkout.badEmail'), 'error'); return }
-  paying.value = true
-  try {
-    const ticket = await ticketsApi.buy(o.value.event.id, { qtyAdult: o.value.adult, qtyChild: o.value.child, email: email.value.trim() || undefined })
-    if (auth.user) cacheTicket(auth.user.id, ticket)
-    store.clear()
-    await router.replace(`/confirm/${ticket.code}`)
-  } catch (err) {
-    ui.toast(errorText(err), 'error')
-  } finally {
-    paying.value = false
-  }
-}
 </script>
 
 <template>

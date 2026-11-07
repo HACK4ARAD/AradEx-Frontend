@@ -127,5 +127,18 @@
   "claimed": {
     "title": "Oferte revendicate",
     "paid": "plătită cu {n} p"
+  },
+  "web": {
+    "title": "Oferte de la firmele din Arad",
+    "sub": "Revendici aici, arăți codul la casă. Unele se plătesc cu punctele din acțiunile comunitare.",
+    "points": "Ai {points}. Ofertele marcate „Cu puncte” le plătești direct de aici.",
+    "back": "Toate ofertele",
+    "mine": "Ofertele mele",
+    "claimTitle": "Revendică oferta",
+    "claimText": "Primești un cod cu QR pe care îl arăți la casă, de pe telefon. Firma îl validează o singură dată.",
+    "balance": "Ai {points}.",
+    "mineEmpty": "Nicio ofertă revendicată",
+    "mineEmptyText": "Vezi ofertele firmelor partenere din Arad.",
+    "browse": "Vezi ofertele"
   }
 }

@@ -62,6 +62,7 @@
     "find": "Find events",
     "offline": "Tickets also work offline.",
     "offlineShown": "You're offline — showing the tickets saved on your phone.",
+    "offlineWeb": "You are offline — showing the tickets saved in this browser.",
     "loginText": "Log in to see your tickets.",
     "webSub": "Tickets bought in the app. Those from the organiser's website are in your email.",
     "fullscreen": "Show full screen",
