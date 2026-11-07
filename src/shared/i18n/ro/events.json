@@ -233,5 +233,6 @@
     "noActions": "Nicio acțiune programată acum.",
     "offersTitle": "Oferte în Arad",
     "allOffers": "Toate ofertele"
-  }
+  },
+  "calendarPick": {"title": "Când vii?", "hint": "Programul: {open}–{close}, în fiecare zi de pe {from} până pe {to}. Alege ziua și ora; în calendar intră o vizită de 2 ore.", "day": "Ziua", "hour": "Ora", "noHours": "În ziua asta nu mai sunt ore libere. Alege altă zi.", "add": "Adaugă în calendar"}
 }

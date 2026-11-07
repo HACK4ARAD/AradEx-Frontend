@@ -4,7 +4,10 @@
  * (restricționată pe domeniu / aplicație în Google Cloud); fără ea, harta folosește rezerva Leaflet.
  */
 export const GOOGLE_MAPS_KEY = (import.meta.env.VITE_GOOGLE_MAPS_KEY as string | undefined)?.trim() || ''
-/** Map ID-ul e cerut de AdvancedMarkerElement; DEMO_MAP_ID e cel public de test al Google. */
+/**
+ * Map ID (stil din Google Cloud). Nefolosit acum: harta pune pinii cu OverlayView și ascunde locurile Google cu `styles`,
+ * care nu merg împreună cu un Map ID (vezi `GoogleMapCanvas`). Rămâne pentru un stil de hartă din consolă, dacă e nevoie.
+ */
 export const GOOGLE_MAP_ID = (import.meta.env.VITE_GOOGLE_MAPS_MAP_ID as string | undefined)?.trim() || 'DEMO_MAP_ID'
 
 let loading: Promise<void> | null = null

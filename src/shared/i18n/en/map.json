@@ -29,7 +29,8 @@
     "empty": "Nothing here",
     "emptyText": "Change the period, the type or the search.",
     "reset": "Show everything",
-    "routing": "Working out the route…"
+    "routing": "Working out the route…",
+    "transitHint": "In Transport mode the map shows only CTP stops, lines and vehicles and the bike stations. Tap a stop for arrivals, or choose “Walk” to see events and places again."
   },
   "travel": { "label": "How you get around", "foot": "On foot", "transit": "Transit", "car": "Car" },
   "layers": {

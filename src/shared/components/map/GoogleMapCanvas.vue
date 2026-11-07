@@ -1,23 +1,72 @@
 <script setup lang="ts">
-// T08 · harta cu Google Maps (Maps JavaScript API). Pinii sunt AdvancedMarkerElement cu aceleași elemente `.ax-pin`
-// ca rezerva Leaflet; traseul (OSRM) e o polilinie. Dacă scriptul Google nu se încarcă, anunță `failed` (MapView trece pe Leaflet).
+// T08 · harta cu Google Maps (Maps JavaScript API). Pinii sunt elementele `.ax-pin` (aceleași ca în rezerva Leaflet), puse pe
+// hartă cu un OverlayView și centrate exact pe coordonate; traseul (OSRM) e o polilinie. Fără Map ID: doar așa Google aplică
+// `styles`, cu care ascundem locurile Google (magazine, restaurante, stații Google…) — pe harta noastră nu se pot apăsa și
+// se amestecă cu pinii aplicației. Dacă scriptul Google nu se încarcă, anunță `failed` (MapView trece pe Leaflet).
 import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import type { GeoPoint } from '@/shared/types/common'
 import { ARAD_CENTER } from '@/shared/composables/useGeo'
-import { GOOGLE_MAP_ID, loadGoogleMaps, markGoogleUnavailable, onGoogleUnavailable } from '@/shared/composables/useGoogleMaps'
+import { loadGoogleMaps, markGoogleUnavailable, onGoogleUnavailable } from '@/shared/composables/useGoogleMaps'
 import { LINE_OPACITY, LINE_WEIGHT, fitInsets, meElement, pinElement, type MapProps } from './types'
 
 const props = withDefaults(defineProps<MapProps>(),
   { selectedId: null, route: null, routeApproximate: false, me: null, center: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
 const emit = defineEmits<{ select: [id: string | null]; failed: [] }>()
 
+/**
+ * Stilul hărții: fără locurile Google (POI — afaceri, atracții, parcuri cu pictograme) și fără stațiile Google de transport
+ * (avem stațiile CTP reale în stratul „Transport”); străzile, numele lor și apele rămân.
+ */
+const MAP_STYLES: google.maps.MapTypeStyle[] = [
+  { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+  { featureType: 'transit.station', stylers: [{ visibility: 'off' }] },
+]
+
+/** Un element HTML pe hartă, centrat pe coordonată (`map.panes`: `overlayMouseTarget` dacă se poate apăsa). */
+interface HtmlMarker { remove(): void }
+let makeMarker: ((pos: GeoPoint, content: HTMLElement, z: number, onClick?: () => void) => HtmlMarker) | null = null
+
+/** Clasa se creează după ce scriptul Google e încărcat (extinde google.maps.OverlayView). */
+function overlayFactory(map: google.maps.Map) {
+  class Overlay extends google.maps.OverlayView {
+    pos: google.maps.LatLng
+    box: HTMLDivElement
+    clickable: boolean
+    constructor(pos: GeoPoint, content: HTMLElement, z: number, onClick?: () => void) {
+      super()
+      this.pos = new google.maps.LatLng(pos.lat, pos.lng)
+      this.clickable = !!onClick
+      this.box = document.createElement('div')
+      this.box.style.cssText = `position:absolute;transform:translate(-50%,-50%);z-index:${z};${onClick ? 'cursor:pointer;' : 'pointer-events:none;'}`
+      this.box.append(content)
+      if (onClick) {
+        google.maps.OverlayView.preventMapHitsAndGesturesFrom(this.box)
+        this.box.addEventListener('click', (e) => { e.stopPropagation(); onClick() })
+      }
+      this.setMap(map)
+    }
+    onAdd() {
+      const panes = this.getPanes()
+      ;(this.clickable ? panes?.overlayMouseTarget : panes?.overlayLayer)?.append(this.box)
+    }
+    draw() {
+      const p = this.getProjection()?.fromLatLngToDivPixel(this.pos)
+      if (!p) return
+      this.box.style.left = `${p.x}px`
+      this.box.style.top = `${p.y}px`
+    }
+    onRemove() { this.box.remove() }
+    remove() { this.setMap(null) }
+  }
+  return (pos: GeoPoint, content: HTMLElement, z: number, onClick?: () => void): HtmlMarker => new Overlay(pos, content, z, onClick)
+}
+
 const el = ref<HTMLDivElement | null>(null)
 const map = shallowRef<google.maps.Map | null>(null)
-let Marker: typeof google.maps.marker.AdvancedMarkerElement | null = null
-let markers: google.maps.marker.AdvancedMarkerElement[] = []
+let markers: HtmlMarker[] = []
 let routeLine: google.maps.Polyline | null = null
 let transitLines: google.maps.Polyline[] = []
-let meMarker: google.maps.marker.AdvancedMarkerElement | null = null
+let meMarker: HtmlMarker | null = null
 
 /** Liniile straturilor (transport, parcări), sub traseul ales (zIndex mai mic). */
 function drawLines() {
@@ -29,13 +78,11 @@ function drawLines() {
 }
 
 function drawMarkers() {
-  if (!map.value || !Marker) return
-  for (const m of markers) m.map = null
+  if (!map.value || !makeMarker) return
+  for (const m of markers) m.remove()
   markers = props.markers.map((m) => {
     const sel = m.id === props.selectedId
-    const mk = new Marker!({ map: map.value, position: { lat: m.lat, lng: m.lng }, content: pinElement(m, sel), zIndex: sel ? 1000 : 1, gmpClickable: true })
-    mk.addEventListener('gmp-click', () => emit('select', m.id))
-    return mk
+    return makeMarker!({ lat: m.lat, lng: m.lng }, pinElement(m, sel), sel ? 1000 : 10, () => emit('select', m.id))
   })
 }
 
@@ -55,9 +102,9 @@ function drawRoute() {
 }
 
 function drawMe() {
-  if (!map.value || !Marker) return
-  if (meMarker) meMarker.map = null
-  meMarker = props.me ? new Marker({ map: map.value, position: props.me, content: meElement(), zIndex: 900 }) : null
+  if (!map.value || !makeMarker) return
+  meMarker?.remove()
+  meMarker = props.me ? makeMarker(props.me, meElement(), 900) : null
 }
 
 /** Cât așteptăm primele dale ale hărții; peste atât (rețea, cheie refuzată fără semnal) trecem pe Leaflet. */
@@ -70,13 +117,13 @@ onMounted(async () => {
   try {
     await loadGoogleMaps()
     const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary
-    ;({ AdvancedMarkerElement: Marker } = (await google.maps.importLibrary('marker')) as google.maps.MarkerLibrary)
     if (!el.value) return
     const center = props.center ?? props.me ?? ARAD_CENTER
     map.value = new Map(el.value, {
-      center, zoom: props.zoom, mapId: GOOGLE_MAP_ID,
+      center, zoom: props.zoom, styles: MAP_STYLES,
       disableDefaultUI: true, clickableIcons: false, gestureHandling: 'greedy',
     })
+    makeMarker = overlayFactory(map.value)
     map.value.addListener('click', () => emit('select', null))
     tilesTimer = setTimeout(() => markGoogleUnavailable(), TILES_TIMEOUT_MS)
     google.maps.event.addListenerOnce(map.value, 'tilesloaded', () => { if (tilesTimer) clearTimeout(tilesTimer); tilesTimer = null })
@@ -92,10 +139,11 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   stopWatching?.()
   if (tilesTimer) clearTimeout(tilesTimer)
-  for (const m of markers) m.map = null
+  for (const m of markers) m.remove()
   routeLine?.setMap(null)
   for (const l of transitLines) l.setMap(null)
-  if (meMarker) meMarker.map = null
+  meMarker?.remove()
+  makeMarker = null
   map.value = null
 })
 
