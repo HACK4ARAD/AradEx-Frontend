@@ -17,6 +17,8 @@
   "subtitle": "Reduceri și produse locale la firmele partenere din Arad.",
   "empty": "Nicio ofertă aici",
   "emptyText": "Alege altă categorie sau revino mai târziu.",
+  "count": "0 oferte | 1 ofertă | {n} oferte",
+  "filtered": "filtrate",
   "until": "până {date}",
   "permanent": "permanentă",
   "localBadge": "Făcut în Arad",
