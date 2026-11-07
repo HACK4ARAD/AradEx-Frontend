@@ -1,44 +1,27 @@
 <script setup lang="ts">
 // T07 · S4 Alege biletele — design/final `/event/:id/tickets`: Adult / Copil cu stepper, nota „nu trebuie printate”, total jos.
 // Pentru un eveniment gratuit cu locuri (înscriere) ecranul nu e necesar: S3 înscrie direct.
-import { computed, reactive, watch } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import { useEventDetail } from '@/shared/composables/useEventDetail'
 import { useEventFormat } from '@/shared/composables/useEvents'
-import { orderTotal } from '@/shared/composables/useTickets'
+import { useTicketPick } from '@/shared/composables/useTicketOrder'
 import { useBack } from '@/shared/composables/useBack'
-import { useTicketOrderStore } from '@/shared/stores/ticketOrder'
 
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const fmt = useEventFormat()
-const store = useTicketOrderStore()
 const id = computed(() => Number(route.params.id))
 const back = useBack(`/events/${id.value}`)
 const { event: e, loading, notFound } = useEventDetail(id)
-const qty = reactive({ adult: 1, child: 0 })
-
-watch(e, (ev) => {
-  if (ev && store.order?.event.id === ev.id) { qty.adult = store.order.adult; qty.child = store.order.child }
-}, { immediate: true })
-
-const n = computed(() => qty.adult + qty.child)
-const total = computed(() => orderTotal(qty.adult, qty.child, e.value?.priceAdult, e.value?.priceChild))
-const left = computed(() => e.value?.spotsLeft ?? null)
-const tooMany = computed(() => left.value != null && n.value > left.value)
-const ended = computed(() => !!e.value && new Date(e.value.endAt ?? e.value.startAt).getTime() < Date.now())
-const types = computed(() => [
-  { key: 'adult' as const, label: t('tickets.adult'), price: e.value?.priceAdult },
-  ...(e.value?.priceChild != null ? [{ key: 'child' as const, label: t('tickets.child'), price: e.value.priceChild }] : []),
-])
-function step(k: 'adult' | 'child', d: number) { qty[k] = Math.max(0, Math.min(10, qty[k] + d)) }
+/** Logica comună cu web-ul (W6): cantitățile, totalul, locurile rămase, comanda din store. */
+const { qty, n, total, left, tooMany, ended, kinds, step, commit } = useTicketPick(e)
+const types = computed(() => kinds.value.map((k) => ({ ...k, label: k.key === 'adult' ? t('tickets.adult') : t('tickets.child') })))
 function next() {
-  if (!e.value || n.value === 0 || tooMany.value) return
-  store.set({ event: e.value, adult: qty.adult, child: qty.child })
-  router.push('/checkout')
+  if (commit()) router.push('/checkout')
 }
 </script>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // W15 — Pagina publică a firmei (T09; design/final web.html #/businesses/:id): antet cu insigne și acțiuni, oferte (T10),
-// evenimente viitoare, anunțuri; în dreapta despre + contact. Harta din design vine cu MapView (T08).
+// evenimente viitoare, anunțuri; în dreapta harta mică cu pinul firmei (T23) + despre + contact.
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -8,7 +8,10 @@ import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import AnnouncementItem from '@/shared/components/business/AnnouncementItem.vue'
 import BusinessContact from '@/shared/components/business/BusinessContact.vue'
 import PublicEventRow from '@/shared/components/business/PublicEventRow.vue'
+import MapView from '@/shared/components/map/MapView.vue'
+import type { MapMarker } from '@/shared/components/map/types'
 import { directionsUrl, useBusinessPage } from '@/shared/composables/useBusiness'
+import { useAuthStore } from '@/shared/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,6 +20,13 @@ const id = computed(() => Number(route.params.id))
 const { data, loading, error, notFound, reload } = useBusinessPage(id)
 const b = computed(() => data.value?.business)
 const maps = computed(() => (b.value ? directionsUrl(b.value.lat, b.value.lng, b.value.address) : null))
+
+/* T23 · harta mică: pinul firmei; „Indicații” deschide traseul pe harta noastră (/map?to=offer:<id>) pentru conturile personale
+   când firma are oferte (doar atunci e pin pe hartă), altfel Google Maps */
+const auth = useAuthStore()
+const pin = computed<MapMarker | null>(() => (b.value?.lat != null && b.value.lng != null
+  ? { id: `offer:${b.value.id}`, lat: b.value.lat, lng: b.value.lng, kind: 'offer' } : null))
+const inAppRoute = computed(() => !!pin.value && !!data.value?.offers.length && auth.hasRole('VISITOR', 'LOCAL'))
 </script>
 
 <template>
@@ -62,7 +72,23 @@ const maps = computed(() => (b.value ? directionsUrl(b.value.lat, b.value.lng, b
           </div>
         </template>
       </div>
-      <BusinessContact :business="b" />
+      <aside class="flex flex-col gap-3 min-w-0">
+        <div v-if="pin" class="bg-white rounded-[16px] overflow-hidden">
+          <div class="relative isolate h-[220px] bg-soft">
+            <MapView :markers="[pin]" :selected-id="pin.id" :center="pin" :zoom="15" />
+          </div>
+          <div class="p-3 flex items-center gap-2">
+            <span class="flex-1 min-w-0 text-[13.5px] text-muted truncate">{{ b.address }}</span>
+            <router-link v-if="inAppRoute" :to="{ path: '/map', query: { to: pin.id } }" class="h-9 px-3.5 rounded-[12px] bg-ink text-white flex items-center gap-1.5 text-[13.5px] font-semibold no-underline shrink-0">
+              <AppIcon name="directions" :size="18" />{{ t('business.public.directions') }}
+            </router-link>
+            <a v-else-if="maps" :href="maps" target="_blank" rel="noopener" class="h-9 px-3.5 rounded-[12px] bg-ink text-white flex items-center gap-1.5 text-[13.5px] font-semibold no-underline shrink-0">
+              <AppIcon name="directions" :size="18" />{{ t('business.public.directions') }}
+            </a>
+          </div>
+        </div>
+        <BusinessContact :business="b" />
+      </aside>
     </div>
   </template>
 </template>

@@ -10,5 +10,15 @@
   "language": "Limba aplicației",
   "roleRow": "Rolul contului",
   "roleHint": "Rolul vine de la cont și îl poate schimba doar administratorul.",
-  "loggedOut": "Te-ai deconectat."
+  "loggedOut": "Te-ai deconectat.",
+  "settings": {
+    "title": "Setări",
+    "name": "Nume",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "role": "Rolul contului",
+    "language": "Limba",
+    "logout": "Deconectare",
+    "logoutText": "Te deconectezi de pe acest dispozitiv."
+  }
 }

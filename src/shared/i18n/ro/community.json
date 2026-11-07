@@ -188,7 +188,18 @@
     "inApp": "Te înscrii din aplicația AradExperience",
     "boardTitle": "Clasamentul lunii · {month}",
     "ctaTitle": "Te înscrii din aplicație",
-    "ctaText": "Descarcă AradExperience, alege o acțiune din tab-ul Comunitate și arată codul QR la fața locului."
+    "ctaText": "Descarcă AradExperience, alege o acțiune din tab-ul Comunitate și arată codul QR la fața locului.",
+    "register": "Mă înscriu",
+    "myQr": "QR-ul meu",
+    "confirmed": "Confirmat +{n}",
+    "details": "Detalii",
+    "allBoard": "Tot clasamentul",
+    "visitorTitle": "Acțiunile sunt pentru localnici",
+    "visitorText": "Te poți înscrie din pagina acțiunii dacă locuiești în Arad. Punctele se folosesc la ofertele „Cu puncte” ale partenerilor.",
+    "filterAll": "Toate",
+    "backToCommunity": "Comunitate",
+    "full": "Locuri epuizate",
+    "ended": "Încheiată"
   },
   "pointsType": {
     "EARN_ACTION": "Acțiune comunitară",
@@ -308,5 +319,17 @@
     "rejected": "Respins",
     "note": "Arată codul la eveniment. Reprezentantul primăriei îl scanează și îți confirmă prezența.",
     "leave": "Renunț la înscriere"
+  },
+  "account": {
+    "title": "Puncte & înscrieri",
+    "registrations": "Înscrierile mele",
+    "emptyTitle": "Nicio înscriere",
+    "emptyText": "Înscrie-te la o acțiune din Comunitate și primești un cod QR.",
+    "toCommunity": "Vezi acțiunile",
+    "history": "Istoric puncte",
+    "historyEmpty": "Încă nu ai câștigat puncte.",
+    "qr": "QR",
+    "leaderboard": "Clasament",
+    "loadError": "Nu am putut încărca punctele."
   }
 }

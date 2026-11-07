@@ -92,17 +92,24 @@ export function useOffer(id: Ref<number | null>, translate: (key: string) => str
   return { offer, loading, notFound, error, redeeming, reload: load, redeem }
 }
 
+/** Codurile active (emise, nefolosite) primele; în rest ordinea din API. */
+export function activeFirst(items: RedemptionDto[]): RedemptionDto[] {
+  return [...items].sort((a, b) => Number(b.status === 'ISSUED') - Number(a.status === 'ISSUED'))
+}
+
 /** Codurile mele (Contul meu · Ofertele mele). */
 export function useMyRedemptions() {
   const ui = useUiStore()
   const items = ref<RedemptionDto[]>([])
   const loading = ref(true)
+  const error = ref<unknown>(null)
   async function load() {
     loading.value = true
-    try { items.value = await offersApi.myRedemptions() } catch (e) { ui.error(e) } finally { loading.value = false }
+    error.value = null
+    try { items.value = await offersApi.myRedemptions() } catch (e) { error.value = e; ui.error(e) } finally { loading.value = false }
   }
   load()
-  return { items, loading, reload: load }
+  return { items, loading, error, reload: load }
 }
 
 /** Ofertele firmei (panou web W16 + panoul mobil E5). */

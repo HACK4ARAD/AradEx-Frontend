@@ -9,19 +9,15 @@ import { AppIcon } from '@/shared/components'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 import { useBack } from '@/shared/composables/useBack'
-import type { Locale } from '@/shared/i18n'
+import LocaleSwitch from '@/shared/components/profile/LocaleSwitch.vue'
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 const ui = useUiStore()
 const back = useBack('/')
 
 const initials = computed(() => (auth.user?.displayName ?? '?').split(/\s+/).map((w) => w.charAt(0)).join('').slice(0, 2).toUpperCase())
-
-function changeLocale(l: Locale) {
-  if (l !== locale.value) auth.changeLocale(l).catch((e) => ui.error(e))
-}
 
 function logout() {
   auth.logout()
@@ -98,11 +94,7 @@ onMounted(async () => {
       <div class="flex items-center gap-3 py-3.5 border-b border-line">
         <AppIcon name="language" />
         <span class="flex-1 text-[15px]">{{ t('profile.language') }}</span>
-        <div class="inline-flex gap-0.5 p-[3px] rounded-[10px] bg-bg" role="radiogroup" :aria-label="t('profile.language')">
-          <button v-for="l in (['ro', 'en'] as const)" :key="l" type="button" role="radio" :aria-checked="locale === l"
-            class="h-8 px-3 rounded-lg text-[13px] font-semibold" :class="locale === l ? 'bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]' : 'text-muted'"
-            @click="changeLocale(l)">{{ l === 'ro' ? 'Română' : 'English' }}</button>
-        </div>
+        <LocaleSwitch />
       </div>
       <div class="flex items-center gap-3 py-3.5">
         <AppIcon name="shield_person" />

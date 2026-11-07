@@ -1,83 +1,33 @@
 <script setup lang="ts">
 // T08 · S7 — harta (design/final mobile „Hartă”): pe tot ecranul, căutare, Azi / Weekend / 7 zile, tipuri, pinii aplicației;
 // pin → card jos cu „Arată traseul” (OSRM, pe jos / mașină) și „Deschide”. `?to=event:5` (din „Indicații”) deschide direct traseul.
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
-import MapView, { type MapMarker } from '@/shared/components/map/MapView.vue'
-import { filterItems, parseTarget, useMapData, type MapKind, type MapPeriod } from '@/shared/composables/useMapData'
-import { fetchDirections, googleMapsUrl, type Directions, type TravelMode } from '@/shared/composables/useDirections'
-import { useGeo } from '@/shared/composables/useGeo'
+import MapView from '@/shared/components/map/MapView.vue'
+import { MAP_KINDS as kinds, MAP_PERIODS as periods, useMapScreen } from '@/shared/composables/useMapScreen'
+import { googleMapsUrl } from '@/shared/composables/useDirections'
 import { useFormat } from '@/shared/composables/useFormat'
 import { useAuthStore } from '@/shared/stores/auth'
-import { useUiStore } from '@/shared/stores/ui'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
-const ui = useUiStore()
 const f = useFormat()
-const geo = useGeo()
 
-const period = ref<MapPeriod>('today')
-const kind = ref<'all' | MapKind>('all')
-const target = ref<string | null>(parseTarget(route.query.to))
-const selected = ref<string | null>(target.value)
-const mode = ref<TravelMode>('foot')
-const directions = ref<Directions | null>(null)
+// starea (perioadă, tip, pin, traseu cu routeSeq, ținta din `?to=`) e comună cu harta de pe web: shared/composables/useMapScreen
+const { geo, period, kind, selected, mode, directions, items, loading, markers, sel, routing, showRoute, select, init } = useMapScreen(route.query.to)
 const mapRef = ref<InstanceType<typeof MapView> | null>(null)
-
-const { items, loading, load, ensure } = useMapData(period)
-
-const visible = computed(() => filterItems(items.value, kind.value, target.value))
-const markers = computed<MapMarker[]>(() => visible.value.map((i) => ({ id: i.key, lat: i.lat, lng: i.lng, kind: i.kind })))
-const sel = computed(() => items.value.find((i) => i.key === selected.value) ?? null)
-const routing = computed(() => !!sel.value && target.value === sel.value.key)
 const initials = computed(() => (auth.user?.displayName ?? '').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase())
-
-const periods: MapPeriod[] = ['today', 'weekend', 'week']
-const kinds: ('all' | MapKind)[] = ['all', 'event', 'place', 'offer', 'action']
-
-// fiecare cerere de traseu are un număr; un răspuns întârziat (alt pin, alt mod, card închis) se ignoră
-let routeSeq = 0
-
-async function showRoute() {
-  const to = sel.value
-  if (!to) return
-  const seq = ++routeSeq
-  const m = mode.value
-  target.value = to.key
-  directions.value = null
-  const stale = () => seq !== routeSeq || target.value !== to.key
-  const from = await geo.locate()
-  if (stale()) return
-  const d = await fetchDirections(from, to, m)
-  if (!stale()) directions.value = d
-}
-
-function select(id: string | null) {
-  selected.value = id
-  if (id !== target.value) { routeSeq++; target.value = null; directions.value = null }
-}
 
 async function myLocation() {
   const p = await geo.locate()
   mapRef.value?.flyTo(p, 16)
 }
 
-watch(mode, () => { if (routing.value) void showRoute() })
-// pinul selectat a dispărut (altă perioadă): închidem cardul și traseul, să nu rămână o linie fără destinație
-watch(sel, (s) => { if (!s && selected.value) select(null) })
-
-onMounted(async () => {
-  await load()
-  if (!target.value) return
-  // ținta poate fi în afara perioadei afișate (un bilet de săptămâna viitoare): ensure o aduce și o ține pe hartă
-  if (await ensure(target.value)) { selected.value = target.value; await showRoute() }
-  else { ui.toast(t('map.notFound'), 'info'); target.value = null; selected.value = null }
-})
+onMounted(init)
 </script>
 
 <template>

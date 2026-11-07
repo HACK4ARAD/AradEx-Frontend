@@ -1,0 +1,91 @@
+import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import type { MapMarker } from '@/shared/components/map/types'
+import { filterItems, parseTarget, useMapData, type MapItem, type MapKind, type MapPeriod } from '@/shared/composables/useMapData'
+import { distanceKm, fetchDirections, type Directions, type TravelMode } from '@/shared/composables/useDirections'
+import { useGeo } from '@/shared/composables/useGeo'
+import { useUiStore } from '@/shared/stores/ui'
+import type { GeoPoint } from '@/shared/types/common'
+
+/**
+ * T08 / T23 · starea ecranului de hartă, comună aplicației (S7, harta pe tot ecranul) și web-ului (W9, listă + hartă):
+ * perioada, tipul, pinul selectat, traseul (OSRM, pe jos / mașină) și ținta din `?to=kind:id`.
+ * Fiecare cerere de traseu are un număr: un răspuns întârziat (alt pin, alt mod, card închis) se ignoră.
+ */
+export const MAP_PERIODS: MapPeriod[] = ['today', 'weekend', 'week']
+export const MAP_KINDS: ('all' | MapKind)[] = ['all', 'event', 'place', 'offer', 'action']
+
+/** Căutarea din lista web: titlu + subtitlu, fără diacritice și fără majuscule; ținta rămâne. */
+export function searchItems(items: MapItem[], q: string, keep?: string | null): MapItem[] {
+  const n = fold(q.trim())
+  if (!n) return items
+  return items.filter((i) => i.key === keep || fold(`${i.title} ${i.sub}`).includes(n))
+}
+
+function fold(s: string): string {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+}
+
+/** Lista W9: fiecare pin cu distanța față de `from` (utilizatorul sau centrul Aradului), cel mai apropiat primul. */
+export function byDistance(items: MapItem[], from: GeoPoint): { item: MapItem; km: number }[] {
+  return items.map((item) => ({ item, km: distanceKm(from, item) })).sort((a, b) => a.km - b.km)
+}
+
+export function useMapScreen(to: unknown) {
+  const { t } = useI18n()
+  const ui = useUiStore()
+  const geo = useGeo()
+
+  const period = ref<MapPeriod>('today')
+  const kind = ref<'all' | MapKind>('all')
+  const target = ref<string | null>(parseTarget(to))
+  const selected = ref<string | null>(target.value)
+  const mode = ref<TravelMode>('foot')
+  const directions = ref<Directions | null>(null)
+
+  const { items, loading, load, ensure } = useMapData(period)
+
+  const visible = computed(() => filterItems(items.value, kind.value, target.value))
+  const markers = computed<MapMarker[]>(() => toMarkers(visible.value))
+  const sel = computed(() => items.value.find((i) => i.key === selected.value) ?? null)
+  const routing = computed(() => !!sel.value && target.value === sel.value.key)
+
+  let routeSeq = 0
+
+  async function showRoute() {
+    const dest = sel.value
+    if (!dest) return
+    const seq = ++routeSeq
+    const m = mode.value
+    target.value = dest.key
+    directions.value = null
+    const stale = () => seq !== routeSeq || target.value !== dest.key
+    const from = await geo.locate()
+    if (stale()) return
+    const d = await fetchDirections(from, dest, m)
+    if (!stale()) directions.value = d
+  }
+
+  function select(id: string | null) {
+    selected.value = id
+    if (id !== target.value) { routeSeq++; target.value = null; directions.value = null }
+  }
+
+  watch(mode, () => { if (routing.value) void showRoute() })
+  // pinul selectat a dispărut (altă perioadă): închidem cardul și traseul, să nu rămână o linie fără destinație
+  watch(sel, (s) => { if (!s && selected.value) select(null) })
+
+  /** Încarcă pinii; ținta din `?to=` poate fi în afara perioadei afișate: ensure o aduce și deschide direct traseul. */
+  async function init() {
+    await load()
+    if (!target.value) return
+    if (await ensure(target.value)) { selected.value = target.value; await showRoute() }
+    else { ui.toast(t('map.notFound'), 'info'); target.value = null; selected.value = null }
+  }
+
+  return { geo, period, kind, target, selected, mode, directions, items, loading, visible, markers, sel, routing, showRoute, select, init }
+}
+
+export function toMarkers(items: MapItem[]): MapMarker[] {
+  return items.map((i) => ({ id: i.key, lat: i.lat, lng: i.lng, kind: i.kind }))
+}

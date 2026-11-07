@@ -19,5 +19,16 @@
   "myLocation": "Locația mea",
   "close": "Închide",
   "notFound": "Locul nu mai e pe hartă (s-a încheiat sau a fost scos).",
-  "loading": "Se încarcă harta…"
+  "loading": "Se încarcă harta…",
+  "web": {
+    "title": "Hartă",
+    "results": "niciun rezultat | un rezultat | {n} rezultate",
+    "sortedCenter": "sortate după distanța față de centrul Aradului",
+    "sortedYou": "sortate după distanța față de tine",
+    "list": "Rezultatele de pe hartă",
+    "empty": "Nimic aici",
+    "emptyText": "Schimbă perioada, tipul sau căutarea.",
+    "reset": "Arată tot",
+    "routing": "Se calculează traseul…"
+  }
 }

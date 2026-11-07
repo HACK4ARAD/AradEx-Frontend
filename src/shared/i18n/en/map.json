@@ -19,5 +19,16 @@
   "myLocation": "My location",
   "close": "Close",
   "notFound": "This place is no longer on the map (it ended or was removed).",
-  "loading": "Loading the map…"
+  "loading": "Loading the map…",
+  "web": {
+    "title": "Map",
+    "results": "no results | one result | {n} results",
+    "sortedCenter": "sorted by distance from Arad's centre",
+    "sortedYou": "sorted by distance from you",
+    "list": "Results on the map",
+    "empty": "Nothing here",
+    "emptyText": "Change the period, the type or the search.",
+    "reset": "Show everything",
+    "routing": "Working out the route…"
+  }
 }

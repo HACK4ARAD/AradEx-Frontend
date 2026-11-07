@@ -216,5 +216,22 @@
     "placesText": "Obiective cu ghid audio, restaurante și cafenele cu păreri de la oameni.",
     "allPlaces": "Toate obiectivele și localurile",
     "plannerSub": "Cât timp ai → program cu obiective, ore și traseu"
+  },
+  "personalHome": {
+    "greeting": "Bună, {name}",
+    "title": "Ce faci în Arad?",
+    "searchPh": "Caută evenimente, concerte, spectacole…",
+    "search": "Caută",
+    "filters": "Filtre",
+    "allEvents": "Toate evenimentele",
+    "loadError": "Nu am putut încărca evenimentele.",
+    "mapCount": "{n} locuri pe hartă · azi",
+    "openMap": "Deschide harta",
+    "communityTitle": "Comunitate",
+    "communityText": "Acțiuni ale Primăriei cu puncte pentru localnici. Punctele se folosesc la firmele partenere.",
+    "allActions": "Toate acțiunile",
+    "noActions": "Nicio acțiune programată acum.",
+    "offersTitle": "Oferte în Arad",
+    "allOffers": "Toate ofertele"
   }
 }

@@ -1,38 +1,19 @@
 <script setup lang="ts">
 // T06 · Salvate (din Profil) — design/final `/saved`: lista de EventCard sau starea goală.
-import { onMounted, ref, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import EventCard from '@/shared/components/events/EventCard.vue'
-import { eventsApi } from '@/shared/api/events'
-import { useSaveEvent } from '@/shared/composables/useEvents'
-import { useGeo } from '@/shared/composables/useGeo'
+import { useSavedEvents } from '@/shared/composables/useSavedEvents'
 import { useBack } from '@/shared/composables/useBack'
-import { useUiStore } from '@/shared/stores/ui'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useRouter } from 'vue-router'
-import type { EventSummary } from '@/shared/types/events'
 
 const { t } = useI18n()
 const back = useBack('/profile')
-const ui = useUiStore()
 const auth = useAuthStore()
 const router = useRouter()
-const saver = useSaveEvent()
-const geo = useGeo()
-const items = shallowRef<EventSummary[]>([])
-const loading = ref(true)
-
-async function load() {
-  if (!auth.isLoggedIn) { loading.value = false; return }
-  loading.value = true
-  try { items.value = await eventsApi.saved(geo.near()) } catch (err) { ui.error(err) } finally { loading.value = false }
-}
-async function toggle(e: EventSummary) {
-  await saver.toggle(e, '/login')
-  if (!e.saved) items.value = items.value.filter((x) => x.id !== e.id)
-}
-onMounted(load)
+/** Lista + scoaterea din Salvate: logica e comună cu web-ul (Contul meu › Salvate). */
+const { items, loading, toggle } = useSavedEvents()
 </script>
 
 <template>
