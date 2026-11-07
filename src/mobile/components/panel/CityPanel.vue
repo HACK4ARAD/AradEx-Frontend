@@ -8,7 +8,7 @@ import QrScanner from '@/shared/components/qr/QrScanner.vue'
 import ManualCodeForm from '@/shared/components/community/ManualCodeForm.vue'
 import ScanResultCard from '@/shared/components/community/ScanResultCard.vue'
 import { useFormat } from '@/shared/composables/useFormat'
-import { useActionRegistrations, useCityCommunity, type ScanResult } from '@/shared/composables/useCommunity'
+import { aradTodayStart, initials, useActionRegistrations, useCityCommunity, type ScanResult } from '@/shared/composables/useCommunity'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 
@@ -27,7 +27,7 @@ const busyId = ref<number | null>(null)
 
 /** Acțiunile publicate care nu s-au încheiat înainte de azi, cea mai apropiată prima. */
 const field = computed(() => {
-  const todayStart = new Date(`${f.todayIso()}T00:00:00`).getTime()
+  const todayStart = aradTodayStart(f.todayIso())
   return city.actions.value
     .filter((a) => a.status === 'PUBLISHED' && new Date(a.endAt).getTime() >= todayStart)
     .sort((a, b) => a.startAt.localeCompare(b.startAt))
@@ -69,8 +69,6 @@ async function confirmOne(id: number) {
     ui.toast(r.alreadyConfirmed ? t('community.scan.alreadyTitle', { name: r.user?.displayName ?? '' }) : t('community.scan.okTitle', { name: r.user?.displayName ?? '', n: r.pointsAwarded }), 'success')
   }
 }
-
-const initials = (name?: string) => (name ?? '?').split(' ').map((s) => s.charAt(0)).join('').slice(0, 2).toUpperCase()
 </script>
 
 <template>

@@ -8,7 +8,7 @@ import { AppButton, AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/com
 import RegistrationTicket from '@/shared/components/community/RegistrationTicket.vue'
 import { useBack } from '@/shared/composables/useBack'
 import { useFormat } from '@/shared/composables/useFormat'
-import { isActiveRegistration, isEnded, spotsLeft, useAction } from '@/shared/composables/useCommunity'
+import { directionsUrl, isActiveRegistration, isEnded, spotsLeft, useAction } from '@/shared/composables/useCommunity'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 
@@ -34,7 +34,7 @@ const more = computed(() => (a.value ? Math.max(0, a.value.registeredCount - a.v
 const isStaff = computed(() => auth.hasRole('CITY_HALL'))
 const canRegister = computed(() => auth.role === 'LOCAL' || auth.role === 'VISITOR')
 
-const mapsUrl = computed(() => (a.value ? `https://www.google.com/maps/dir/?api=1&destination=${a.value.lat},${a.value.lng}` : ''))
+const mapsUrl = computed(() => (a.value ? directionsUrl(a.value) : ''))
 /** Link Google Calendar fără login (FEATURES §2): ore în UTC, format YYYYMMDDTHHMMSSZ. */
 const calendarUrl = computed(() => {
   if (!a.value) return ''
@@ -57,10 +57,16 @@ async function onCancel() {
 async function share() {
   if (!a.value) return
   const data = { title: a.value.title, text: `${a.value.title} · ${f.dateTime(a.value.startAt)}`, url: window.location.href }
+  if (navigator.share) {
+    try { await navigator.share(data) } catch { /* închis de utilizator */ }
+    return
+  }
   try {
-    if (navigator.share) await navigator.share(data)
-    else { await navigator.clipboard.writeText(data.url); ui.toast(t('community.action.linkCopied'), 'success') }
-  } catch { /* închis de utilizator */ }
+    await navigator.clipboard.writeText(data.url)
+    ui.toast(t('community.action.linkCopied'), 'success')
+  } catch {
+    ui.toast(t('community.action.shareUnavailable'))   // ex. WebView-ul Android fără Web Share / clipboard
+  }
 }
 </script>
 

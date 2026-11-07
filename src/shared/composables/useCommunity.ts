@@ -34,6 +34,31 @@ export function levelFor(points: number): Level {
   return { key: cur.key, next, toNext: next.min - points, progress: Math.round(((points - cur.min) / (next.min - cur.min)) * 100) }
 }
 
+// ---------------------------------------------------------------- ajutoare de afișare (ora Aradului)
+
+const TZ = 'Europe/Bucharest'
+const fmt = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('ro-RO', { timeZone: TZ, ...o })
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
+/** Data din colțul cardului: { dow: 'SÂM', day: '7', mon: 'NOV' }. */
+export function dayParts(iso: string) {
+  const d = new Date(iso)
+  const up = (o: Intl.DateTimeFormatOptions) => fmt(o).format(d).replace('.', '').toUpperCase()
+  return { dow: up({ weekday: 'short' }), day: up({ day: 'numeric' }), mon: up({ month: 'short' }) }
+}
+/** „Noiembrie” (luna curentă, pentru Clasament). */
+export const currentMonthLabel = (now = new Date()) => cap(fmt({ month: 'long' }).format(now))
+/** Ora curentă la Arad (0–23), pentru salut. */
+export const aradHour = (now = new Date()) => Number(new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', hour12: false }).format(now))
+/** Miezul nopții de azi, ora Aradului, ca timestamp (independent de fusul telefonului). */
+export const aradTodayStart = (todayIso: string) => new Date(bucharestIso(todayIso, '00:00')).getTime()
+/** „Radu M.” → „RM”. */
+export const initials = (name?: string) => (name ?? '?').trim().split(/\s+/).map((s) => s.charAt(0)).join('').slice(0, 2).toUpperCase()
+/** Indicații în Google Maps (fără cheie), până la harta T08. */
+export const directionsUrl = (a: { lat: number; lng: number }) => `https://www.google.com/maps/dir/?api=1&destination=${a.lat},${a.lng}`
+/** Rolurile care strâng puncte (au card cu puncte / „locul tău”). */
+export const earnsPoints = (role: string | null | undefined) => role === 'LOCAL' || role === 'VISITOR'
+
 /** Acțiunea s-a încheiat (nu mai acceptă înscrieri). */
 export const isEnded = (a: Pick<ActionSummary, 'endAt'>, now = Date.now()) => new Date(a.endAt).getTime() <= now
 /** Locuri libere. */
@@ -185,7 +210,8 @@ export function useLeaderboard(period: Ref<LeaderboardPeriod>) {
   const loading = ref(true)
   async function load() {
     loading.value = true
-    try { board.value = await communityApi.leaderboard(period.value) } catch (e) { ui.error(e) } finally { loading.value = false }
+    // la eroare `board` devine null, ca ecranul să arate starea de eroare (nu „nimeni n-a câștigat puncte”)
+    try { board.value = await communityApi.leaderboard(period.value) } catch (e) { board.value = null; ui.error(e) } finally { loading.value = false }
   }
   watch(period, load)
   return { board, loading, load }

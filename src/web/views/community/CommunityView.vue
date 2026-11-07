@@ -9,7 +9,7 @@ import LeaderboardRows from '@/shared/components/community/LeaderboardRows.vue'
 import PointsCard from '@/shared/components/community/PointsCard.vue'
 import RegistrationTicket from '@/shared/components/community/RegistrationTicket.vue'
 import { useFormat } from '@/shared/composables/useFormat'
-import { ACTION_CATEGORIES, isActiveRegistration, isEnded, spotsLeft, useActions, useLeaderboard, usePoints } from '@/shared/composables/useCommunity'
+import { ACTION_CATEGORIES, directionsUrl, isActiveRegistration, isEnded, spotsLeft, useActions, useLeaderboard, usePoints } from '@/shared/composables/useCommunity'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 import type { ActionCategory, ActionSummary, LeaderboardPeriod } from '@/shared/types/community'
@@ -114,7 +114,8 @@ async function onCancel(a: ActionSummary) {
           <AppChip :active="period === 'year'" @click="period = period === 'month' ? 'year' : 'month'">{{ period === 'month' ? t('community.web.toYear') : t('community.web.toMonth') }}</AppChip>
         </div>
         <Skeleton v-if="lb.loading.value" :rows="3" :height="32" />
-        <LeaderboardRows v-else-if="lb.board.value" :board="lb.board.value" :me-id="auth.user?.id" :me-name="auth.user?.displayName" :limit="5" />
+        <LeaderboardRows v-else-if="lb.board.value" :board="lb.board.value" :me-id="canEarn ? auth.user?.id : undefined" :me-name="auth.user?.displayName" :limit="5" />
+        <EmptyState v-else icon="cloud_off" :title="t('community.leaderboard.loadError')" :action="t('common.retry')" @action="lb.load" />
         <p class="text-muted text-[12px] m-0 mt-2.5">{{ t('community.prizes.note') }}</p>
       </div>
 
@@ -140,7 +141,7 @@ async function onCancel(a: ActionSummary) {
     </template>
     <template v-if="detail" #footer>
       <div class="flex gap-2 w-full">
-        <a :href="`https://www.google.com/maps/dir/?api=1&destination=${detail.lat},${detail.lng}`" target="_blank" rel="noopener"
+        <a :href="directionsUrl(detail)" target="_blank" rel="noopener"
           class="flex-1 h-12 rounded-[14px] border border-line flex items-center justify-center gap-2 font-semibold no-underline text-ink"><AppIcon name="directions" :size="20" />{{ t('community.action.directions') }}</a>
         <AppButton v-if="!isActiveRegistration(detail.myRegistration) && !isEnded(detail) && spotsLeft(detail) > 0" class="flex-1" :loading="list.savingId.value === detail.id" @click="onRegister(detail)">{{ t('community.web.register') }}</AppButton>
       </div>

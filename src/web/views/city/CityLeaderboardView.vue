@@ -7,7 +7,7 @@ import { AppButton, AppChip, AppIcon, EmptyState, Skeleton } from '@/shared/comp
 import PanelHeader from '@/shared/components/business/PanelHeader.vue'
 import PrizesCard from '@/shared/components/community/PrizesCard.vue'
 import { useFormat } from '@/shared/composables/useFormat'
-import { useLeaderboard } from '@/shared/composables/useCommunity'
+import { currentMonthLabel, useLeaderboard } from '@/shared/composables/useCommunity'
 import type { LeaderboardPeriod } from '@/shared/types/community'
 
 const { t } = useI18n()
@@ -18,8 +18,8 @@ const q = ref('')
 onMounted(load)
 
 const now = new Date()
-const monthName = new Intl.DateTimeFormat('ro-RO', { month: 'long', timeZone: 'Europe/Bucharest' }).format(now)
-const monthLabel = monthName.charAt(0).toUpperCase() + monthName.slice(1)
+const monthLabel = currentMonthLabel(now)
+const monthName = monthLabel.toLowerCase()
 const rows = computed(() => {
   const s = q.value.trim().toLowerCase()
   return (board.value?.entries ?? []).filter((r) => !s || r.displayName.toLowerCase().includes(s))
@@ -61,6 +61,7 @@ function exportCsv() {
         </label>
       </div>
       <Skeleton v-if="loading" :rows="5" :height="44" class="p-3" />
+      <EmptyState v-else-if="!board" icon="cloud_off" :title="t('community.leaderboard.loadError')" :action="t('common.retry')" @action="load" />
       <EmptyState v-else-if="!rows.length" icon="leaderboard" :title="t('community.leaderboard.empty')" />
       <div v-else class="overflow-x-auto">
         <table class="w-full text-[14px] border-collapse min-w-[560px]">

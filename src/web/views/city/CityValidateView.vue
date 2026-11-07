@@ -12,7 +12,7 @@ import LeaderboardRows from '@/shared/components/community/LeaderboardRows.vue'
 import ManualCodeForm from '@/shared/components/community/ManualCodeForm.vue'
 import ScanResultCard from '@/shared/components/community/ScanResultCard.vue'
 import { useFormat } from '@/shared/composables/useFormat'
-import { useActionRegistrations, useCityCommunity, useLeaderboard, type ScanResult } from '@/shared/composables/useCommunity'
+import { initials, useActionRegistrations, useCityCommunity, useLeaderboard, type ScanResult } from '@/shared/composables/useCommunity'
 import { useUiStore } from '@/shared/stores/ui'
 import type { LeaderboardPeriod, RegistrationDto } from '@/shared/types/community'
 
@@ -53,14 +53,23 @@ async function confirm(r: RegistrationDto) {
   busyId.value = r.id
   const res = await city.confirm(r.id)
   busyId.value = null
-  if (res) { regs.replace(res); ui.toast(t('community.scan.okTitle', { name: res.user?.displayName ?? '', n: res.pointsAwarded }), 'success'); lb.load() }
+  if (res) {
+    if (r.status === 'NO_SHOW' && !res.alreadyConfirmed) adjustRegistered(r.actionId, 1)
+    regs.replace(res)
+    ui.toast(t('community.scan.okTitle', { name: res.user?.displayName ?? '', n: res.pointsAwarded }), 'success')
+    lb.load()
+  }
 }
 
 async function reject(r: RegistrationDto) {
   busyId.value = r.id
   const res = await city.reject(r.id)
   busyId.value = null
-  if (res) { regs.replace(res); ui.toast(t('community.validate.rejected', { name: r.user?.displayName ?? '' })) }
+  if (res) {
+    if (r.status === 'REGISTERED') adjustRegistered(r.actionId, -1)
+    regs.replace(res)
+    ui.toast(t('community.validate.rejected', { name: r.user?.displayName ?? '' }))
+  }
 }
 
 async function confirmAll() {
@@ -89,7 +98,11 @@ async function manual(code: string) {
 }
 
 const tone: Record<string, string> = { REGISTERED: 'bg-warn-soft text-warn', CONFIRMED: 'bg-ok-soft text-ok', NO_SHOW: 'bg-bad-soft text-bad' }
-const initials = (name?: string) => (name ?? '?').split(' ').map((s) => s.charAt(0)).join('').slice(0, 2).toUpperCase()
+
+/** Ține contorul „Înscriși” la zi fără reîncărcare: o respingere eliberează locul, confirmarea unui NO_SHOW îl ia înapoi. */
+function adjustRegistered(actionId: number, delta: number) {
+  city.actions.value = city.actions.value.map((a) => (a.id === actionId ? { ...a, registeredCount: Math.max(0, a.registeredCount + delta) } : a))
+}
 </script>
 
 <template>
@@ -167,6 +180,7 @@ const initials = (name?: string) => (name ?? '?').split(' ').map((s) => s.charAt
           <div class="flex items-center justify-between"><b class="text-[15px]">{{ t('community.web.boardMonth') }}</b><router-link to="/w/city/leaderboard" class="text-[13px] text-muted no-underline">{{ t('community.dashboard.all') }}</router-link></div>
           <Skeleton v-if="lb.loading.value" :rows="3" :height="32" />
           <LeaderboardRows v-else-if="lb.board.value" :board="lb.board.value" :limit="5" />
+          <EmptyState v-else icon="cloud_off" :title="t('community.leaderboard.loadError')" :action="t('common.retry')" @action="lb.load" />
         </div>
       </div>
     </div>

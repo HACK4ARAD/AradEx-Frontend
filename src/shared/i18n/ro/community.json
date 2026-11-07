@@ -1,11 +1,36 @@
 {
   "title": "Comunitate",
   "loadError": "Nu am putut încărca acțiunile comunitare.",
-  "category": { "ENVIRONMENT": "Mediu", "HEALTH": "Sănătate", "SOCIAL": "Social", "CULTURE": "Cultură" },
-  "categoryIcon": { "ENVIRONMENT": "🌳", "HEALTH": "🩸", "SOCIAL": "🤝", "CULTURE": "🎭" },
-  "status": { "REGISTERED": "În așteptare", "CONFIRMED": "Confirmat", "CANCELLED": "Anulat", "NO_SHOW": "Neprezentat" },
-  "actionStatus": { "DRAFT": "Ciornă", "PUBLISHED": "Publicată", "CANCELLED": "Anulată", "DONE": "Încheiată" },
-  "levels": { "newcomer": "Nou-venit", "volunteer": "Voluntar", "ambassador": "Ambasador", "legend": "Legendă a Aradului" },
+  "category": {
+    "ENVIRONMENT": "Mediu",
+    "HEALTH": "Sănătate",
+    "SOCIAL": "Social",
+    "CULTURE": "Cultură"
+  },
+  "categoryIcon": {
+    "ENVIRONMENT": "🌳",
+    "HEALTH": "🩸",
+    "SOCIAL": "🤝",
+    "CULTURE": "🎭"
+  },
+  "status": {
+    "REGISTERED": "În așteptare",
+    "CONFIRMED": "Confirmat",
+    "CANCELLED": "Anulat",
+    "NO_SHOW": "Neprezentat"
+  },
+  "actionStatus": {
+    "DRAFT": "Ciornă",
+    "PUBLISHED": "Publicată",
+    "CANCELLED": "Anulată",
+    "DONE": "Încheiată"
+  },
+  "levels": {
+    "newcomer": "Nou-venit",
+    "volunteer": "Voluntar",
+    "ambassador": "Ambasador",
+    "legend": "Legendă a Aradului"
+  },
   "card": {
     "points": "+{n} puncte",
     "confirmed": "Prezență confirmată · +{n}",
@@ -73,7 +98,8 @@
     "share": "Trimite",
     "linkCopied": "Link copiat.",
     "notFound": "Acțiunea nu există sau nu mai e publicată.",
-    "backToList": "Înapoi la acțiuni"
+    "backToList": "Înapoi la acțiuni",
+    "shareUnavailable": "Trimiterea nu e disponibilă aici. Copiază linkul din bara de adrese."
   },
   "ticket": {
     "title": "QR-ul tău",
@@ -99,7 +125,8 @@
     "empty": "Încă nu a câștigat nimeni puncte în perioada asta.",
     "onlyEarned": "Doar punctele câștigate la acțiuni, nu și cele cheltuite.",
     "useText": "Plătești cu puncte la ofertele „Cu puncte” ale partenerilor Primăriei. Codul apare în aplicație.",
-    "seeOffers": "Vezi ofertele cu puncte"
+    "seeOffers": "Vezi ofertele cu puncte",
+    "loadError": "Nu am putut încărca clasamentul."
   },
   "scan": {
     "confirm": "Confirmă",
@@ -174,7 +201,11 @@
     "what": "Pentru",
     "points": "Puncte"
   },
-  "pointsType": { "EARN_ACTION": "Acțiune comunitară", "SPEND_OFFER": "Plată cu puncte", "ADJUST": "Ajustare" },
+  "pointsType": {
+    "EARN_ACTION": "Acțiune comunitară",
+    "SPEND_OFFER": "Plată cu puncte",
+    "ADJUST": "Ajustare"
+  },
   "dashboard": {
     "morning": "Bună dimineața",
     "day": "Bună ziua",

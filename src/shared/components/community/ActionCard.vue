@@ -7,19 +7,14 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import { useFormat } from '@/shared/composables/useFormat'
-import { isActiveRegistration, isEnded } from '@/shared/composables/useCommunity'
+import { dayParts, isActiveRegistration, isEnded } from '@/shared/composables/useCommunity'
 import type { ActionSummary } from '@/shared/types/community'
 
 const props = defineProps<{ action: ActionSummary; to: string }>()
 const { t } = useI18n()
 const f = useFormat()
 
-const TZ = 'Europe/Bucharest'
-const parts = computed(() => {
-  const d = new Date(props.action.startAt)
-  const fmt = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('ro-RO', { timeZone: TZ, ...o }).format(d).replace('.', '').toUpperCase()
-  return { dow: fmt({ weekday: 'short' }), day: fmt({ day: 'numeric' }), mon: fmt({ month: 'short' }) }
-})
+const parts = computed(() => dayParts(props.action.startAt))
 const reg = computed(() => (isActiveRegistration(props.action.myRegistration) ? props.action.myRegistration : undefined))
 const more = computed(() => Math.max(0, props.action.registeredCount - props.action.goingPreview.length))
 const ended = computed(() => isEnded(props.action))

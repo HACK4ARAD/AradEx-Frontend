@@ -3,7 +3,6 @@
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 
-defineProps<{ flat?: boolean }>()
 const { t } = useI18n()
 const PRIZES = [1, 2, 3] as const
 const tone = ['bg-[#FFE08A]', 'bg-[#E6E6E6]', 'bg-[#F0C9A8]']

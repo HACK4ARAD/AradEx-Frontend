@@ -8,7 +8,7 @@ import { AppButton, AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import PanelHeader from '@/shared/components/business/PanelHeader.vue'
 import KpiCard from '@/shared/components/community/KpiCard.vue'
 import { useFormat } from '@/shared/composables/useFormat'
-import { useCityDashboard } from '@/shared/composables/useCommunity'
+import { aradHour, useCityDashboard } from '@/shared/composables/useCommunity'
 import { useAuthStore } from '@/shared/stores/auth'
 
 const { t } = useI18n()
@@ -19,7 +19,7 @@ const { data, loading, load } = useCityDashboard()
 onMounted(load)
 
 const greeting = computed(() => {
-  const h = Number(new Intl.DateTimeFormat('en-GB', { hour: '2-digit', hour12: false, timeZone: 'Europe/Bucharest' }).format(new Date()))
+  const h = aradHour()
   return h < 11 ? t('community.dashboard.morning') : h < 18 ? t('community.dashboard.day') : t('community.dashboard.evening')
 })
 const nf = (n: number) => new Intl.NumberFormat('ro-RO').format(n)
