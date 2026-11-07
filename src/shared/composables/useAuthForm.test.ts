@@ -37,6 +37,10 @@ describe('authErrorMessage', () => {
     expect(authErrorMessage(new ApiError(0, 'offline'), 'login')).toEqual({ key: 'auth.errors.network' })
   })
 
+  it('tells personal accounts to use their phone (T21, 403 on email login)', () => {
+    expect(authErrorMessage(new ApiError(403, 'Personal accounts sign in with their phone number'), 'login')).toEqual({ key: 'auth.errors.usePhone' })
+  })
+
   it('falls back to the ProblemDetail detail', () => {
     expect(authErrorMessage(new ApiError(400, 'Unknown business category: X'), 'business')).toEqual({ text: 'Unknown business category: X' })
   })

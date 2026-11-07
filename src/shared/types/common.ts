@@ -18,6 +18,8 @@ export interface ProblemDetail {
   detail?: string
   instance?: string
   errors?: { field: string; message: string }[]
+  /** 429 (T21, coduri OTP): peste câte secunde se poate încerca din nou */
+  retryAfterSeconds?: number
 }
 
 export interface GeoPoint { lat: number; lng: number }

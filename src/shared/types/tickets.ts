@@ -7,6 +7,7 @@ export type TicketStatus = 'CONFIRMED' | 'CANCELLED' | 'USED'
 export interface TicketDto {
   code: string; eventId: number; eventTitle: string; startAt: string; endAt?: string; locationName: string; address?: string
   lat: number; lng: number; imageUrl?: string; ticketType: TicketType; qtyAdult: number; qtyChild: number
-  priceAdult?: number; priceChild?: number; total: number; status: TicketStatus; email: string; createdAt: string; usedAt?: string
+  priceAdult?: number; priceChild?: number; total: number; status: TicketStatus; email?: string; createdAt: string; usedAt?: string
 }
-export interface TicketRequest { qtyAdult: number; qtyChild: number; email: string }
+/** `email` opțional (T21: conturile cu telefon) */
+export interface TicketRequest { qtyAdult: number; qtyChild: number; email?: string }
