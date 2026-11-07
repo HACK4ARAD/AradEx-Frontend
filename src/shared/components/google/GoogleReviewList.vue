@@ -2,10 +2,11 @@
 // T17 · rezumatul Google („Pe Google · ★ 4,6 · 1.240 de păreri”) + recenziile, cu atribuirea cerută de Google:
 // numele autorului (cu link spre profil când există), poza lui, „Powered by Google” și linkul spre locul de pe Google Maps.
 // Folosit de blocul din aplicație (GoogleReviews) și de panoul firmei (Recenzii).
-import { ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useResizeObserver } from '@vueuse/core'
 import { AppIcon } from '@/shared/components'
-import { formatCount, formatRating, starsOf } from '@/shared/composables/useGoogle'
+import { formatRating, ratingsText, starsOf } from '@/shared/composables/useGoogle'
 import type { GoogleInfoDto } from '@/shared/types/google'
 
 const props = withDefaults(defineProps<{ info: GoogleInfoDto; limit?: number; heading?: boolean }>(), { limit: 5, heading: true })
@@ -17,10 +18,28 @@ const toggle = (i: number) => {
   open.value = next
 }
 const initial = (name: string) => name.trim().charAt(0).toUpperCase() || 'G'
+
+/* „Mai mult” apare doar la recenziile tăiate efectiv la 4 rânduri (depinde de lățimea ecranului, nu de numărul de caractere). */
+const root = ref<HTMLElement | null>(null)
+const texts = ref<(HTMLElement | null)[]>([])
+const clamped = ref<Set<number>>(new Set())
+function measure() {
+  const next = new Set<number>()
+  texts.value.forEach((el, i) => {
+    if (!el) return
+    // fără layout (teste, ecran ascuns) nu putem măsura: rămâne regula după lungime
+    const cut = el.clientHeight > 0 ? el.scrollHeight > el.clientHeight + 1 : (props.info.reviews[i]?.text.length ?? 0) > 220
+    if (cut) next.add(i)
+  })
+  clamped.value = next
+}
+onMounted(measure)
+watch(() => props.info, () => { open.value = new Set(); nextTick(measure) })
+useResizeObserver(root, () => measure())
 </script>
 
 <template>
-  <div data-test="google-reviews">
+  <div ref="root" data-test="google-reviews">
     <div>
       <div class="min-w-0">
         <div v-if="heading" class="text-[12px] font-semibold uppercase tracking-[0.04em] text-muted">{{ t('google.title') }}</div>
@@ -30,7 +49,7 @@ const initial = (name: string) => name.trim().charAt(0).toUpperCase() || 'G'
             <AppIcon v-for="(on, i) in starsOf(props.info.rating)" :key="i" name="star" :size="18" :fill="on" :class="on ? '' : 'text-line'" />
           </span>
           <span v-if="props.info.userRatingCount != null" class="text-[13px] text-muted">
-            {{ t('google.ratings', { n: formatCount(props.info.userRatingCount) }, props.info.userRatingCount) }}
+            {{ ratingsText(t, props.info.userRatingCount) }}
           </span>
         </div>
       </div>
@@ -52,8 +71,8 @@ const initial = (name: string) => name.trim().charAt(0).toUpperCase() || 'G'
             </div>
           </div>
         </div>
-        <p class="text-[14px] leading-[1.45] mt-1.5 mb-0 whitespace-pre-line" :class="open.has(i) ? '' : 'line-clamp-4'">{{ r.text }}</p>
-        <button v-if="r.text.length > 220" type="button" class="text-[13px] font-semibold text-ink mt-1 p-0 bg-transparent border-0 underline" @click="toggle(i)">
+        <p :ref="(el) => { texts[i] = el as HTMLElement | null }" class="text-[14px] leading-[1.45] mt-1.5 mb-0 whitespace-pre-line" :class="open.has(i) ? '' : 'line-clamp-4'">{{ r.text }}</p>
+        <button v-if="clamped.has(i) || open.has(i)" type="button" class="text-[13px] font-semibold text-ink mt-1 p-0 bg-transparent border-0 underline" @click="toggle(i)">
           {{ open.has(i) ? t('google.less') : t('google.more') }}
         </button>
       </article>

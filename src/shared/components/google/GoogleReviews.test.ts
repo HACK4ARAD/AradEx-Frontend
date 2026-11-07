@@ -3,7 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { i18n } from '@/shared/i18n'
 import type { GoogleInfoDto } from '@/shared/types/google'
 import GoogleReviews from './GoogleReviews.vue'
-import { formatCount, formatRating, starsOf } from '@/shared/composables/useGoogle'
+import { formatCount, formatRating, ratingsText, starsOf } from '@/shared/composables/useGoogle'
 
 const place = vi.fn()
 const business = vi.fn()
@@ -33,7 +33,7 @@ describe('GoogleReviews', () => {
     expect(place).toHaveBeenCalledWith(2, 'ro')
     expect(w.text()).toContain('Pe Google')
     expect(w.text()).toContain('4,6')
-    expect(w.text()).toContain('1.240 păreri')
+    expect(w.text()).toContain('1.240 de păreri')
     expect(w.text()).toContain('Ana P.')
     expect(w.text()).toContain('acum o lună')
     expect(w.find('a[href="https://g.co/a"]').exists()).toBe(true)
@@ -66,5 +66,16 @@ describe('useGoogle helpers', () => {
     expect(starsOf(4.6)).toEqual([true, true, true, true, true])
     expect(starsOf(3.2)).toEqual([true, true, true, false, false])
     expect(starsOf(undefined)).toEqual([false, false, false, false, false])
+  })
+
+  it('uses the Romanian „de” from 20 up (and at 100, 1.000), English plurals otherwise', () => {
+    const t = i18n.global.t as (k: string, n?: Record<string, unknown>) => string
+    i18n.global.locale.value = 'ro'
+    expect([0, 1, 2, 19, 20, 101, 119, 120, 200, 1240].map((n) => ratingsText(t, n))).toEqual([
+      'nicio părere', 'o părere', '2 păreri', '19 păreri', '20 de păreri', '101 păreri', '119 păreri', '120 de păreri', '200 de păreri', '1.240 de păreri',
+    ])
+    i18n.global.locale.value = 'en'
+    expect([0, 1, 631].map((n) => ratingsText(t, n))).toEqual(['no ratings', 'one rating', '631 ratings'])
+    i18n.global.locale.value = 'ro'
   })
 })

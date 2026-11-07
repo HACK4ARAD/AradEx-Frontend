@@ -4,15 +4,16 @@
 // la evenimente (T07 partea 2), deci aici e doar partea Google.
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AppIcon } from '@/shared/components'
+import { AppIcon, Skeleton } from '@/shared/components'
 import GoogleReviewList from '@/shared/components/google/GoogleReviewList.vue'
 import GoogleLinkCard from '@/web/components/google/GoogleLinkCard.vue'
-import { formatCount, formatRating, starsOf } from '@/shared/composables/useGoogle'
+import { formatRating, ratingsText, starsOf } from '@/shared/composables/useGoogle'
 import type { GoogleLinkDto } from '@/shared/types/google'
 import { CARD, EMPTY, H1, HEAD, SUB } from '@/web/components/community/panel'
 
 const { t } = useI18n()
 const link = ref<GoogleLinkDto | null>(null)
+const loading = ref(true)
 </script>
 
 <template>
@@ -26,7 +27,8 @@ const link = ref<GoogleLinkDto | null>(null)
 
     <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px] items-start">
       <div :class="CARD">
-        <GoogleReviewList v-if="link?.info" :info="link.info" />
+        <Skeleton v-if="loading" :rows="3" />
+        <GoogleReviewList v-else-if="link?.info" :info="link.info" />
         <div v-else :class="EMPTY" data-test="reviews-empty">
           <AppIcon name="reviews" :size="32" class="text-muted" />
           <div class="font-semibold text-ink mt-2">{{ t('google.panel.emptyTitle') }}</div>
@@ -41,10 +43,10 @@ const link = ref<GoogleLinkDto | null>(null)
             <AppIcon v-for="(on, i) in starsOf(link.info.rating)" :key="i" name="star" :size="20" :fill="on" :class="on ? '' : 'text-line'" />
           </div>
           <div class="text-[12.5px] text-muted mt-1">
-            {{ t('google.title') }} · {{ t('google.ratings', { n: formatCount(link.info.userRatingCount) }, link.info.userRatingCount ?? 0) }}
+            {{ t('google.title') }} · {{ ratingsText(t, link.info.userRatingCount) }}
           </div>
         </div>
-        <GoogleLinkCard kind="business" @change="link = $event" />
+        <GoogleLinkCard kind="business" @change="link = $event" @loading="loading = $event" />
       </div>
     </div>
   </div>

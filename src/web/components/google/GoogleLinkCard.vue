@@ -6,12 +6,12 @@ import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import { googleApi } from '@/shared/api/google'
 import { useUiStore } from '@/shared/stores/ui'
-import { GOOGLE_PLACE_ID, PLACE_ID_FINDER, formatCount, formatRating } from '@/shared/composables/useGoogle'
+import { GOOGLE_PLACE_ID, PLACE_ID_FINDER, formatRating, ratingsText } from '@/shared/composables/useGoogle'
 import type { GoogleLinkDto } from '@/shared/types/google'
 import { BTN_SM, BTN_SM_SEC, CARD, CH, CH_TITLE, HINT, INPUT, LABEL, PILL } from '@/web/components/community/panel'
 
 const props = defineProps<{ kind: 'place' | 'business'; placeId?: number }>()
-const emit = defineEmits<{ change: [link: GoogleLinkDto] }>()
+const emit = defineEmits<{ change: [link: GoogleLinkDto]; loading: [busy: boolean] }>()
 const { t } = useI18n()
 const ui = useUiStore()
 
@@ -20,23 +20,34 @@ const value = ref('')
 const saving = ref(false)
 const valid = computed(() => GOOGLE_PLACE_ID.test(value.value.trim()))
 const dirty = computed(() => value.value.trim() !== (link.value?.googlePlaceId ?? ''))
+/** Doar răspunsul ultimei cereri contează: la schimbarea rapidă a obiectivului, unul mai lent nu-l suprascrie pe cel nou. */
+let seq = 0
 
 async function load() {
+  const mine = ++seq
   link.value = null
+  value.value = ''
+  emit('loading', true)
   try {
-    link.value = props.kind === 'place' ? (props.placeId ? await googleApi.placeLink(props.placeId) : null) : await googleApi.myLink()
-    value.value = link.value?.googlePlaceId ?? ''
-    if (link.value) emit('change', link.value)
+    const res = props.kind === 'place' ? (props.placeId ? await googleApi.placeLink(props.placeId) : null) : await googleApi.myLink()
+    if (mine !== seq) return
+    link.value = res
+    value.value = res?.googlePlaceId ?? ''
+    if (res) emit('change', res)
   } catch (err) {
-    ui.error(err)
+    if (mine === seq) ui.error(err)
+  } finally {
+    if (mine === seq) emit('loading', false)
   }
 }
 
 async function save(id: string | null) {
   if (id && !GOOGLE_PLACE_ID.test(id)) return
+  const target = props.placeId
   saving.value = true
   try {
-    const res = props.kind === 'place' ? await googleApi.setPlaceLink(props.placeId as number, id) : await googleApi.setMyLink(id)
+    const res = props.kind === 'place' ? await googleApi.setPlaceLink(target as number, id) : await googleApi.setMyLink(id)
+    if (props.kind === 'place' && props.placeId !== target) return
     link.value = res
     value.value = res.googlePlaceId ?? ''
     emit('change', res)
@@ -59,12 +70,13 @@ watch(() => props.placeId, load, { immediate: true })
         <div :class="HINT">{{ t('google.link.sub') }}<template v-if="kind === 'place'"> {{ t('google.link.subPlace') }}</template></div>
       </div>
       <span v-if="link?.info?.rating != null" :class="[PILL, 'bg-ok-soft text-ok']">
-        <AppIcon name="star" :size="14" fill /> {{ formatRating(link.info.rating) }} · {{ t('google.ratings', { n: formatCount(link.info.userRatingCount) }, link.info.userRatingCount ?? 0) }}
+        <AppIcon name="star" :size="14" fill /> {{ formatRating(link.info.rating) }} · {{ ratingsText(t, link.info.userRatingCount) }}
       </span>
       <span v-else-if="link && !link.googlePlaceId" :class="[PILL, 'bg-soft text-muted']">{{ t('google.link.notLinked') }}</span>
     </div>
 
     <p v-if="link && !link.configured" class="m-0 mb-3 text-[12.5px] text-warn bg-warn-soft rounded-[10px] px-3 py-2">{{ t('google.link.notConfigured') }}</p>
+    <p v-else-if="link?.googlePlaceId && link.problem === 'INVALID_ID'" class="m-0 mb-3 text-[12.5px] text-bad bg-bad-soft rounded-[10px] px-3 py-2" data-test="google-invalid">{{ t('google.link.invalidId') }}</p>
     <p v-else-if="link?.googlePlaceId && !link.info" class="m-0 mb-3 text-[12.5px] text-muted bg-soft rounded-[10px] px-3 py-2">{{ t('google.link.unavailable') }}</p>
 
     <label :class="LABEL" :for="`gpid-${kind}`">{{ t('google.link.label') }}</label>

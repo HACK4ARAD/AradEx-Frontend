@@ -1,6 +1,11 @@
 {
   "title": "On Google",
-  "ratings": "no ratings | one rating | {n} ratings",
+  "ratings": {
+    "zero": "no ratings",
+    "one": "one rating",
+    "few": "{n} ratings",
+    "many": "{n} ratings"
+  },
   "openMaps": "View on Google Maps",
   "allReviews": "All reviews on Google",
   "more": "More",
@@ -19,6 +24,7 @@
     "saved": "The Google link was saved.",
     "unlinked": "The Google link was removed.",
     "invalid": "A Google ID only has letters, digits, “_” and “-”.",
+    "invalidId": "Google doesn't know this Place ID: check it (the rating won't show in the app until it's right).",
     "notLinked": "Not linked to Google",
     "notConfigured": "The Google key isn't set on the server: reviews don't show in the app yet.",
     "unavailable": "Google isn't responding right now; the rating shows up once it's back.",

@@ -19,11 +19,13 @@ export interface GoogleInfoDto {
   attribution: 'Powered by Google'
 }
 
-/** Panouri (Primărie, firmă): legătura cu Google; `info` lipsește dacă nu e legat, nu e cheie sau Google nu răspunde acum. */
+/** Panouri (Primărie, firmă): legătura cu Google; `info` lipsește dacă nu e legat, nu e cheie sau e o problemă (`problem`). */
 export interface GoogleLinkDto {
   googlePlaceId?: string
   configured: boolean
   info?: GoogleInfoDto
+  /** De ce lipsește `info` deși e legat: Google nu cunoaște ID-ul sau nu răspunde acum. */
+  problem?: 'INVALID_ID' | 'UNAVAILABLE'
 }
 
 export interface GooglePlaceIdRequest { googlePlaceId: string | null }

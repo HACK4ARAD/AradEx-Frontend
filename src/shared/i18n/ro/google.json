@@ -1,6 +1,11 @@
 {
   "title": "Pe Google",
-  "ratings": "nicio părere | o părere | {n} păreri",
+  "ratings": {
+    "zero": "nicio părere",
+    "one": "o părere",
+    "few": "{n} păreri",
+    "many": "{n} de păreri"
+  },
   "openMaps": "Vezi pe Google Maps",
   "allReviews": "Toate recenziile pe Google",
   "more": "Mai mult",
@@ -19,6 +24,7 @@
     "saved": "Legătura cu Google a fost salvată.",
     "unlinked": "Legătura cu Google a fost scoasă.",
     "invalid": "ID-ul Google are doar litere, cifre, „_” și „-”.",
+    "invalidId": "Google nu cunoaște acest Place ID: verifică-l (ratingul nu apare în aplicație până nu e corect).",
     "notLinked": "Nelegat de Google",
     "notConfigured": "Cheia Google nu e setată pe server: recenziile nu apar încă în aplicație.",
     "unavailable": "Google nu răspunde acum; ratingul apare după ce revine.",

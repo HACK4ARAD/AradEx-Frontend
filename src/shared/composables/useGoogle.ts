@@ -19,6 +19,18 @@ export function formatCount(n?: number): string {
   return n == null ? '' : new Intl.NumberFormat(intlLocale()).format(n)
 }
 
+type Translate = (key: string, named?: Record<string, unknown>) => string
+
+/**
+ * „o părere”, „12 păreri”, „631 de păreri”: în română, de la 20 în sus (și la 100, 1.000 …) se pune „de”
+ * (regula: n ≥ 20 și ultimele două cifre 00 sau ≥ 20). În engleză „one rating” / „631 ratings”.
+ */
+export function ratingsText(t: Translate, n?: number): string {
+  const count = n ?? 0
+  const key = count === 0 ? 'zero' : count === 1 ? 'one' : count >= 20 && (count % 100 === 0 || count % 100 >= 20) ? 'many' : 'few'
+  return t(`google.ratings.${key}`, { n: formatCount(count) })
+}
+
 /** Stelele pline pentru un rating (rotunjit la cea mai apropiată stea), ca listă de 5 valori. */
 export function starsOf(rating = 0): boolean[] {
   const full = Math.round(Math.max(0, Math.min(5, rating)))
