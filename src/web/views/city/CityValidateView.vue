@@ -4,12 +4,14 @@
 // Confirmă / Respinge / Confirmă toți, „Voluntarii care scanează” cu confirmarea manuală după cod, „Clasament · luna”.
 // Scanarea QR NU se face din web (doar din aplicație: Primăria pe /m/panel, voluntarii în T18).
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, Skeleton } from '@/shared/components'
 import ScanResultCard from '@/shared/components/community/ScanResultCard.vue'
 import PanelKpi from '@/web/components/community/PanelKpi.vue'
 import ValidateActionCard from '@/web/components/community/ValidateActionCard.vue'
+import PanelPager from '@/web/components/community/PanelPager.vue'
 import * as P from '@/web/components/community/panel'
 import { useFormat } from '@/shared/composables/useFormat'
 import { initials, useActionRegistrations, useCityCommunity, useLeaderboard, type ScanResult } from '@/shared/composables/useCommunity'
@@ -17,6 +19,7 @@ import { useUiStore } from '@/shared/stores/ui'
 import type { LeaderboardPeriod, RegistrationDto } from '@/shared/types/community'
 
 const route = useRoute()
+const router = useRouter()
 const { t } = useI18n()
 const f = useFormat()
 const ui = useUiStore()
@@ -39,7 +42,26 @@ const groups = computed(() => {
   return { upcoming, past }
 })
 const actions = computed(() => [...groups.value.upcoming, ...groups.value.past])
-const cardTo = (id: number) => ({ path: '/city/validate', query: { a: id } })
+
+/**
+ * Paginare pe secțiune: 12 carduri pe ecran lat (încap în 1–4 coloane), 6 pe ecran îngust. Pagina stă în link (`pu` / `pp`),
+ * ca „← Toate acțiunile” să te ducă înapoi pe aceeași pagină.
+ */
+type Group = 'upcoming' | 'past'
+const PAGE_KEY: Record<Group, string> = { upcoming: 'pu', past: 'pp' }
+const wide = useMediaQuery('(min-width: 1280px)')
+const pageSize = computed(() => (wide.value ? 12 : 6))
+function pageOf(g: Group): number {
+  const pages = Math.max(1, Math.ceil(groups.value[g].length / pageSize.value))
+  return Math.min(pages, Math.max(1, Number(route.query[PAGE_KEY[g]]) || 1))
+}
+function setPage(g: Group, p: number) {
+  router.replace({ query: { ...route.query, [PAGE_KEY[g]]: p > 1 ? String(p) : undefined } })
+  document.getElementById(`validate-${g}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+const shown = (g: Group) => groups.value[g].slice((pageOf(g) - 1) * pageSize.value, pageOf(g) * pageSize.value)
+const cardTo = (id: number) => ({ path: '/city/validate', query: { ...route.query, a: id } })
+const backTo = computed(() => ({ path: '/city/validate', query: { ...route.query, a: undefined } }))
 const current = computed(() => city.actions.value.find((a) => a.id === selected.value))
 const visible = computed(() => regs.items.value.filter((r) => r.status !== 'CANCELLED'))
 
@@ -125,7 +147,7 @@ async function manual() {
 <template>
   <div :class="P.HEAD">
     <div class="min-w-0">
-      <router-link v-if="current" to="/city/validate" class="inline-flex items-center gap-1 text-[13px] font-semibold text-muted no-underline hover:text-ink mb-2" data-test="validate-back">
+      <router-link v-if="current" :to="backTo" class="inline-flex items-center gap-1 text-[13px] font-semibold text-muted no-underline hover:text-ink mb-2" data-test="validate-back">
         <AppIcon name="arrow_back" :size="16" />{{ t('community.validate.back') }}
       </router-link>
       <h1 :class="P.H1">{{ t('community.validate.title') }}</h1>
@@ -141,11 +163,12 @@ async function manual() {
   </div>
   <!-- cardurile acțiunilor -->
   <template v-else-if="!current">
-    <section v-for="g in (['upcoming', 'past'] as const)" v-show="groups[g].length" :key="g" class="mb-7">
+    <section v-for="g in (['upcoming', 'past'] as const)" v-show="groups[g].length" :id="`validate-${g}`" :key="g" class="mb-7 scroll-mt-20">
       <h2 class="m-0 mb-3 text-[12px] font-bold tracking-[.07em] uppercase text-muted">{{ t(`community.validate.${g}`) }} · {{ groups[g].length }}</h2>
       <div class="grid gap-3.5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-        <ValidateActionCard v-for="a in groups[g]" :key="a.id" :action="a" :to="cardTo(a.id)" />
+        <ValidateActionCard v-for="a in shown(g)" :key="a.id" :action="a" :to="cardTo(a.id)" />
       </div>
+      <PanelPager :model-value="pageOf(g)" :total="groups[g].length" :size="pageSize" @update:model-value="setPage(g, $event)" />
     </section>
   </template>
   <template v-else>

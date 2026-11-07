@@ -13,5 +13,9 @@
   "comingSoon": "In progress — see docs/PLAN.md",
   "close": "Close",
   "scanHint": "Point the camera at the QR code",
-  "cameraError": "Cannot start the camera. Allow camera access or type the code instead."
+  "cameraError": "Cannot start the camera. Allow camera access or type the code instead.",
+  "pagination": "Pagination",
+  "pageRange": "{from}–{to} of {total}",
+  "prevPage": "Previous page",
+  "nextPage": "Next page"
 }
