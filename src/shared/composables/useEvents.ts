@@ -7,6 +7,7 @@ import { useGeo } from '@/shared/composables/useGeo'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 import type { EventCategory, EventDto, EventQuery, EventSummary } from '@/shared/types/events'
+import { currentApp } from '@/router/app'
 
 const TZ = 'Europe/Bucharest'
 
@@ -160,7 +161,7 @@ export function useSaveEvent() {
     try {
       if (was) await eventsApi.unsave(e.id)
       else await eventsApi.save(e.id)
-      ui.toast(was ? t('events.unsavedToast') : t(loginPath.startsWith('/w') ? 'events.savedToastWeb' : 'events.savedToast'), was ? 'info' : 'success')
+      ui.toast(was ? t('events.unsavedToast') : t(currentApp() === 'web' ? 'events.savedToastWeb' : 'events.savedToast'), was ? 'info' : 'success')
     } catch (err) {
       e.saved = was
       if (e.savesCount != null) e.savesCount += was ? 1 : -1

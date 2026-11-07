@@ -9,7 +9,7 @@ const base: EventSummary = {
   locationName: 'Teatrul Clasic', lat: 46.17, lng: 21.31, ticketType: 'IN_APP', priceFrom: 25, isHot: true, isDemo: true,
   participantsCount: 86, organizerName: 'Teatrul Clasic', organizerType: 'EXTERNAL', distanceKm: 0.4, saved: false, ratingCount: 0,
 }
-const mountCard = (e: EventSummary) => mount(EventCard, { props: { event: e, to: '/m/events/22' }, global: { plugins: [i18n], stubs: { RouterLink: RouterLinkStub } } })
+const mountCard = (e: EventSummary) => mount(EventCard, { props: { event: e, to: '/events/22' }, global: { plugins: [i18n], stubs: { RouterLink: RouterLinkStub } } })
 
 describe('EventCard', () => {
   it('shows the Popular badge, distance and price', () => {

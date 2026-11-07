@@ -14,7 +14,7 @@ import { useRouter } from 'vue-router'
 import type { EventSummary } from '@/shared/types/events'
 
 const { t } = useI18n()
-const back = useBack('/m/profile')
+const back = useBack('/profile')
 const ui = useUiStore()
 const auth = useAuthStore()
 const router = useRouter()
@@ -29,7 +29,7 @@ async function load() {
   try { items.value = await eventsApi.saved(geo.near()) } catch (err) { ui.error(err) } finally { loading.value = false }
 }
 async function toggle(e: EventSummary) {
-  await saver.toggle(e, '/m/login')
+  await saver.toggle(e, '/login')
   if (!e.saved) items.value = items.value.filter((x) => x.id !== e.id)
 }
 onMounted(load)
@@ -42,9 +42,9 @@ onMounted(load)
   </div>
   <Skeleton v-if="loading" :rows="2" :height="300" />
   <template v-else-if="items.length">
-    <EventCard v-for="e in items" :key="e.id" :event="e" :to="`/m/events/${e.id}`" @toggle-save="toggle(e)" />
+    <EventCard v-for="e in items" :key="e.id" :event="e" :to="`/events/${e.id}`" @toggle-save="toggle(e)" />
   </template>
   <EmptyState v-else-if="!auth.isLoggedIn" icon="bookmark" :title="t('events.savedList.title')" :text="t('events.savedList.loginText')" :action="t('nav.login')"
-    @action="router.push({ path: '/m/login', query: { next: '/m/saved' } })" />
+    @action="router.push({ path: '/login', query: { next: '/saved' } })" />
   <EmptyState v-else icon="bookmark" :title="t('events.savedList.emptyTitle')" :text="t('events.savedList.emptyText')" />
 </template>

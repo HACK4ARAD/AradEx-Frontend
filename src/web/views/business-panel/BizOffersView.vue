@@ -31,7 +31,7 @@ onMounted(() => { o.load(); panel.load() })
 
 async function save(req: OfferCreate) {
   const ok = await o.save(editing.value?.id ?? null, req, editing.value ? { published: t('offers.biz.saved'), draft: t('offers.biz.saved') } : msg.value)
-  if (ok) router.push('/w/business/offers')
+  if (ok) router.push('/business/offers')
 }
 function toggle(x: OfferDto) {
   o.setPaused(x, x.status === 'PUBLISHED', { published: t('offers.biz.published'), draft: t('offers.biz.paused') })
@@ -46,22 +46,22 @@ async function remove(x: OfferDto) {
   <template v-if="sub">
     <PanelHeader :title="sub === 'new' ? t('offers.biz.new') : t('offers.biz.edit')" />
     <Skeleton v-if="o.loading.value && sub !== 'new'" :rows="2" />
-    <EmptyState v-else-if="sub !== 'new' && !editing" icon="sell" :title="t('offers.biz.notFound')" :action="t('offers.biz.title')" @action="router.push('/w/business/offers')" />
+    <EmptyState v-else-if="sub !== 'new' && !editing" icon="sell" :title="t('offers.biz.notFound')" :action="t('offers.biz.title')" @action="router.push('/business/offers')" />
     <div v-else class="bg-white rounded-[20px] border border-line p-6 max-w-[760px]">
       <OfferForm :key="sub" :initial="initial" :saving="o.saving.value" :submit-label="editing ? t('offers.form.save') : t('offers.form.publish')"
-        @submit="save" @cancel="router.push('/w/business/offers')" />
+        @submit="save" @cancel="router.push('/business/offers')" />
     </div>
   </template>
   <template v-else>
     <PanelHeader :title="t('offers.biz.title')" :subtitle="t('offers.biz.subtitle')">
-      <AppButton size="sm" icon="add" @click="router.push('/w/business/offers/new')">{{ t('offers.biz.new') }}</AppButton>
+      <AppButton size="sm" icon="add" @click="router.push('/business/offers/new')">{{ t('offers.biz.new') }}</AppButton>
     </PanelHeader>
     <Skeleton v-if="o.loading.value" :rows="3" :height="80" />
     <EmptyState v-else-if="o.error.value" icon="cloud_off" :title="t('business.loadError')" :action="t('common.retry')" @action="o.load" />
-    <EmptyState v-else-if="!o.items.value.length" icon="sell" :title="t('offers.biz.empty')" :text="t('offers.biz.emptyText')" :action="t('offers.biz.new')" @action="router.push('/w/business/offers/new')" />
+    <EmptyState v-else-if="!o.items.value.length" icon="sell" :title="t('offers.biz.empty')" :text="t('offers.biz.emptyText')" :action="t('offers.biz.new')" @action="router.push('/business/offers/new')" />
     <div v-else class="flex flex-col gap-2.5 max-w-[960px]">
       <BizOfferItem v-for="x in o.items.value" :key="x.id" :offer="x" actions :can-publish="verified"
-        @toggle="toggle(x)" @edit="router.push(`/w/business/offers/${x.id}`)" @remove="remove(x)" />
+        @toggle="toggle(x)" @edit="router.push(`/business/offers/${x.id}`)" @remove="remove(x)" />
     </div>
   </template>
 </template>

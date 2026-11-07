@@ -10,12 +10,12 @@ const { t } = useI18n()
 const auth = useAuthStore()
 const initials = computed(() => (auth.user?.displayName ?? '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase())
 const menu = computed(() => [
-  { to: '/w/account/tickets', icon: 'confirmation_number', label: t('nav.myTickets') },
-  { to: '/w/account/saved', icon: 'bookmark', label: t('nav.saved') },
-  ...(auth.user?.role === 'LOCAL' || auth.user?.role === 'ADMIN' ? [{ to: '/w/account/points', icon: 'volunteer_activism', label: t('nav.pointsAndRegistrations') }] : []),
-  { to: '/w/account/offers', icon: 'sell', label: t('nav.myOffers') },
-  { to: '/w/account/itineraries', icon: 'auto_awesome', label: t('nav.itineraries') },
-  { to: '/w/account/settings', icon: 'settings', label: t('nav.settings') },
+  { to: '/account/tickets', icon: 'confirmation_number', label: t('nav.myTickets') },
+  { to: '/account/saved', icon: 'bookmark', label: t('nav.saved') },
+  ...(auth.user?.role === 'LOCAL' || auth.user?.role === 'ADMIN' ? [{ to: '/account/points', icon: 'volunteer_activism', label: t('nav.pointsAndRegistrations') }] : []),
+  { to: '/account/offers', icon: 'sell', label: t('nav.myOffers') },
+  { to: '/account/itineraries', icon: 'auto_awesome', label: t('nav.itineraries') },
+  { to: '/account/settings', icon: 'settings', label: t('nav.settings') },
 ])
 </script>
 

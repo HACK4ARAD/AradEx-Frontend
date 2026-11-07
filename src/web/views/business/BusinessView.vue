@@ -21,7 +21,7 @@ const maps = computed(() => (b.value ? directionsUrl(b.value.lat, b.value.lng, b
 
 <template>
   <Skeleton v-if="loading" :rows="4" :height="96" />
-  <EmptyState v-else-if="notFound" icon="storefront" :title="t('business.public.notFound')" :text="t('business.public.notFoundText')" :action="t('business.public.back')" @action="router.push('/w')" />
+  <EmptyState v-else-if="notFound" icon="storefront" :title="t('business.public.notFound')" :text="t('business.public.notFoundText')" :action="t('business.public.back')" @action="router.push('/')" />
   <EmptyState v-else-if="error || !data" icon="cloud_off" :title="t('business.loadError')" :action="t('common.retry')" @action="reload" />
   <template v-else-if="b">
     <div class="bg-white rounded-[20px] p-5 flex flex-col md:flex-row md:items-center gap-4">
@@ -51,7 +51,7 @@ const maps = computed(() => (b.value ? directionsUrl(b.value.lat, b.value.lng, b
       <div class="min-w-0">
         <h2 class="text-[20px] font-semibold m-0 mb-3">{{ t('business.public.events') }}</h2>
         <div v-if="data.events.length" class="flex flex-col gap-2.5">
-          <PublicEventRow v-for="e in data.events" :key="e.id" :event="e" :to="`/w/events/${e.id}`" />
+          <PublicEventRow v-for="e in data.events" :key="e.id" :event="e" :to="`/events/${e.id}`" />
         </div>
         <div v-else class="bg-white rounded-[16px] p-4 text-[14px] text-muted">{{ t('business.public.noEventsText') }}</div>
 

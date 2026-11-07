@@ -12,18 +12,18 @@ const opts = { global: { plugins: [i18n], stubs: { RouterLink: RouterLinkStub } 
 
 describe('PlaceCard', () => {
   it('row: type, visit time, distance, guide badge and "doar exterior"', () => {
-    const w = mount(PlaceCard, { props: { place: place({ distanceKm: 0.6 }), to: '/m/places/8' }, ...opts })
+    const w = mount(PlaceCard, { props: { place: place({ distanceKm: 0.6 }), to: '/places/8' }, ...opts })
     const text = w.text()
     expect(text).toContain('Turnul de Apă')
     expect(text).toContain('Obiectiv turistic · 15 min · 0,6 km')
     expect(text).toContain('Ghid · 2 puncte')
     expect(text).toContain('doar exterior')
-    expect(w.findComponent(RouterLinkStub).props('to')).toBe('/m/places/8')
+    expect(w.findComponent(RouterLinkStub).props('to')).toBe('/places/8')
   })
 
 
   it('hides the guide badge when a place has no guide points', () => {
-    const w = mount(PlaceCard, { props: { place: place({ guidePointsCount: 0, guideMinutes: 0 }), to: '/m/places/8' }, ...opts })
+    const w = mount(PlaceCard, { props: { place: place({ guidePointsCount: 0, guideMinutes: 0 }), to: '/places/8' }, ...opts })
     expect(w.text()).not.toContain('Ghid')
   })
 })

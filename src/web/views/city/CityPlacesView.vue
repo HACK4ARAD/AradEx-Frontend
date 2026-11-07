@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // T05 · Panou Primărie (și Admin) · Obiective & ghiduri (design/final/web, „/city/places”, W25):
-// lista obiectivelor + editorul obiectivului selectat (`/w/city/places/:id`, `/w/city/places/new`) cu punctele de ghid.
+// lista obiectivelor + editorul obiectivului selectat (`/city/places/:id`, `/city/places/new`) cu punctele de ghid.
 // „Generează cu AI” din design rămâne pentru după T12.
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -14,6 +14,7 @@ import type { FormErrors, GuidePointForm } from '@/shared/composables/usePlaceFo
 import type { GuidePointDto } from '@/shared/types/places'
 import { useUiStore } from '@/shared/stores/ui'
 import { ApiError } from '@/shared/api/client'
+import { mobilePreviewHref } from '@/router/app'
 
 const route = useRoute()
 const router = useRouter()
@@ -27,7 +28,7 @@ const c = useCityPlaces(selectedId)
 
 // fără selecție → primul obiectiv din listă
 watch(() => [sub.value, c.items.value.length] as const, ([s, n]) => {
-  if (!s && n) router.replace(`/w/city/places/${c.items.value[0].id}`)
+  if (!s && n) router.replace(`/city/places/${c.items.value[0].id}`)
 }, { immediate: true })
 
 const busy = ref(false)
@@ -45,13 +46,13 @@ async function save() {
   if (id === undefined) return
   if (id === null) { ui.toast(t('places.form.errors.fix'), 'error'); return }
   ui.toast(t(isNew.value ? 'places.panel.created' : 'places.panel.saved'), 'success')
-  if (isNew.value) router.replace(`/w/city/places/${id}`)
+  if (isNew.value) router.replace(`/city/places/${id}`)
 }
 
 async function removePlace() {
   if (!c.place.value || !window.confirm(t('places.panel.confirmDelete', { name: c.place.value.name }))) return
   const ok = await run(async () => { await c.remove(); return true }, 'places.panel.deleteConflict')
-  if (ok) { ui.toast(t('places.panel.deleted'), 'success'); router.replace('/w/city/places') }
+  if (ok) { ui.toast(t('places.panel.deleted'), 'success'); router.replace('/city/places') }
 }
 
 const sheetOpen = ref(false)
@@ -71,7 +72,7 @@ async function removePoint(g: GuidePointDto) {
 }
 const move = (g: GuidePointDto, dir: -1 | 1) => run(() => c.movePoint(g, dir))
 /** „Vezi ca vizitator” = ecranul E3 din aplicație (ghidul nu are pagină publică pe web), în tab nou. */
-const openInApp = (id: number) => window.open(router.resolve(`/m/places/${id}`).href, '_blank', 'noopener')
+const openInApp = (id: number) => window.open(mobilePreviewHref(`/places/${id}`), '_blank', 'noopener')
 </script>
 
 <template>
@@ -81,7 +82,7 @@ const openInApp = (id: number) => window.open(router.resolve(`/m/places/${id}`).
         <h1 class="text-[26px] font-semibold tracking-[-0.02em] m-0">{{ t('places.panel.title') }}</h1>
         <p class="text-muted text-[14px] mt-1 mb-0 max-w-[720px]">{{ t('places.panel.subtitle', { n: c.items.value.length }) }}</p>
       </div>
-      <AppButton icon="add" size="sm" @click="router.push('/w/city/places/new')">{{ t('places.panel.new') }}</AppButton>
+      <AppButton icon="add" size="sm" @click="router.push('/city/places/new')">{{ t('places.panel.new') }}</AppButton>
     </div>
 
     <div class="bg-white rounded-[16px] border border-line grid lg:grid-cols-[320px_minmax(0,1fr)] overflow-hidden">
@@ -91,7 +92,7 @@ const openInApp = (id: number) => window.open(router.resolve(`/m/places/${id}`).
         <div class="overflow-y-auto max-h-[300px] lg:max-h-none">
           <div v-if="c.loading.value && !c.items.value.length" class="p-3"><Skeleton :rows="6" :height="52" /></div>
           <EmptyState v-else-if="c.error.value" icon="cloud_off" :title="t('places.list.error')" :text="c.error.value" :action="t('common.retry')" @action="c.reloadList()" />
-          <router-link v-for="p in c.filtered.value" :key="p.id" :to="`/w/city/places/${p.id}`"
+          <router-link v-for="p in c.filtered.value" :key="p.id" :to="`/city/places/${p.id}`"
             class="flex items-center gap-3 px-3 py-2.5 no-underline text-ink border-b border-line last:border-b-0"
             :class="selectedId === p.id ? 'bg-soft' : 'hover:bg-bg'" data-test="panel-place">
             <span class="w-11 h-11 rounded-[10px] bg-[#7a7a72] bg-cover bg-center shrink-0" :style="p.imageUrl ? { backgroundImage: `url('${p.imageUrl}')` } : undefined" />

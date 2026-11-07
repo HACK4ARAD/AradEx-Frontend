@@ -47,12 +47,12 @@ onMounted(async () => {
       <div class="text-[14px] text-muted font-medium">{{ f.longDate(new Date().toISOString()) }}</div>
       <h1 class="text-[32px] leading-[1.08] font-semibold tracking-[-0.035em] m-0">{{ t('home.title') }}</h1>
     </div>
-    <router-link v-if="auth.user" to="/m/profile" class="w-11 h-11 shrink-0 rounded-full bg-ink text-white text-[17px] font-bold flex items-center justify-center no-underline" :aria-label="t('nav.profile')">{{ initials }}</router-link>
-    <router-link v-else to="/m/profile" class="w-11 h-11 shrink-0 rounded-full bg-white border border-line text-ink flex items-center justify-center no-underline" :aria-label="t('nav.profile')"><AppIcon name="person" /></router-link>
+    <router-link v-if="auth.user" to="/profile" class="w-11 h-11 shrink-0 rounded-full bg-ink text-white text-[17px] font-bold flex items-center justify-center no-underline" :aria-label="t('nav.profile')">{{ initials }}</router-link>
+    <router-link v-else to="/profile" class="w-11 h-11 shrink-0 rounded-full bg-white border border-line text-ink flex items-center justify-center no-underline" :aria-label="t('nav.profile')"><AppIcon name="person" /></router-link>
   </div>
 
   <div class="flex items-center gap-2.5">
-    <button type="button" class="flex-1 min-w-0 h-[52px] px-4 rounded-[16px] bg-white border border-line text-muted text-[16px] flex items-center gap-2.5 text-left" @click="router.push('/m/search')">
+    <button type="button" class="flex-1 min-w-0 h-[52px] px-4 rounded-[16px] bg-white border border-line text-muted text-[16px] flex items-center gap-2.5 text-left" @click="router.push('/search')">
       <AppIcon name="search" /><span class="truncate">{{ t('common.search') }}</span>
     </button>
     <button type="button" class="relative w-[52px] h-[52px] shrink-0 rounded-[16px] bg-white border border-line flex items-center justify-center" :aria-label="t('events.filters.aria')" @click="openFilters">

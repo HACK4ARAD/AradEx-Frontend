@@ -11,7 +11,7 @@ const { km } = useFormat()
 </script>
 
 <template>
-  <router-link :to="`/m/places/${place.id}`" class="shrink-0 w-[168px] rounded-[18px] overflow-hidden bg-white border border-line shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.05)] no-underline text-ink text-left">
+  <router-link :to="`/places/${place.id}`" class="shrink-0 w-[168px] rounded-[18px] overflow-hidden bg-white border border-line shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.05)] no-underline text-ink text-left">
     <div class="relative h-[104px] bg-[#555] bg-center bg-cover" :style="place.imageUrl ? { backgroundImage: `url('${place.imageUrl}')` } : undefined">
       <span v-if="place.guidePointsCount" class="absolute left-2 top-2 inline-flex items-center gap-[5px] text-[11.5px] font-medium px-2 py-[3px] rounded-full bg-white/95">
         <AppIcon name="headphones" :size="16" />{{ t('places.card.guide', { n: place.guidePointsCount }, place.guidePointsCount) }}

@@ -1,0 +1,17 @@
+{
+  "privacy": {
+    "title": "Confidențialitate",
+    "updated": "Actualizat pe 7 noiembrie 2026",
+    "intro": "AradExperience e aplicația orașului Arad pentru evenimente, obiective cu ghid, oferte locale și acțiuni comunitare. Pagina asta spune ce date folosim și de ce.",
+    "sections": {
+      "account": { "title": "Contul tău", "text": "Numele, adresa de email și parola (salvată criptat) îți creează contul. Pe telefon, aplicația ține minte doar sesiunea (un token), ca să nu te conectezi de fiecare dată." },
+      "activity": { "title": "Ce faci în aplicație", "text": "Salvăm biletele și rezervările, evenimentele salvate, înscrierile la acțiunile comunitare, punctele primite și folosite, ofertele revendicate și itinerariile tale, ca să le vezi oricând." },
+      "location": { "title": "Locația", "text": "Locația e folosită doar când o permiți, pe telefon, pentru hartă, trasee și „lângă mine”. Coordonatele se trimit la cerere pentru a calcula distanțele și nu se salvează în contul tău." },
+      "camera": { "title": "Camera", "text": "Camera pornește doar când scanezi un cod QR (bilete, oferte, acțiuni). Imaginile nu se salvează și nu pleacă de pe telefon." },
+      "ai": { "title": "Asistentul AI", "text": "Mesajele trimise asistentului sunt procesate de Anthropic (Claude) doar pentru a-ți răspunde, împreună cu lista evenimentelor publice. Nu trimite date personale în chat." },
+      "storage": { "title": "Unde stau datele", "text": "Datele stau pe servere Amazon Web Services din Uniunea Europeană (Stockholm). Nu vindem datele și nu le folosim pentru reclame." },
+      "rights": { "title": "Drepturile tale", "text": "Poți cere oricând o copie a datelor sau ștergerea contului, împreună cu biletele, punctele și înscrierile asociate." }
+    },
+    "contact": "Contact: {email}"
+  }
+}

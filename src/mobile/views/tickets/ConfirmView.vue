@@ -36,10 +36,10 @@ const day = computed(() => {
     </p>
     <p v-if="ticket.email" class="text-center text-muted mt-2 mb-0 text-[13.5px]">{{ t('tickets.confirm.copy', { email: ticket.email }) }}</p>
     <div class="mt-auto pt-10 pb-2 flex flex-col">
-      <router-link :to="`/m/tickets/${ticket.code}`" class="min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold flex items-center justify-center no-underline">{{ paid ? t('tickets.confirm.seeTicket') : t('tickets.confirm.seeCode') }}</router-link>
+      <router-link :to="`/tickets/${ticket.code}`" class="min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold flex items-center justify-center no-underline">{{ paid ? t('tickets.confirm.seeTicket') : t('tickets.confirm.seeCode') }}</router-link>
       <a :href="googleCalendarUrl({ title: ticket.eventTitle, startAt: ticket.startAt, endAt: ticket.endAt, locationName: ticket.locationName, address: ticket.address })" target="_blank" rel="noopener"
         class="min-h-[52px] mt-2.5 rounded-[16px] bg-white border border-line text-ink text-[16px] font-semibold flex items-center justify-center no-underline">{{ t('tickets.confirm.addCalendar') }}</a>
-      <router-link to="/m" class="text-center mt-4 font-semibold underline underline-offset-[3px] text-ink">{{ t('tickets.confirm.backToEvents') }}</router-link>
+      <router-link to="/" class="text-center mt-4 font-semibold underline underline-offset-[3px] text-ink">{{ t('tickets.confirm.backToEvents') }}</router-link>
     </div>
   </div>
 </template>

@@ -43,46 +43,65 @@ describe('authErrorMessage', () => {
 })
 
 describe('homeFor', () => {
-  it('sends panels to their dashboards', () => {
-    expect(homeFor('BUSINESS', 'w')).toBe('/w/business')
-    expect(homeFor('CITY_HALL', 'w')).toBe('/w/city')
-    expect(homeFor('ADMIN', 'w')).toBe('/w/admin')
-    expect(homeFor('LOCAL', 'w')).toBe('/w')
-    expect(homeFor('CITY_HALL', 'm')).toBe('/m/panel')
-    expect(homeFor('VISITOR', 'm')).toBe('/m')
-    expect(homeFor('VOLUNTEER', 'm')).toBe('/m/vol/actions')
+  it('sends each role home, without a prefix', () => {
+    expect(homeFor('BUSINESS', 'w')).toBe('/business')
+    expect(homeFor('CITY_HALL', 'w')).toBe('/city')
+    expect(homeFor('ADMIN', 'w')).toBe('/admin')
+    expect(homeFor('LOCAL', 'w')).toBe('/')
+    expect(homeFor('CITY_HALL', 'm')).toBe('/panel')
+    expect(homeFor('BUSINESS', 'm')).toBe('/panel')
+    expect(homeFor('VISITOR', 'm')).toBe('/')
+    expect(homeFor('VOLUNTEER', 'm')).toBe('/vol/actions')
   })
 })
 
 describe('safeNext', () => {
-  it('only accepts internal paths of the same UI', () => {
-    expect(safeNext('/m/tickets', 'm')).toBe('/m/tickets')
-    expect(safeNext('/w/account', 'm')).toBeNull()
-    expect(safeNext('//evil.example', 'm')).toBeNull()
-    expect(safeNext('https://evil.example', 'w')).toBeNull()
-    expect(safeNext('/m/login', 'm')).toBeNull()
-    expect(safeNext(undefined, 'w')).toBeNull()
+  it('only accepts internal paths', () => {
+    expect(safeNext('/tickets')).toBe('/tickets')
+    expect(safeNext('/city/actions?x=1')).toBe('/city/actions?x=1')
+    expect(safeNext('//evil.example')).toBeNull()
+    expect(safeNext('/\\evil.example')).toBeNull()
+    expect(safeNext('https://evil.example')).toBeNull()
+    expect(safeNext('tickets')).toBeNull()
+    expect(safeNext(undefined)).toBeNull()
   })
 
-  it('ignores the bare start page', () => {
-    expect(safeNext('/w', 'w')).toBeNull()
-    expect(safeNext('/m', 'm')).toBeNull()
+  it('ignores the start page and the login pages', () => {
+    expect(safeNext('/')).toBeNull()
+    expect(safeNext('/login')).toBeNull()
+    expect(safeNext('/login?next=/x')).toBeNull()
+    expect(safeNext('/vol/login')).toBeNull()
+  })
+
+  it('strips the old /m and /w prefixes', () => {
+    expect(safeNext('/m/tickets')).toBe('/tickets')
+    expect(safeNext('/w/city')).toBe('/city')
+    expect(safeNext('/m')).toBeNull()
+    expect(safeNext('/w/login')).toBeNull()
+    expect(safeNext('/m//evil.example')).toBeNull()
   })
 })
 
 describe('landingFor', () => {
-  const rolesOf = (p: string) => (p.startsWith('/w/city') ? (['CITY_HALL'] as Role[]) : p.startsWith('/m/tickets') ? (['VISITOR', 'LOCAL'] as Role[]) : undefined)
+  const rolesOf = (p: string) => (p.startsWith('/city') ? (['CITY_HALL'] as Role[]) : p.startsWith('/tickets') ? (['VISITOR', 'LOCAL'] as Role[]) : undefined)
 
   it('uses next when the role may open it', () => {
-    expect(landingFor('LOCAL', 'm', '/m/tickets', rolesOf)).toBe('/m/tickets')
-    expect(landingFor('VISITOR', 'w', '/w/events', rolesOf)).toBe('/w/events')
-    expect(landingFor('ADMIN', 'w', '/w/city/actions', rolesOf)).toBe('/w/city/actions')
+    expect(landingFor('LOCAL', 'm', '/tickets', rolesOf)).toBe('/tickets')
+    expect(landingFor('LOCAL', 'm', '/m/tickets', rolesOf)).toBe('/tickets')
+    expect(landingFor('VISITOR', 'w', '/community', rolesOf)).toBe('/community')
+    expect(landingFor('ADMIN', 'w', '/city/actions', rolesOf)).toBe('/city/actions')
   })
 
   it('falls back to the role home when next is missing, the start page, or forbidden', () => {
-    expect(landingFor('CITY_HALL', 'w', '/w', rolesOf)).toBe('/w/city')
-    expect(landingFor('BUSINESS', 'w', undefined, rolesOf)).toBe('/w/business')
-    expect(landingFor('CITY_HALL', 'm', '/m/tickets', rolesOf)).toBe('/m/panel')
-    expect(landingFor('LOCAL', 'w', '/w/city', rolesOf)).toBe('/w')
+    expect(landingFor('CITY_HALL', 'w', '/', rolesOf)).toBe('/city')
+    expect(landingFor('BUSINESS', 'w', undefined, rolesOf)).toBe('/business')
+    expect(landingFor('CITY_HALL', 'm', '/tickets', rolesOf)).toBe('/panel')
+    expect(landingFor('LOCAL', 'w', '/city', rolesOf)).toBe('/')
+  })
+
+  it('falls back to the role home when next is not a route in this app', () => {
+    const notHere = (p: string) => (p.startsWith('/events') || p.startsWith('/tickets') ? null : rolesOf(p))
+    expect(landingFor('BUSINESS', 'w', '/w/events/5', notHere)).toBe('/business')
+    expect(landingFor('CITY_HALL', 'w', '/m/tickets', notHere)).toBe('/city')
   })
 })
