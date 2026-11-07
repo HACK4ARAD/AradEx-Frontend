@@ -43,8 +43,14 @@
     "yourCode": "Codul tău",
     "hint": "Arată codul la casă sau la intrare. Firma îl validează o singură dată.",
     "used": "Folosit {date}",
-    "pointsLater": "Plata cu puncte vine odată cu punctele (T11). Deocamdată oferta se revendică gratuit.",
-    "errUnavailable": "Oferta nu mai e valabilă azi."
+    "errUnavailable": "Oferta nu mai e valabilă azi.",
+    "payPoints": "Plătește cu {n} de puncte",
+    "pointsShort": "{n} p",
+    "paidDone": "Plătit cu {n} de puncte. Codul e și în Bilete.",
+    "paid": "Plătit cu {n} de puncte din acțiunile comunitare.",
+    "notEnough": "Nu ai destule puncte: ai {have}, îți trebuie {n}.",
+    "errPoints": "Nu ai destule puncte pentru oferta asta.",
+    "pointsLocalsOnly": "Plata cu puncte e pentru localnicii care participă la acțiunile comunitare."
   },
   "status": {
     "ISSUED": "Activ",
@@ -84,7 +90,7 @@
     "validFrom": "Valabilă de la",
     "validUntil": "Până la (gol = permanentă)",
     "pointsPrice": "Preț în puncte (opțional)",
-    "pointsHint": "Localnicii pot plăti cu punctele din acțiunile comunitare (din T11).",
+    "pointsHint": "Localnicii pot plăti cu punctele câștigate la acțiunile comunitare.",
     "imageUrl": "Poză (opțional, ex. /img/oferta-cafea.jpg)",
     "paused": "Salvează ca ciornă (pauză)",
     "save": "Salvează",
@@ -117,6 +123,7 @@
     "errCancelled": "Codul a fost anulat."
   },
   "claimed": {
-    "title": "Oferte revendicate"
+    "title": "Oferte revendicate",
+    "paid": "plătită cu {n} p"
   }
 }

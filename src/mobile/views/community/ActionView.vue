@@ -83,7 +83,7 @@ async function share() {
     </div>
   </div>
 
-  <div class="pt-4 pb-36">
+  <div class="pt-4 pb-32">
     <Skeleton v-if="loading" :rows="4" />
     <EmptyState v-else-if="notFound" icon="volunteer_activism" :title="t('community.action.notFound')" :action="t('community.action.backToList')" @action="router.push('/m/community')" />
     <EmptyState v-else-if="!a" icon="cloud_off" :title="t('community.loadError')" :action="t('common.retry')" @action="load" />
@@ -133,8 +133,8 @@ async function share() {
     </template>
   </div>
 
-  <!-- butonul principal, fix deasupra tab bar-ului -->
-  <div v-if="a" class="fixed bottom-20 inset-x-4 z-20 max-w-[480px] mx-auto">
+  <!-- bara de jos din design (`bottombar`), peste tab bar, ca la detaliul evenimentului (T06) și al ofertei (T10) -->
+  <div v-if="a" class="fixed left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[480px] z-40 px-5 pt-3 pb-[max(30px,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur border-t border-line">
     <AppButton v-if="isStaff" block variant="secondary" icon="qr_code_scanner" @click="router.push('/m/panel')">{{ t('community.action.staffCta') }}</AppButton>
     <AppButton v-else-if="reg" block icon="qr_code_2" :class="reg.status === 'CONFIRMED' ? '!bg-green' : ''" @click="qrOpen = true">
       {{ reg.status === 'CONFIRMED' ? t('community.action.confirmedCta', { n: a.pointsReward }) : t('community.action.myQrCta') }}
@@ -143,7 +143,7 @@ async function share() {
     <AppButton v-else-if="free <= 0" block disabled>{{ t('community.action.fullCta') }}</AppButton>
     <div v-else-if="auth.role === 'VISITOR'" class="flex flex-col gap-1.5">
       <AppButton block icon="how_to_reg" class="!bg-green" :loading="saving" @click="onRegister">{{ t('community.action.visitorCta') }}</AppButton>
-      <span class="text-muted text-[12px] text-center bg-bg/90 rounded">{{ t('community.action.visitorNote') }}</span>
+      <span class="text-muted text-[12px] text-center">{{ t('community.action.visitorNote') }}</span>
     </div>
     <AppButton v-else-if="!auth.isLoggedIn || canRegister" block icon="how_to_reg" class="!bg-green" :loading="saving" @click="onRegister">
       {{ t('community.action.registerCta', { n: a.pointsReward }) }}
