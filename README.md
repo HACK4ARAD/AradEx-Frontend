@@ -16,4 +16,15 @@ Scheletul (T02) e construit și verificat (`build` + `test` verzi):
 - `src/router/index.ts` — toate rutele din `docs/API.md` §Rute FE; cele neimplementate afișează `PlaceholderView` cu codul ecranului și task-ul; guard pe `meta.roles`.
 - PWA (`vite-plugin-pwa`), fonturi locale (Inter, Material Symbols în `public/fonts`), `public/_redirects` pentru Netlify.
 
+## Aplicația Android (Capacitor 6, T15)
+Același build Vue, împachetat ca aplicație nativă (`android/`, `capacitor.config.ts`); pornește direct pe interfața mobilă (`/m`). Cere Android Studio (SDK 34) și JDK 21 (`JAVA_HOME`).
+```
+npm run cap:sync      # vite build + copiază dist în proiectul Android
+npm run android:run   # build + instalează pe emulatorul/telefonul conectat (sau: npm run android:open → Android Studio)
+adb reverse tcp:8081 tcp:8081   # emulator/telefon prin USB: localhost:8081 din aplicație = API-ul de pe PC
+```
+- API-ul folosit e `VITE_API_URL` de la build. Originea aplicației e `http://localhost`, deci trebuie în `CORS_ORIGINS` din BE.
+- Live reload în aplicația instalată: `adb reverse tcp:5173 tcp:5173`, apoi `CAP_SERVER_URL=http://localhost:5173 npx cap run android`.
+- iOS: `npx cap add ios` + build doar pe macOS cu Xcode.
+
 Mod de lucru: `CLAUDE.md` de aici + `../AradEx-Plan/CLAUDE.md`; skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt în `../AradEx-Plan/.claude/skills/`. Următorul pas: T03 (login real pe API), apoi T05/T06 — înlocuiești `PlaceholderView` rută cu rută.
