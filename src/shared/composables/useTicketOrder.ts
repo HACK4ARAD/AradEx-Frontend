@@ -102,6 +102,8 @@ export function useCheckout() {
       element?.destroy()
       element = elements.create('payment', { layout: 'tabs' })
       element.on('ready', () => { cardReady.value = true })
+      // T25: cheie publică greșită sau rețea blocată — Stripe nu mai trimite `ready`: eroarea cu „Reîncearcă”, nu un formular gol
+      element.on('loaderror', () => { prepareError.value = t('tickets.checkout.stripeLoadError') })
       if (cardEl.value) element.mount(cardEl.value)
     } catch (err) {
       prepareError.value = err instanceof ApiError ? errorText(err) : t('tickets.checkout.stripeLoadError')
