@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ApiError } from '@/shared/api/client'
-import type { Role } from '@/shared/types/api'
+import type { Role } from '@/shared/types/common'
 import { authErrorMessage, emptyAuthForm, homeFor, landingFor, safeNext, validateAuthForm } from './useAuthForm'
 
 describe('validateAuthForm', () => {
@@ -50,6 +50,7 @@ describe('homeFor', () => {
     expect(homeFor('LOCAL', 'w')).toBe('/w')
     expect(homeFor('CITY_HALL', 'm')).toBe('/m/panel')
     expect(homeFor('VISITOR', 'm')).toBe('/m')
+    expect(homeFor('VOLUNTEER', 'm')).toBe('/m/vol/actions')
   })
 })
 

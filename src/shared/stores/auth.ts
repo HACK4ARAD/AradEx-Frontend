@@ -3,7 +3,8 @@ import { computed, ref } from 'vue'
 import { authApi } from '@/shared/api/auth'
 import { tokenStore, setUnauthorizedHandler } from '@/shared/api/client'
 import { i18n, setLocale, type Locale } from '@/shared/i18n'
-import type { RegisterRequest, Role, UpdateMeRequest, UserDto } from '@/shared/types/api'
+import type { Role } from '@/shared/types/common'
+import type { RegisterRequest, UpdateMeRequest, UserDto } from '@/shared/types/auth'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserDto | null>(null)

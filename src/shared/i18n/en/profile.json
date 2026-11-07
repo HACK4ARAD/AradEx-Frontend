@@ -1,0 +1,14 @@
+{
+  "title": "Profile",
+  "connectedAs": "Signed in · {role}",
+  "guestTitle": "Browsing as a visitor",
+  "guestText": "Sign in when you buy tickets or want points.",
+  "verified": "Verified",
+  "pendingVerification": "Pending verification",
+  "points": "Your points",
+  "pointsAvailable": "points available",
+  "language": "App language",
+  "roleRow": "Account role",
+  "roleHint": "The role comes from the account and only an administrator can change it.",
+  "loggedOut": "You signed out."
+}
