@@ -24,7 +24,7 @@ function drawMarkers() {
   markers = props.markers.map((m) => {
     const sel = m.id === props.selectedId
     const mk = new Marker!({ map: map.value, position: { lat: m.lat, lng: m.lng }, content: pinElement(m, sel), zIndex: sel ? 1000 : 1, gmpClickable: true })
-    mk.addListener('click', () => emit('select', m.id))
+    mk.addEventListener('gmp-click', () => emit('select', m.id))
     return mk
   })
 }
