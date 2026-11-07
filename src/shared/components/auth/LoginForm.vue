@@ -1,6 +1,7 @@
 <script setup lang="ts">
-// Formularul de cont, comun mobil (S12) + web (W0, tab „Cont personal”): conectare, cont nou (Vizitator / Localnic) și,
-// pe web, înregistrarea unei firme (contul rămâne neverificat până la Primărie/Admin). View-urile adaugă doar rama.
+// Formularul cu e-mail + parolă, comun mobil + web: conectarea firmelor, a Primăriei și a Adminului și, pe web, înregistrarea
+// unei firme (contul rămâne neverificat până la Primărie/Admin). T21: conturile personale (Vizitator, Localnic) nu mai trec
+// pe aici: intră cu telefon + cod OTP în aplicația mobilă (mobile/components/auth/PhoneLogin). View-urile adaugă doar rama.
 import { computed, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -34,14 +35,12 @@ const busy = ref(false)
 const isWeb = props.ui === 'w'
 const showDemo = DEMO_ENABLED
 
-const title = computed(() => t(mode.value === 'login' ? 'auth.loginTitle' : mode.value === 'register' ? 'auth.registerTitle' : 'auth.businessTitle'))
+const title = computed(() => t(mode.value === 'business' ? 'auth.businessTitle' : 'auth.loginTitle'))
 const subtitle = computed(() => {
   if (mode.value === 'business') return t('auth.businessSub')
-  if (mode.value === 'register') return t(isWeb ? 'auth.registerSubWeb' : 'auth.registerSub')
-  if (props.loginOnly) return t('auth.loginSubPanels')
-  return t(isWeb ? 'auth.loginSubWeb' : 'auth.loginSub')
+  return t(isWeb ? 'auth.loginSubPanels' : 'auth.loginSubFirm')
 })
-const submitLabel = computed(() => t(mode.value === 'login' ? 'auth.submitLogin' : mode.value === 'register' ? 'auth.submitRegister' : 'auth.submitBusiness'))
+const submitLabel = computed(() => t(mode.value === 'business' ? 'auth.submitBusiness' : 'auth.submitLogin'))
 
 function setMode(m: AuthMode) { mode.value = m; error.value = '' }
 /** Completează un cont demo; apelat și din exterior prin ref (cardurile de panouri de pe web). */
@@ -101,27 +100,15 @@ defineExpose({ useDemo })
       <AppInput v-model="form.password" :label="t('auth.password')" type="password" icon="lock" :placeholder="t('auth.passwordPh')"
         :autocomplete="mode === 'login' ? 'current-password' : 'new-password'" />
 
-      <div v-if="mode === 'register'">
-        <span class="block text-[14px] font-semibold mb-2">{{ t('auth.useAs') }}</span>
-        <div class="flex gap-2">
-          <button v-for="r in (['VISITOR', 'LOCAL'] as const)" :key="r" type="button" :aria-pressed="form.role === r"
-            class="flex-1 min-w-0 rounded-2xl bg-white flex flex-col items-center gap-0.5 text-center"
-            :class="form.role === r ? 'border-2 border-ink p-[11px]' : 'border border-line p-3'" @click="form.role = r">
-            <b class="text-[14px]">{{ t(`auth.role.${r}`) }}</b>
-            <span class="text-[11.5px] text-muted leading-tight">{{ t(`auth.roleHint.${r}`) }}</span>
-          </button>
-        </div>
-      </div>
-
       <div v-if="error" role="alert" class="flex gap-2.5 items-start px-3.5 py-3 rounded-[14px] bg-[#FCE8E6] text-[#B3261E] text-[13.5px] leading-snug">
         <AppIcon name="error" :size="18" /><span>{{ error }}</span>
       </div>
 
       <AppButton type="submit" block :loading="busy" class="mt-1" :icon="mode === 'business' ? 'add_business' : undefined">{{ submitLabel }}</AppButton>
 
-      <button v-if="!loginOnly" type="button" class="self-center text-[14px] font-semibold underline underline-offset-[3px] py-1"
-        @click="setMode(mode === 'login' ? 'register' : 'login')">
-        {{ mode === 'login' ? t('auth.toRegister') : t('auth.toLogin') }}
+      <button v-if="mode === 'business'" type="button" class="self-center text-[14px] font-semibold underline underline-offset-[3px] py-1"
+        @click="setMode('login')">
+        {{ t('auth.toLogin') }}
       </button>
     </form>
 

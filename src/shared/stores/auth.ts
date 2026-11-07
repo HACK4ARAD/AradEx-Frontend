@@ -4,7 +4,7 @@ import { authApi } from '@/shared/api/auth'
 import { tokenStore, setUnauthorizedHandler } from '@/shared/api/client'
 import { i18n, setLocale, type Locale } from '@/shared/i18n'
 import type { Role } from '@/shared/types/common'
-import type { RegisterRequest, UpdateMeRequest, UserDto } from '@/shared/types/auth'
+import type { AuthResponse, RegisterRequest, UpdateMeRequest, UserDto } from '@/shared/types/auth'
 import { APP } from '@/shared/app'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -36,7 +36,18 @@ export const useAuthStore = defineStore('auth', () => {
 
   /** Cont nou: păstrează limba aleasă înainte de înregistrare (contul nou pornește cu 'ro'). */
   async function register(req: RegisterRequest) {
-    const res = await authApi.register(req)
+    return acceptNewAccount(await authApi.register(req))
+  }
+
+  /** T21: sesiunea venită din login-ul cu telefon (cont existent). */
+  function acceptSession(res: AuthResponse) {
+    setSession(res.token, res.user)
+    applyAccountLocale(res.user)
+    return res.user
+  }
+
+  /** Cont nou (email sau telefon): păstrează limba aleasă înainte de înregistrare. */
+  async function acceptNewAccount(res: AuthResponse) {
     setSession(res.token, res.user)
     const chosen = i18n.global.locale.value as Locale
     if (chosen !== res.user.locale) {
@@ -107,5 +118,5 @@ export const useAuthStore = defineStore('auth', () => {
     })
   })
 
-  return { user, token, ready, savingLocale, isLoggedIn, role, login, register, updateMe, changeLocale, logout, init, hasRole }
+  return { user, token, ready, savingLocale, isLoggedIn, role, login, register, acceptSession, acceptNewAccount, updateMe, changeLocale, logout, init, hasRole }
 })

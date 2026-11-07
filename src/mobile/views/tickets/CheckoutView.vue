@@ -32,10 +32,11 @@ const lines = computed(() => !o.value ? [] : [
 
 async function pay() {
   if (!o.value || paying.value) return
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim())) { ui.toast(t('tickets.checkout.badEmail'), 'error'); return }
+  // T21: emailul e opțional (conturile cu telefon); dacă e completat, trebuie să fie valid
+  if (email.value.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim())) { ui.toast(t('tickets.checkout.badEmail'), 'error'); return }
   paying.value = true
   try {
-    const ticket = await ticketsApi.buy(o.value.event.id, { qtyAdult: o.value.adult, qtyChild: o.value.child, email: email.value.trim() })
+    const ticket = await ticketsApi.buy(o.value.event.id, { qtyAdult: o.value.adult, qtyChild: o.value.child, email: email.value.trim() || undefined })
     if (auth.user) cacheTicket(auth.user.id, ticket)
     store.clear()
     await router.replace(`/confirm/${ticket.code}`)

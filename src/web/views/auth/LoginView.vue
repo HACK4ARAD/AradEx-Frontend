@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// W0 — Conectare pe web (design/final/web.html → /login): stânga panou de prezentare, dreapta „Cont personal” / „Panouri”.
+// W0 — Conectare pe web (design/final/web.html → /login): stânga panou de prezentare, dreapta login-ul panourilor (Primărie,
+// firme, Admin) + „Înregistrează-ți firma”. T21: conturile personale intră doar în aplicația mobilă, cu telefon + cod OTP.
 // Pagina e în afara WebLayout (fără bara de sus), ca în design. Sub 1100px rămâne doar formularul.
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -8,13 +9,7 @@ import LoginForm from '@/shared/components/auth/LoginForm.vue'
 import { DEMO_ENABLED } from '@/shared/composables/useAuthForm'
 
 const { t } = useI18n()
-const tab = ref<'personal' | 'panels'>('personal')
 const panelsForm = ref<InstanceType<typeof LoginForm> | null>(null)
-
-const personalDemo = [
-  { label: 'visitor@demo.ro', email: 'visitor@demo.ro' },
-  { label: 'local@demo.ro', email: 'local@demo.ro' },
-]
 
 const panels = [
   { email: 'primaria@demo.ro', icon: 'account_balance', bg: 'bg-ink', title: 'auth.panels.cityTitle', desc: 'auth.panels.cityDesc' },
@@ -58,31 +53,19 @@ function pick(email: string) {
           <span class="w-2.5 h-2.5 rounded-full bg-accent" /> {{ t('app.name') }}
         </router-link>
 
-        <div class="inline-flex self-start gap-0.5 p-[3px] rounded-[10px] bg-[#EDEDE7]" role="tablist">
-          <button v-for="x in (['personal', 'panels'] as const)" :key="x" type="button" role="tab" :aria-selected="tab === x"
-            class="h-8 px-3 rounded-lg text-[13px] font-semibold"
-            :class="tab === x ? 'bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]' : 'text-muted'" @click="tab = x">
-            {{ t(`auth.tabs.${x}`) }}
-          </button>
+        <LoginForm ref="panelsForm" ui="w" />
+        <div v-if="DEMO_ENABLED" class="text-[13px] text-muted mt-1">{{ t('auth.panels.pick') }}</div>
+        <button v-for="p in (DEMO_ENABLED ? panels : [])" :key="p.email" type="button"
+          class="bg-white border border-line rounded-2xl p-4 flex items-center gap-3 text-left w-full hover:border-ink transition-colors" @click="pick(p.email)">
+          <span class="w-11 h-11 rounded-xl text-white flex items-center justify-center shrink-0" :class="p.bg"><AppIcon :name="p.icon" /></span>
+          <span class="min-w-0">
+            <b class="block text-[15px]">{{ t(p.title) }}</b>
+            <span class="block text-[13px] text-muted mt-0.5">{{ p.email }} · {{ t(p.desc) }}</span>
+          </span>
+        </button>
+        <div class="flex gap-2.5 items-start px-3.5 py-3 rounded-xl bg-[#F1F1EC] text-muted text-[12.5px] leading-normal">
+          <AppIcon name="smartphone" :size="18" /><span>{{ t('auth.panels.personal') }}</span>
         </div>
-
-        <LoginForm v-if="tab === 'personal'" key="personal" ui="w" :demo-accounts="personalDemo" />
-
-        <template v-else>
-          <LoginForm ref="panelsForm" key="panels" ui="w" login-only />
-          <div v-if="DEMO_ENABLED" class="text-[13px] text-muted mt-1">{{ t('auth.panels.pick') }}</div>
-          <button v-for="p in (DEMO_ENABLED ? panels : [])" :key="p.email" type="button"
-            class="bg-white border border-line rounded-2xl p-4 flex items-center gap-3 text-left w-full hover:border-ink transition-colors" @click="pick(p.email)">
-            <span class="w-11 h-11 rounded-xl text-white flex items-center justify-center shrink-0" :class="p.bg"><AppIcon :name="p.icon" /></span>
-            <span class="min-w-0">
-              <b class="block text-[15px]">{{ t(p.title) }}</b>
-              <span class="block text-[13px] text-muted mt-0.5">{{ p.email }} · {{ t(p.desc) }}</span>
-            </span>
-          </button>
-          <div class="flex gap-2.5 items-start px-3.5 py-3 rounded-xl bg-[#F1F1EC] text-muted text-[12.5px] leading-normal">
-            <AppIcon name="badge" :size="18" /><span>{{ t('auth.panels.volunteers') }}</span>
-          </div>
-        </template>
 
         <router-link to="/" class="self-center inline-flex items-center gap-1 text-[13px] text-muted no-underline mt-2">
           <AppIcon name="arrow_back" :size="16" /> {{ t('auth.backToSite') }}

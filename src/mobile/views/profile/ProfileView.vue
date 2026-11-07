@@ -51,7 +51,7 @@ onMounted(async () => {
         <div class="min-w-0 flex-1">
           <span class="text-muted text-[13px]">{{ t('profile.connectedAs', { role: t(`auth.role.${auth.user.role}`) }) }}</span>
           <b class="block text-[16px] truncate">{{ auth.user.displayName }}</b>
-          <span class="block text-muted text-[13px] truncate">{{ auth.user.email }}</span>
+          <span class="block text-muted text-[13px] truncate">{{ auth.user.phone ?? auth.user.email }}</span>
         </div>
       </template>
       <template v-else>
