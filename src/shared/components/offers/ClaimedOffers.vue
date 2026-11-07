@@ -26,7 +26,7 @@ watch(() => items.value.length, (n) => emit('count', n), { immediate: true })
       <QrCode :value="r.code" :size="56" class="shrink-0" />
       <span class="min-w-0 flex-1">
         <b class="block text-[15.5px] leading-tight">{{ r.offerTitle }}</b>
-        <span class="block text-[13px] text-muted">{{ r.businessName }}</span>
+        <span class="block text-[13px] text-muted">{{ r.businessName }}<template v-if="r.pointsSpent > 0"> · {{ t('offers.claimed.paid', { n: r.pointsSpent }) }}</template></span>
         <span class="flex items-center gap-2 mt-1.5">
           <span class="font-mono text-[12px]">{{ r.code }}</span>
           <span class="h-[22px] px-2 rounded-full text-[11.5px] font-semibold flex items-center" :class="r.status === 'ISSUED' ? 'bg-green text-white' : 'bg-soft text-muted'">

@@ -5,7 +5,8 @@ import type { OfferCreate, OfferDto, OfferQuery, OfferSummary, RedemptionDto, Re
 export const offersApi = {
   list: (q: OfferQuery = {}) => client.get<OfferSummary[]>('/offers', { query: { ...q } }),
   get: (id: number) => client.get<OfferDto>(`/offers/${id}`),
-  redeem: (id: number) => client.post<RedemptionDto>(`/offers/${id}/redeem`),
+  /** `withPoints` (T11): plătește `pointsPrice` din punctele comunitare; 409 `insufficient_points` dacă soldul nu ajunge. */
+  redeem: (id: number, withPoints = false) => client.post<RedemptionDto>(`/offers/${id}/redeem`, undefined, { query: withPoints ? { withPoints: true } : undefined }),
   myRedemptions: () => client.get<RedemptionDto[]>('/me/redemptions'),
   businessOffers: () => client.get<OfferDto[]>('/business/offers'),
   create: (req: OfferCreate) => client.post<OfferDto>('/business/offers', req),

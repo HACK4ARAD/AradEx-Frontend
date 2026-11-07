@@ -17,6 +17,9 @@ const { items, loading, error, reload } = useOfferList(filter)
   <div class="flex flex-col gap-3.5 mt-3.5">
     <OfferBanner @pick="filter = 'CAFE'" />
     <OfferCategoryBar v-model="filter" />
+    <div v-if="!loading && !error" class="flex items-center justify-between -mb-1">
+      <span class="text-muted text-[14px]">{{ t('offers.count', items.length) }}<template v-if="filter !== 'ALL'"> · {{ t('offers.filtered') }}</template></span>
+    </div>
     <Skeleton v-if="loading" :rows="3" :height="220" />
     <EmptyState v-else-if="error" icon="cloud_off" :title="t('business.loadError')" :action="t('common.retry')" @action="reload" />
     <EmptyState v-else-if="!items.length" icon="sell" :title="t('offers.empty')" :text="t('offers.emptyText')" :action="t('offers.cats.ALL')" @action="filter = 'ALL'" />

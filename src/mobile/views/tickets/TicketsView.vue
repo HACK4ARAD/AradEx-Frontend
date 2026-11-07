@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // T07 · S9 Biletele mele — designul din „AradExperience information architecture” (S9): Viitoare / Trecute; secțiunea
-// „Acțiuni, oferte și recompense” (ofertele revendicate din T10; înscrierile la acțiuni și recompensele vin cu T11), cu poză,
+// „Acțiuni, oferte și recompense” (înscrierile la acțiunile comunitare din T11, apoi ofertele revendicate din T10), cu poză,
 // firmă, titlu, stare și QR → sheet-ul „Codul tău”; apoi „Bilete cumpărate” (poză, dată, titlu, câte bilete) → S10.
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -11,11 +11,14 @@ import StatusPill from '@/shared/components/tickets/StatusPill.vue'
 import EventImage from '@/shared/components/events/EventImage.vue'
 import { useMyTickets } from '@/shared/composables/useTickets'
 import { useMyRedemptions } from '@/shared/composables/useOffers'
+import { aradTodayStart, useMyRegistrations } from '@/shared/composables/useCommunity'
+import { communityApi } from '@/shared/api/community'
 import { useEventFormat } from '@/shared/composables/useEvents'
 import { useFormat } from '@/shared/composables/useFormat'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 import type { RedemptionDto } from '@/shared/types/offers'
+import type { RegistrationDto } from '@/shared/types/community'
 import type { TicketDto } from '@/shared/types/tickets'
 
 const { t } = useI18n()
@@ -29,7 +32,13 @@ const { upcoming, past, loading, offline, error, load } = useMyTickets()
 const claims = useMyRedemptions()
 const bookings = computed(() => (tab.value === 'up' ? upcoming.value : past.value))
 const mine = computed(() => claims.items.value.filter((r) => (tab.value === 'up' ? r.status === 'ISSUED' : r.status !== 'ISSUED')))
-const busy = computed(() => loading.value || claims.loading.value)
+/* T11: înscrierile la acțiunile comunitare — Viitoare = de azi încolo (Arad), Trecute = înainte */
+const regs = useMyRegistrations()
+const myRegs = computed(() => {
+  const today = aradTodayStart(f.todayIso())
+  return regs.items.value.filter((r) => (new Date(r.actionStartAt).getTime() >= today) === (tab.value === 'up'))
+})
+const busy = computed(() => loading.value || claims.loading.value || regs.loading.value)
 const initials = computed(() => (auth.user?.displayName ?? '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase())
 const shown = ref<CodeView | null>(null)
 
@@ -39,8 +48,27 @@ const validity = (r: RedemptionDto) => r.validUntil ? t('tickets.code.validUntil
 function openClaim(r: RedemptionDto) {
   shown.value = { title: r.offerTitle, sub: `${r.businessName} · ${validity(r)}`, code: r.code, pill: r.status === 'ISSUED' ? undefined : pill(r) }
 }
+const regPill = (r: RegistrationDto) => r.status === 'CONFIRMED' ? { tone: 'ok' as const, label: t('community.tickets.confirmed', { n: r.pointsReward }) }
+  : r.status === 'NO_SHOW' ? { tone: 'no' as const, label: t('community.tickets.rejected') } : { tone: 'pending' as const, label: t('community.tickets.pending') }
+const leaving = ref(false)
+async function leave(r: RegistrationDto) {
+  if (leaving.value) return
+  leaving.value = true
+  try {
+    await communityApi.cancel(r.actionId)
+    shown.value = null
+    await regs.load()
+    ui.toast(t('community.action.cancelledToast'), 'success')
+  } catch (e) { ui.error(e) } finally { leaving.value = false }
+}
+function openReg(r: RegistrationDto) {
+  shown.value = {
+    title: r.actionTitle, sub: `${f.dateTime(r.actionStartAt)} · ${r.locationName}`, code: r.code, note: t('community.tickets.note'), pill: regPill(r),
+    action: r.status === 'REGISTERED' ? { label: t('community.tickets.leave'), onClick: () => void leave(r), get busy() { return leaving.value } } : undefined,
+  }
+}
 const count = (tk: TicketDto) => tk.ticketType === 'FREE' ? t('tickets.registration') : t('tickets.count', tk.qtyAdult + tk.qtyChild)
-onMounted(async () => { await load(); if (error.value) ui.toast(error.value, 'error') })
+onMounted(async () => { void regs.load(); await load(); if (error.value) ui.toast(error.value, 'error') })
 </script>
 
 <template>
@@ -56,15 +84,28 @@ onMounted(async () => { await load(); if (error.value) ui.toast(error.value, 'er
     </div>
 
     <!-- Acțiuni, oferte și recompense -->
-    <div v-if="mine.length" class="flex flex-col gap-2.5">
+    <div v-if="mine.length || myRegs.length" class="flex flex-col gap-2.5">
       <div class="text-[14px] font-semibold text-muted">{{ t('tickets.mine.mineSection') }}</div>
+      <!-- T11: înscrierile la acțiunile comunitare (prototipul IA: poză, titlu, dată · oră, starea validării) -->
+      <button v-for="r in myRegs" :key="'c' + r.id" type="button" class="flex gap-3.5 items-center w-full text-left bg-white rounded-[20px] p-3 shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.05)] active:scale-[.98] transition-transform"
+        @click="openReg(r)">
+        <span class="w-16 h-16 shrink-0 rounded-[14px] bg-green-deep bg-cover bg-center flex items-center justify-center" :style="r.actionImageUrl ? { backgroundImage: `url('${r.actionImageUrl}')` } : undefined">
+          <AppIcon v-if="!r.actionImageUrl" name="volunteer_activism" :size="28" class="text-white/95" />
+        </span>
+        <span class="flex-1 min-w-0 flex flex-col gap-1">
+          <span class="text-[13px] text-muted font-medium">{{ f.dateTime(r.actionStartAt) }}</span>
+          <span class="text-[16px] font-semibold leading-[1.3]">{{ r.actionTitle }}</span>
+          <StatusPill :tone="regPill(r).tone" :label="regPill(r).label" />
+        </span>
+        <AppIcon name="qr_code_2" :size="24" class="text-muted" />
+      </button>
       <button v-for="r in mine" :key="r.id" type="button" class="flex gap-3.5 items-center w-full text-left bg-white rounded-[20px] p-3 shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.05)] active:scale-[.98] transition-transform"
         @click="openClaim(r)">
         <span class="w-16 h-16 shrink-0 rounded-[14px] bg-[#8A6A4F] bg-cover bg-center flex items-center justify-center" :style="r.offerImageUrl ? { backgroundImage: `url('${r.offerImageUrl}')` } : undefined">
           <AppIcon v-if="!r.offerImageUrl" name="sell" :size="28" class="text-white/95" />
         </span>
         <span class="flex-1 min-w-0 flex flex-col gap-1">
-          <span class="text-[13px] text-muted font-medium">{{ r.businessName }}</span>
+          <span class="text-[13px] text-muted font-medium">{{ r.businessName }}<template v-if="r.pointsSpent > 0"> · {{ t('offers.claimed.paid', { n: r.pointsSpent }) }}</template></span>
           <span class="text-[16px] font-semibold leading-[1.3]">{{ r.offerTitle }}</span>
           <StatusPill :tone="pill(r).tone" :label="pill(r).label" />
         </span>
@@ -74,11 +115,11 @@ onMounted(async () => { await load(); if (error.value) ui.toast(error.value, 'er
 
     <div v-if="offline" role="status" class="flex gap-2.5 items-center px-3.5 py-3 rounded-[14px] bg-white border border-line text-[14px] leading-[1.45]"><AppIcon name="wifi_off" :size="20" />{{ t('tickets.mine.offlineShown') }}</div>
 
-    <Skeleton v-if="busy && !bookings.length && !mine.length" :rows="2" :height="88" />
+    <Skeleton v-if="busy && !bookings.length && !mine.length && !myRegs.length" :rows="2" :height="88" />
 
     <!-- Bilete cumpărate -->
     <div v-if="bookings.length" class="flex flex-col gap-2.5">
-      <div v-if="mine.length" class="text-[14px] font-semibold text-muted mt-2">{{ t('tickets.mine.bookings') }}</div>
+      <div v-if="mine.length || myRegs.length" class="text-[14px] font-semibold text-muted mt-2">{{ t('tickets.mine.bookings') }}</div>
       <router-link v-for="tk in bookings" :key="tk.code" :to="`/tickets/${tk.code}`" class="flex gap-3.5 items-center w-full bg-white rounded-[20px] p-3 shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.05)] no-underline text-ink active:scale-[.98] transition-transform">
         <EventImage :src="tk.imageUrl" category="CONCERT" :emoji-size="28" class="w-16 h-16 shrink-0 rounded-[14px] overflow-hidden" />
         <span class="flex-1 min-w-0 flex flex-col gap-[3px]">
@@ -91,7 +132,7 @@ onMounted(async () => { await load(); if (error.value) ui.toast(error.value, 'er
     </div>
 
     <!-- gol -->
-    <template v-if="!busy && !bookings.length && !mine.length">
+    <template v-if="!busy && !bookings.length && !mine.length && !myRegs.length">
       <div v-if="tab === 'up'" class="bg-white rounded-[20px] px-[22px] py-8 flex flex-col items-center text-center gap-2.5">
         <AppIcon name="confirmation_number" :size="36" />
         <div class="text-[19px] font-semibold">{{ t('tickets.mine.emptyUp') }}</div>
