@@ -30,3 +30,17 @@ describe('helpers', () => {
     expect(new URL(url).searchParams.get('location')).toBe('Palatul Cultural, Piața George Enescu 1')
   })
 })
+
+describe('liveUntil', () => {
+  it('multi-day exhibition is live only during the daily hours', async () => {
+    const { useEventFormat } = await import('./useEvents')
+    const { createApp } = await import('vue')
+    const { i18n } = await import('@/shared/i18n')
+    let fmt!: ReturnType<typeof useEventFormat>
+    createApp({ setup() { fmt = useEventFormat(); return () => null } }).use(i18n).mount(document.createElement('div'))
+    const ex = { startAt: '2026-11-06T07:00:00Z', endAt: '2026-11-30T15:00:00Z' } // 09:00–17:00 în Arad, 6–30 nov.
+    expect(fmt.liveUntil(ex, Date.parse('2026-11-07T10:00:00Z'))).toBe('17:00')
+    expect(fmt.liveUntil(ex, Date.parse('2026-11-07T17:00:00Z'))).toBeNull()
+    expect(fmt.liveUntil({ startAt: '2026-11-07T15:00:00Z', endAt: '2026-11-07T16:00:00Z' }, Date.parse('2026-11-07T15:30:00Z'))).toBe('18:00')
+  })
+})

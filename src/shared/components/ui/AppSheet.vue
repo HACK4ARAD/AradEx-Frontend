@@ -2,13 +2,14 @@
 /**
  * Sheet Clean Ink: de jos pe telefon, dialog centrat de la 768px. Folosit de formulare, filtre, „Revendică” etc.
  * <AppSheet v-model:open="show" :title="t('…')"> conținut <template #footer>butoane</template> </AppSheet>
- * Slotul `action` pune o acțiune în dreapta titlului (ex. „Șterge tot”) în locul butonului de închidere.
+ * Slotul `action` pune o acțiune în dreapta titlului (ex. „Șterge tot”) în locul butonului de închidere; `:closable="false"` = fără X
+ * (ca sheet-urile din design/final care se închid din butoane sau atingând fundalul).
  */
 import { nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppIcon from './AppIcon.vue'
 
-const props = defineProps<{ title?: string; wide?: boolean }>()
+const props = withDefaults(defineProps<{ title?: string; wide?: boolean; closable?: boolean }>(), { closable: true })
 const open = defineModel<boolean>('open', { default: false })
 const { t } = useI18n()
 const panel = ref<HTMLElement | null>(null)
@@ -46,7 +47,7 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', onKey); document
             <h2 v-if="props.title" :id="titleId" class="flex-1 text-[22px] font-semibold tracking-[-0.02em] m-0">{{ props.title }}</h2>
             <span v-else class="flex-1" />
             <slot name="action" />
-            <button v-if="!$slots.action" type="button" class="w-9 h-9 rounded-full bg-soft flex items-center justify-center" :aria-label="t('common.close')" @click="close">
+            <button v-if="!$slots.action && props.closable" type="button" class="w-9 h-9 rounded-full bg-soft flex items-center justify-center" :aria-label="t('common.close')" @click="close">
               <AppIcon name="close" :size="20" />
             </button>
           </div>

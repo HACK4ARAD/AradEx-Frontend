@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
+import { useMyTickets } from '@/shared/composables/useTickets'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
@@ -29,6 +30,10 @@ const tabs = computed(() => {
   ]
 })
 const hideTabs = computed(() => route.meta.hideTabs === true)
+/** Punctul de pe „Bilete” (design/final): ai bilete viitoare și nu ești pe tab-ul lor (T07; lista se reîncarcă după o cumpărare). */
+const myTickets = useMyTickets()
+watch(() => [auth.user?.id, route.path === '/m/tickets' || route.path.startsWith('/m/confirm')], () => { if (auth.user) void myTickets.load() }, { immediate: true })
+const hasUpcomingTickets = computed(() => !!auth.user && myTickets.upcoming.value.length > 0)
 </script>
 
 <template>
@@ -48,8 +53,9 @@ const hideTabs = computed(() => route.meta.hideTabs === true)
           :class="tab.match(route.path) ? 'bg-accent' : 'bg-ink'">
           <AppIcon :name="tab.icon" :size="28" fill />
         </span>
-        <span v-else class="w-[52px] h-8 rounded-full flex items-center justify-center" :class="tab.match(route.path) ? 'bg-soft' : ''">
+        <span v-else class="relative w-[52px] h-8 rounded-full flex items-center justify-center" :class="tab.match(route.path) ? 'bg-soft' : ''">
           <AppIcon :name="tab.icon" :fill="tab.match(route.path)" />
+          <span v-if="tab.to === '/m/tickets' && hasUpcomingTickets && !tab.match(route.path)" class="absolute top-[3px] right-2 w-[9px] h-[9px] rounded-full bg-accent border-2 border-white" />
         </span>
         <span>{{ tab.label }}</span>
       </router-link>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // T06 · S3 Detaliu eveniment — design/final `/event/:id`: hero cu poză + credit, categorie + Popular, tipul de bilete, dată, loc, organizator,
 // descriere, „Trimite / Raportează”, bara de jos cu preț și acțiunea principală.
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/components'
@@ -12,6 +12,10 @@ import { useBack } from '@/shared/composables/useBack'
 import { useUiStore } from '@/shared/stores/ui'
 import { useAuthStore } from '@/shared/stores/auth'
 import { ticketsApi } from '@/shared/api/tickets'
+import { placesApi } from '@/shared/api/places'
+import { businessApi } from '@/shared/api/business'
+import type { PlaceDto } from '@/shared/types/places'
+import type { BusinessDto } from '@/shared/types/business'
 import { cacheTicket, useMyTickets, useTicketErrors } from '@/shared/composables/useTickets'
 
 const route = useRoute()
@@ -28,6 +32,15 @@ const auth = useAuthStore()
 const mine = useMyTickets()
 const errorText = useTicketErrors()
 const joining = ref(false)
+/** Obiectivul legat (T05) pentru rândul „Ghid virtual” și firma organizatoare (T09) pentru „Organizat de …”. */
+const place = shallowRef<PlaceDto | null>(null)
+const biz = shallowRef<BusinessDto | null>(null)
+watch(e, async (ev) => {
+  place.value = null
+  biz.value = null
+  if (ev?.placeId) placesApi.get(ev.placeId).then((p) => { if (p.guidePoints.length) place.value = p }).catch(() => {})
+  if (ev?.organizerBusinessId) businessApi.page(ev.organizerBusinessId).then((b) => { biz.value = b.business }).catch(() => {})
+}, { immediate: true })
 onMounted(() => { if (auth.isLoggedIn) void mine.load() })
 /** T07: biletul / înscrierea mea la acest eveniment (pentru „Ești înscris · vezi codul”). */
 const myTicket = computed(() => mine.upcoming.value.find((x) => x.eventId === id.value) ?? null)
@@ -125,16 +138,28 @@ function openExternal() {
       </div>
       <router-link v-if="e.organizerBusinessId" :to="`/m/businesses/${e.organizerBusinessId}`" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
         <AppIcon name="storefront" class="text-muted" />
-        <div class="flex-1 text-[15.5px]">{{ t('events.detail.organizedBy', { name: e.organizerName }) }}</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-[15.5px]">{{ t('events.detail.organizedBy', { name: e.organizerName }) }}</div>
+          <div v-if="biz" class="text-[13px] text-muted mt-0.5">{{ t(`auth.category.${biz.category}`) }}<template v-if="biz.verified"> · {{ t('events.detail.verifiedAccount') }}</template></div>
+        </div>
         <AppIcon name="chevron_right" />
       </router-link>
-      <div v-else class="flex items-center gap-3 py-3.5">
+      <div v-else class="flex items-center gap-3 py-3.5" :class="place ? 'border-b border-line' : ''">
         <AppIcon :name="e.organizerType === 'CITY' ? 'account_balance' : 'domain'" class="text-muted" />
         <div class="flex-1 min-w-0">
           <div class="text-[15.5px]">{{ t('events.detail.organizedBy', { name: e.organizerName }) }}</div>
           <div v-if="e.externalUrl" class="text-[13px] text-muted mt-0.5 truncate">{{ e.externalUrl.replace(/^https?:\/\//, '') }}</div>
         </div>
       </div>
+
+      <router-link v-if="place" :to="`/m/places/${place.id}`" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
+        <AppIcon name="headphones" class="text-muted" />
+        <div class="flex-1 min-w-0">
+          <div class="text-[15.5px]">{{ t('events.detail.guide', { name: place.name }) }}</div>
+          <div class="text-[13px] text-muted mt-0.5">{{ t('events.detail.guideSub', { n: place.guidePoints.length, m: place.guideMinutes }) }}</div>
+        </div>
+        <AppIcon name="chevron_right" />
+      </router-link>
 
       <h3 class="text-[16px] font-semibold mt-[18px] mb-1.5">{{ t('events.detail.about') }}</h3>
       <p class="text-[15px] text-muted leading-[1.45] m-0 whitespace-pre-line">{{ e.description }}</p>
@@ -167,7 +192,7 @@ function openExternal() {
       </button>
     </div>
 
-    <AppSheet v-model:open="extSheet" :title="t('events.detail.extSheetTitle')">
+    <AppSheet v-model:open="extSheet" :title="t('events.detail.extSheetTitle')" :closable="false">
       <p class="text-muted m-0">{{ t('events.detail.extSheetText') }}</p>
       <div class="flex flex-col gap-2.5 mt-[18px]">
         <button type="button" class="min-h-[52px] rounded-[16px] bg-ink text-white font-semibold flex items-center justify-center gap-2" @click="openExternal"><AppIcon name="open_in_new" :size="18" />{{ t('events.detail.openSite') }}</button>

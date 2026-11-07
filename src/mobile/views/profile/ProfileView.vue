@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // S11 — Profil (T03): contul conectat, rolul (vine din cont, nu se schimbă de aici), limba aplicației, deconectare.
 // Itinerariile, salvatele și punctele detaliate vin în story-urile lor (T06, T11, T13).
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { eventsApi } from '@/shared/api/events'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
@@ -27,6 +28,13 @@ function logout() {
   ui.toast(t('profile.loggedOut'))
   router.push('/m')
 }
+
+// T06: numărul de evenimente salvate pe rândul „Salvate” (design/final S11)
+const savedCount = ref<number | null>(null)
+onMounted(async () => {
+  if (!auth.isLoggedIn) return
+  try { savedCount.value = (await eventsApi.saved()).length } catch { /* fără număr */ }
+})
 </script>
 
 <template>
@@ -84,6 +92,7 @@ function logout() {
       <router-link to="/m/saved" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
         <AppIcon name="bookmark" />
         <span class="flex-1 text-[15px]">{{ t('events.savedList.title') }}</span>
+        <span v-if="savedCount != null" class="text-muted text-[15px]">{{ savedCount }}</span>
         <AppIcon name="chevron_right" />
       </router-link>
       <div class="flex items-center gap-3 py-3.5 border-b border-line">

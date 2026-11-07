@@ -19,7 +19,9 @@
     "onlyLeft": "Mai sunt doar {n} locuri. Alege mai puține bilete.",
     "soldOut": "Nu mai sunt bilete.",
     "continue": "Continuă spre plată",
-    "ended": "Evenimentul s-a încheiat."
+    "ended": "Evenimentul s-a încheiat.",
+    "dateTime": "Data și ora",
+    "lastSpots": "Ultimele {n} bilete"
   },
   "checkout": {
     "title": "Plată",

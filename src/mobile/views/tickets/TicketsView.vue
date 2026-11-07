@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // T07 · S9 Biletele mele — design/final `/tickets`: Viitoare / Trecute, biletele și înscrierile cu QR mic, „funcționează și offline”.
-// (Înscrierile la acțiuni și ofertele revendicate apar aici când vin T11 / T10.)
+// (Înscrierile la acțiuni apar aici când vine T11; ofertele revendicate vin din T10 prin `ClaimedOffers`.)
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import TicketListItem from '@/shared/components/tickets/TicketListItem.vue'
+import ClaimedOffers from '@/shared/components/offers/ClaimedOffers.vue'
 import { useMyTickets } from '@/shared/composables/useTickets'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
@@ -17,6 +18,7 @@ const ui = useUiStore()
 const tab = ref<'up' | 'past'>('up')
 const { upcoming, past, loading, offline, error, load } = useMyTickets()
 const list = computed(() => (tab.value === 'up' ? upcoming.value : past.value))
+const claims = ref(0)   // T10: ofertele revendicate (doar în Viitoare, ca în design)
 const initials = computed(() => (auth.user?.displayName ?? '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase())
 onMounted(async () => { await load(); if (error.value) ui.toast(error.value, 'error') })
 </script>
@@ -37,7 +39,8 @@ onMounted(async () => { await load(); if (error.value) ui.toast(error.value, 'er
     <h3 class="text-[16px] font-semibold mt-0 mb-2">{{ t('tickets.mine.section') }}</h3>
     <TicketListItem v-for="tk in list" :key="tk.code" :ticket="tk" :to="`/m/tickets/${tk.code}`" />
   </template>
-  <EmptyState v-else :icon="'confirmation_number'" :title="tab === 'up' ? t('tickets.mine.emptyUp') : t('tickets.mine.emptyPast')" :text="t('tickets.mine.emptyText')"
+  <EmptyState v-else-if="!(tab === 'up' && claims)" :icon="'confirmation_number'" :title="tab === 'up' ? t('tickets.mine.emptyUp') : t('tickets.mine.emptyPast')" :text="t('tickets.mine.emptyText')"
     :action="tab === 'up' ? t('tickets.mine.find') : undefined" @action="router.push('/m')" />
+  <ClaimedOffers v-if="!loading && tab === 'up'" @count="(n) => (claims = n)" />
   <p class="text-muted text-[12.5px] mt-3.5 text-center flex items-center justify-center gap-1"><AppIcon name="cloud_off" :size="16" />{{ t('tickets.mine.offline') }}</p>
 </template>

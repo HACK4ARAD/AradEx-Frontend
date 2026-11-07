@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// T06 · cardul din grid-urile web (W1, W5, Contul meu › Salvate) — design/final `.evc`.
+// T06 · cardul din grid-ul web al landing-ului (W1) — design/final `.evc`. Fără pagini publice de eveniment pe web (decizia din 7 nov),
+// cardul nu e link: site-ul de prezentare (T20) trimite spre aplicație.
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import EventImage from './EventImage.vue'
@@ -13,7 +14,7 @@ const live = computed(() => fmt.liveUntil(props.event))
 </script>
 
 <template>
-  <router-link :to="`/w/events/${event.id}`" class="block w-full rounded-[16px] overflow-hidden bg-white border border-line no-underline text-ink transition hover:shadow-[0_8px_24px_rgba(0,0,0,.08)] hover:-translate-y-px">
+  <article class="block w-full rounded-[16px] overflow-hidden bg-white border border-line text-ink">
     <EventImage :src="event.imageUrl" :category="event.category" :emoji-size="44" :class="small ? 'h-[120px]' : 'h-[150px]'">
       <div class="absolute left-2.5 top-2.5 flex gap-1.5">
         <span v-if="live" class="inline-flex items-center gap-1 text-[12px] font-semibold px-[9px] py-[3px] rounded-full bg-white">● {{ t('events.now', { time: live }) }}</span>
@@ -26,5 +27,5 @@ const live = computed(() => fmt.liveUntil(props.event))
       <b class="block text-[15px] leading-[1.3]">{{ event.title }}</b>
       <span class="block text-muted text-[12.5px] mt-[3px]">{{ fmt.when(event) }} · {{ event.locationName }}<template v-if="event.ticketType !== 'FREE'"> · {{ fmt.price(event) }}</template></span>
     </div>
-  </router-link>
+  </article>
 </template>
