@@ -29,6 +29,10 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // autoUpdate: versiunea nouă preia controlul imediat (altfel rămâne „waiting” și vizitatorii văd build-ul vechi
+        // până închid toate tab-urile); registerSW reîncarcă pagina după activare
+        skipWaiting: true,
+        clientsClaim: true,
         globPatterns: ['**/*.{js,css,html,woff2,png,jpg,svg}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallbackDenylist: [/^\/api\//],
