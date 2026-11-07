@@ -98,7 +98,7 @@ export const useAuthStore = defineStore('auth', () => {
   setUnauthorizedHandler(() => {
     logout()
     if (!ready.value) return
-    import('@/router').then(({ router }) => {
+    import('@app/router').then(({ router }) => {
       const current = router.currentRoute.value
       if (!current.meta.roles?.length) return
       const login = current.meta.roles.includes('VOLUNTEER') ? '/vol/login' : '/login'

@@ -5,11 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:mobile": "vite --mode mobile",
     "build": "vue-tsc -b && vite build",
+    "build:mobile": "vue-tsc -b && vite build --mode mobile",
+    "check:web": "node scripts/check-web-build.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "vue-tsc --noEmit -p tsconfig.app.json",
-    "cap:sync": "vite build && cap sync android",
+    "cap:sync": "npm run build:mobile && cap sync android",
     "android:run": "npm run cap:sync && cap run android",
     "android:open": "cap open android"
   },

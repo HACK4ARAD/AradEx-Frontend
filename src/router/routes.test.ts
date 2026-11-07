@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import { routesFor } from './routes'
-import type { AppKind } from './app'
+import type { RouteRecordRaw } from 'vue-router'
+import { mobileRoutes } from './mobile'
+import { webRoutes } from './web'
+
+type AppKind = 'mobile' | 'web'
+const lists: Record<AppKind, RouteRecordRaw[]> = { mobile: mobileRoutes, web: webRoutes }
 
 function routerFor(app: AppKind) {
-  return createRouter({ history: createMemoryHistory(), routes: routesFor(app) })
+  return createRouter({ history: createMemoryHistory(), routes: lists[app] })
 }
 
 async function landsOn(app: AppKind, path: string) {
@@ -32,9 +36,8 @@ describe('mobile routes', () => {
     expect((await landsOn('mobile', '/city')).path).toBe('/')
   })
 
-  it('redirect old /m links', async () => {
-    expect((await landsOn('mobile', '/m/places/1')).name).toBe('m-place')
-    expect((await landsOn('mobile', '/m')).name).toBe('m-home')
+  it('know nothing about the old /m prefix', async () => {
+    expect((await landsOn('mobile', '/m/places/1')).path).toBe('/')
   })
 })
 
@@ -67,5 +70,10 @@ describe('web routes', () => {
     expect((await landsOn('web', '/w/city')).name).toBe('w-city')
     expect((await landsOn('web', '/w/login')).name).toBe('w-login')
     expect((await landsOn('web', '/w')).name).toBe('w-landing')
+  })
+
+  it('know nothing about the mobile app', async () => {
+    expect((await landsOn('web', '/m/places/1')).path).toBe('/')
+    expect(webRoutes.flatMap(function names(r): string[] { return [String(r.name ?? ''), ...(r.children ?? []).flatMap(names)] }).filter((n) => n.startsWith('m-'))).toEqual([])
   })
 })

@@ -1,7 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router'
 
 /**
- * Aplicația mobilă (iOS + Android, Capacitor): toate ecranele, fără prefix în URL. Vezi docs/API.md §Rute FE.
+ * Aplicația mobilă (iOS + Android, Capacitor; build-ul `npm run build:mobile`): toate ecranele, fără prefix în URL. Vezi docs/API.md §Rute FE.
  * Fiecare rută are fișierul ei de view în `mobile/views/<feature>/`; story-ul din `meta.task` completează doar acel fișier.
  */
 export const mobileRoutes: RouteRecordRaw[] = [
@@ -46,4 +46,6 @@ export const mobileRoutes: RouteRecordRaw[] = [
       { path: 'vol/messages', name: 'm-vol-messages', component: () => import('@/mobile/views/volunteer/VolMessagesView.vue'), meta: { title: 'Mesaje', task: 'T18', roles: ['VOLUNTEER'] } },
     ],
   },
+  // orice altă cale → Acasă
+  { path: '/:pathMatch(.*)*', redirect: '/' },
 ]

@@ -1,4 +1,4 @@
-# Deploy PWA pe AWS la push pe main: teste + build Vite -> imagine nginx în ECR -> ECS (rolling, rollback automat).
+# Deploy web (prezentare + panouri) pe AWS la push pe main: teste + build Vite web + verificare -> imagine nginx în ECR -> ECS (rolling, rollback automat).
 # Acces AWS cu cheile utilizatorului IAM aradex-gha-frontend (secretele repo-ului AWS_ACCESS_KEY_ID /
 # AWS_SECRET_ACCESS_KEY, puse de AradEx-Infrastructure/scripts/github-keys.sh; organizația AWS nu permite OIDC).
 # URL-ul API vine din SSM (/aradex/web/api_url), scris de AradEx-Infrastructure/terraform. Imaginea: deploy/Dockerfile.
@@ -50,6 +50,8 @@ jobs:
       - run: npm run build
         env:
           VITE_DEMO: "true"
+      # web-ul nu are voie să conțină nimic din aplicația mobilă (build separat, `npm run build:mobile`)
+      - run: npm run check:web
 
       - id: ecr
         uses: aws-actions/amazon-ecr-login@v2
