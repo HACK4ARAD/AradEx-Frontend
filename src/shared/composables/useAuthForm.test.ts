@@ -98,4 +98,10 @@ describe('landingFor', () => {
     expect(landingFor('CITY_HALL', 'm', '/tickets', rolesOf)).toBe('/panel')
     expect(landingFor('LOCAL', 'w', '/city', rolesOf)).toBe('/')
   })
+
+  it('falls back to the role home when next is not a route in this app', () => {
+    const notHere = (p: string) => (p.startsWith('/events') || p.startsWith('/tickets') ? null : rolesOf(p))
+    expect(landingFor('BUSINESS', 'w', '/w/events/5', notHere)).toBe('/business')
+    expect(landingFor('CITY_HALL', 'w', '/m/tickets', notHere)).toBe('/city')
+  })
 })

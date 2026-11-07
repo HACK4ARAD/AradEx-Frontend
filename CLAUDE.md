@@ -30,7 +30,7 @@ src/
            legal/ = Confidențialitate)   components/site/ (secțiunile prezentării, T20)   presentation.ts (linkuri de descărcare, contact)
            web/views/{events,places,map,plan,offers,chat,account,business}/ nu mai sunt în router (T20): web-ul nu are paginile publice ale aplicației
   router/                     app.ts: ce aplicație rulează (nativ → mobile; `?app=mobile|web` forțează și se ține în localStorage `ax.app`;
-                              `?preview=mobile` doar pentru tab-ul curent, din panouri; implicit web) · mobile.ts / web.ts: rutele din API.md §Rute FE
+                              `?preview=mobile` și linkurile vechi `/m/…` → mobil doar pentru tab-ul curent; implicit web) · mobile.ts / web.ts: rutele din API.md §Rute FE
                               (fără prefix; o rută nouă se scrie fără /m sau /w) · routes.ts: + redirect /m/* și /w/* → /* · index.ts: guard meta.roles
 public/                       manifest, icon-uri, fonturi, `_redirects` (nefolosit pe AWS), img/ (pozele din seed, copiate din ../AradEx-Plan/design/assets)
 .github/workflows/deploy.yml   deploy pe AWS la push pe `main` (teste + build → imagine nginx în ECR → ECS); infrastructura: ../AradEx-Infrastructure

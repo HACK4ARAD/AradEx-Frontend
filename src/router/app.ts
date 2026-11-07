@@ -8,31 +8,41 @@ import type { Ui } from '@/shared/composables/useAuthForm'
 export type AppKind = 'mobile' | 'web'
 
 const APP_KEY = 'ax.app'
+/** Alegerea pentru tab-ul curent (sessionStorage): previzualizarea din panouri și linkurile vechi `/m/…` rezistă la refresh. */
+const TAB_KEY = 'ax.app.tab'
 
-type AppStorage = Pick<Storage, 'getItem' | 'setItem'>
+type AppStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
 function isApp(v: unknown): v is AppKind {
   return v === 'mobile' || v === 'web'
 }
 
+function attempt<T>(fn: () => T): T | undefined {
+  try { return fn() } catch { return undefined } // storage blocat (mod privat etc.): alegerea ține doar încărcarea asta
+}
+
 /**
- * Nativ (Capacitor) → mereu mobile. Altfel `?preview=mobile` (doar încărcarea asta), apoi `?app=mobile|web`, care câștigă și se ține minte (test în browser, dev),
- * apoi valoarea ținută minte, apoi web.
+ * Ordinea: nativ (Capacitor) → mereu mobile; `?preview=mobile` sau un link vechi `/m/…` → mobile doar pentru tab-ul
+ * curent; `?app=mobile|web` → se ține minte (test în browser, dev) și anulează alegerea tab-ului; alegerea tab-ului;
+ * valoarea ținută minte; implicit web.
  */
-export function selectApp(opts: { native: boolean; search: string; storage?: AppStorage }): AppKind {
+export function selectApp(opts: { native: boolean; search: string; path?: string; storage?: AppStorage; session?: AppStorage }): AppKind {
   if (opts.native) return 'mobile'
   const params = new URLSearchParams(opts.search)
-  // previzualizare din panourile web (tab nou): aplicația mobilă doar pentru încărcarea asta, fără să se țină minte
-  if (params.get('preview') === 'mobile') return 'mobile'
+  if (params.get('preview') === 'mobile' || /^\/m(\/|$)/.test(opts.path ?? '')) {
+    attempt(() => opts.session?.setItem(TAB_KEY, 'mobile'))
+    return 'mobile'
+  }
   const forced = params.get('app')
   if (isApp(forced)) {
-    try { opts.storage?.setItem(APP_KEY, forced) } catch { /* storage blocat: alegerea ține doar sesiunea asta */ }
+    attempt(() => opts.storage?.setItem(APP_KEY, forced))
+    attempt(() => opts.session?.removeItem(TAB_KEY))
     return forced
   }
-  try {
-    const saved = opts.storage?.getItem(APP_KEY)
-    if (isApp(saved)) return saved
-  } catch { /* storage blocat */ }
+  const tab = attempt(() => opts.session?.getItem(TAB_KEY))
+  if (isApp(tab)) return tab
+  const saved = attempt(() => opts.storage?.getItem(APP_KEY))
+  if (isApp(saved)) return saved
   return 'web'
 }
 
@@ -41,9 +51,13 @@ let chosen: AppKind | undefined
 /** Aplicația curentă, calculată la primul apel. */
 export function currentApp(): AppKind {
   if (!chosen) {
-    let storage: AppStorage | undefined
-    try { storage = window.localStorage } catch { storage = undefined }
-    chosen = selectApp({ native: Capacitor.isNativePlatform(), search: window.location.search, storage })
+    chosen = selectApp({
+      native: Capacitor.isNativePlatform(),
+      search: window.location.search,
+      path: window.location.pathname,
+      storage: attempt(() => window.localStorage),
+      session: attempt(() => window.sessionStorage),
+    })
   }
   return chosen
 }

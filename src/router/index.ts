@@ -29,12 +29,18 @@ export const router = createRouter({
   scrollBehavior: (to) => (to.hash ? { el: to.hash, top: 80, behavior: 'smooth' } : { top: 0 }),
 })
 
+/** `meta.roles` al unei căi, sau `null` dacă nu e o rută cu nume în aplicația curentă (catch-all, redirect vechi). */
+export function routeRoles(path: string): Role[] | undefined | null {
+  const r = router.resolve(path)
+  return r.name ? r.meta.roles : null
+}
+
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
   await auth.init()
   // deja conectat → login-ul nu mai are rost: mergi unde voiai (?next=) sau acasă la rolul tău (pentru alt cont: Deconectare)
   if (auth.user && (to.name === 'm-login' || to.name === 'w-login' || to.name === 'm-vol-login')) {
-    return landingFor(auth.user.role, ui, to.query.next, (p) => router.resolve(p).meta.roles)
+    return landingFor(auth.user.role, ui, to.query.next, routeRoles)
   }
   const roles = to.meta.roles
   if (roles && roles.length) {
