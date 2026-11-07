@@ -28,5 +28,66 @@
   "myTickets": "Biletele mele",
   "pointsAndRegistrations": "Puncte & înscrieri",
   "myOffers": "Ofertele mele",
-  "menu": "Meniu"
+  "menu": "Meniu",
+  "routes": {
+    "w-login": "Conectare",
+    "w-landing": "Acasă",
+    "w-community": "Comunitate",
+    "w-privacy": "Confidențialitate",
+    "w-business": "Panou firmă",
+    "w-business-offers": "Oferte",
+    "w-business-events": "Evenimente",
+    "w-business-announcements": "Anunțuri",
+    "w-business-codes": "Validează coduri",
+    "w-business-reviews": "Recenzii",
+    "w-business-profile": "Profilul firmei",
+    "w-city": "Panou Primărie",
+    "w-city-events": "Evenimente",
+    "w-city-places": "Obiective & ghiduri",
+    "w-city-actions": "Acțiuni comunitare",
+    "w-city-validate": "Validare",
+    "w-city-volunteers": "Voluntari",
+    "w-city-messages": "Mesaje",
+    "w-city-leaderboard": "Clasament",
+    "w-city-partners": "Firme partenere",
+    "w-admin": "Administrare",
+    "w-admin-content": "Conținut & moderare",
+    "w-admin-users": "Utilizatori",
+    "w-admin-settings": "Setări"
+  },
+  "sidebar": {
+    "groups": {
+      "general": "General",
+      "community": "Comunitate",
+      "partners": "Parteneri",
+      "admin": "Administrare"
+    },
+    "business": {
+      "dashboard": "Panou",
+      "offers": "Oferte",
+      "events": "Evenimente",
+      "announcements": "Anunțuri",
+      "codes": "Validează coduri",
+      "reviews": "Recenzii",
+      "profile": "Profilul firmei"
+    },
+    "city": {
+      "dashboard": "Panou",
+      "adminDashboard": "Dashboard",
+      "events": "Evenimente",
+      "places": "Obiective & ghiduri",
+      "actions": "Acțiuni comunitare",
+      "validate": "Validare",
+      "volunteers": "Voluntari",
+      "messages": "Mesaje",
+      "leaderboard": "Clasament",
+      "partners": "Firme partenere"
+    },
+    "admin": {
+      "content": "Conținut & moderare",
+      "users": "Utilizatori",
+      "settings": "Setări"
+    },
+    "language": "Limba: română (apasă pentru engleză)"
+  }
 }

@@ -6,6 +6,7 @@ import { AppIcon, AppButton } from '@/shared/components'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 import { CONTACT_EMAIL } from '@/web/presentation'
+import { routeTitle } from '@/router/guard'
 
 const route = useRoute()
 const router = useRouter()
@@ -19,6 +20,8 @@ const topNav = computed(() => [
   { to: '/community', label: t('site.nav.community') },
   { to: '/#panels', label: t('site.nav.panels') },
 ])
+/** Titlul paginii din bara panoului, în limba curentă (se recalculează și când se schimbă limba). */
+const pageTitle = computed(() => { void locale.value; return routeTitle(route) })
 const navActive = (to: string) => !to.includes('#') && route.path.startsWith(to)
 
 type NavItem = { to: string; icon: string; label: string }
@@ -29,28 +32,29 @@ type NavGroup = { title?: string; items: NavItem[] }
 const isPanel = computed(() => /^\/(business|city|admin)(\/|$)/.test(route.path))
 const sidebar = computed<NavGroup[] | null>(() => {
   if (!isPanel.value) return null
+  const n = (k: string) => t(`nav.sidebar.${k}`)
   if (route.path.startsWith('/business')) return [{ items: [
-    { to: '/business', icon: 'space_dashboard', label: 'Panou' }, { to: '/business/offers', icon: 'sell', label: 'Oferte' },
-    { to: '/business/events', icon: 'calendar_month', label: 'Evenimente' }, { to: '/business/announcements', icon: 'campaign', label: 'Anunțuri' },
-    { to: '/business/codes', icon: 'qr_code_scanner', label: 'Validează coduri' }, { to: '/business/reviews', icon: 'reviews', label: 'Recenzii' },
-    { to: '/business/profile', icon: 'storefront', label: 'Profilul firmei' },
+    { to: '/business', icon: 'space_dashboard', label: n('business.dashboard') }, { to: '/business/offers', icon: 'sell', label: n('business.offers') },
+    { to: '/business/events', icon: 'calendar_month', label: n('business.events') }, { to: '/business/announcements', icon: 'campaign', label: n('business.announcements') },
+    { to: '/business/codes', icon: 'qr_code_scanner', label: n('business.codes') }, { to: '/business/reviews', icon: 'reviews', label: n('business.reviews') },
+    { to: '/business/profile', icon: 'storefront', label: n('business.profile') },
   ] }]
   const admin = auth.role === 'ADMIN'
   const groups: NavGroup[] = [
-    { title: 'General', items: [
-      { to: admin ? '/admin' : '/city', icon: 'space_dashboard', label: admin ? 'Dashboard' : 'Panou' },
-      { to: '/city/events', icon: 'calendar_month', label: 'Evenimente' }, { to: '/city/places', icon: 'headphones', label: 'Obiective & ghiduri' },
+    { title: n('groups.general'), items: [
+      { to: admin ? '/admin' : '/city', icon: 'space_dashboard', label: admin ? n('city.adminDashboard') : n('city.dashboard') },
+      { to: '/city/events', icon: 'calendar_month', label: n('city.events') }, { to: '/city/places', icon: 'headphones', label: n('city.places') },
     ] },
-    { title: 'Comunitate', items: [
-      { to: '/city/actions', icon: 'volunteer_activism', label: 'Acțiuni comunitare' }, { to: '/city/validate', icon: 'fact_check', label: 'Validare' },
-      { to: '/city/volunteers', icon: 'badge', label: 'Voluntari' }, { to: '/city/messages', icon: 'forum', label: 'Mesaje' },
-      { to: '/city/leaderboard', icon: 'emoji_events', label: 'Clasament' },
+    { title: n('groups.community'), items: [
+      { to: '/city/actions', icon: 'volunteer_activism', label: n('city.actions') }, { to: '/city/validate', icon: 'fact_check', label: n('city.validate') },
+      { to: '/city/volunteers', icon: 'badge', label: n('city.volunteers') }, { to: '/city/messages', icon: 'forum', label: n('city.messages') },
+      { to: '/city/leaderboard', icon: 'emoji_events', label: n('city.leaderboard') },
     ] },
-    { title: 'Parteneri', items: [{ to: '/city/partners', icon: 'storefront', label: 'Firme partenere' }] },
+    { title: n('groups.partners'), items: [{ to: '/city/partners', icon: 'storefront', label: n('city.partners') }] },
   ]
-  if (admin) groups.push({ title: 'Administrare', items: [
-    { to: '/admin/content', icon: 'rule_folder', label: 'Conținut & moderare' }, { to: '/admin/users', icon: 'group', label: 'Utilizatori' },
-    { to: '/admin/settings', icon: 'settings', label: 'Setări' },
+  if (admin) groups.push({ title: n('groups.admin'), items: [
+    { to: '/admin/content', icon: 'rule_folder', label: n('admin.content') }, { to: '/admin/users', icon: 'group', label: n('admin.users') },
+    { to: '/admin/settings', icon: 'settings', label: n('admin.settings') },
   ] })
   return groups
 })
@@ -115,7 +119,10 @@ function toggleLocale() {
         <button type="button" class="lg:hidden w-10 h-10 -ml-2 rounded-[10px] flex items-center justify-center" :aria-label="t('nav.menu')" :aria-expanded="menuOpen" @click="menuOpen = true">
           <AppIcon name="menu" />
         </button>
-        <span class="truncate">{{ route.meta.title }}</span>
+        <span class="truncate flex-1">{{ pageTitle }}</span>
+        <button type="button" class="h-8 px-2.5 rounded-full border border-line text-[12px] font-semibold uppercase shrink-0" :aria-label="t('nav.sidebar.language')" :title="t('nav.sidebar.language')" @click="toggleLocale">
+          {{ locale === 'ro' ? 'RO' : 'EN' }}
+        </button>
       </header>
       <main class="flex-1 min-w-0 px-4 py-5 lg:px-8 lg:py-7 max-w-[1280px] w-full">
         <router-view />

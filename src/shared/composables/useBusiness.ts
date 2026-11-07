@@ -154,3 +154,17 @@ export function directionsUrl(lat?: number, lng?: number, address?: string): str
   if (address) return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`
   return null
 }
+
+/**
+ * Un rând din activitatea firmei în limba curentă. API-ul trimite textul gata scris în română („Cod folosit: …”,
+ * „Plată cu 30 de puncte: …”); aici îl refacem din `type` + titlul ofertei (după primul „: ”) + punctele, cu textele din i18n.
+ */
+export function activityLine(item: BusinessActivityDto['items'][number], t: (key: string, values?: Record<string, unknown>) => string): string {
+  const i = item.text.indexOf(': ')
+  if (i < 0) return item.text
+  const title = item.text.slice(i + 2)
+  const n = /(\d+)\s+de\s+puncte|(\d+)\s+puncte/.exec(item.text.slice(0, i))
+  const points = n ? Number(n[1] ?? n[2]) : 0
+  const key = item.type === 'CODE_USED' && points ? 'CODE_USED_POINTS' : item.type
+  return t(`business.activity.types.${key}`, { title, n: points })
+}

@@ -62,7 +62,15 @@
   "activity": {
     "title": "Activitate recentă",
     "empty": "Nicio activitate încă",
-    "emptyText": "Aici apar codurile folosite, rezervările și plățile cu puncte."
+    "emptyText": "Aici apar codurile folosite, rezervările și plățile cu puncte.",
+    "types": {
+      "CODE_USED": "Cod folosit: {title}",
+      "CODE_USED_POINTS": "Cod folosit (plătit cu {n} de puncte): {title}",
+      "POINTS_PAYMENT": "Plată cu {n} de puncte: {title}",
+      "OFFER_REDEEMED": "Ofertă revendicată: {title}",
+      "OFFER_SAVED": "Ofertă salvată: {title}",
+      "TICKET": "Bilet: {title}"
+    }
   },
   "profile": {
     "title": "Profilul firmei",

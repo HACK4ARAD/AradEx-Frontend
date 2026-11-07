@@ -5,7 +5,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, Skeleton } from '@/shared/components'
 import * as P from '@/web/components/community/panel'
-import { useFormat } from '@/shared/composables/useFormat'
+import { intlLocale, useFormat } from '@/shared/composables/useFormat'
 import { currentMonthLabel, initials, useLeaderboard } from '@/shared/composables/useCommunity'
 import type { LeaderboardPeriod } from '@/shared/types/community'
 
@@ -27,12 +27,12 @@ const stats = computed(() => {
   return { people: e.length, points: e.reduce((s, r) => s + r.points, 0), actions: e.reduce((s, r) => s + r.actionsCount, 0) }
 })
 const medal = (rank: number) => (rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : String(rank))
-const nf = (n: number) => new Intl.NumberFormat('ro-RO').format(n)
+const nf = (n: number) => new Intl.NumberFormat(intlLocale()).format(n)
 const PRIZE_TONE = ['#FFE08A', '#E6E6E6', '#F0C9A8']
 
 /** CSV generat local din clasamentul afișat (fără server). */
 function exportCsv() {
-  const head = ['Loc', 'Nume', 'Acțiuni', 'Puncte', 'Ultima participare']
+  const head = [t('community.cityBoard.cols.rank'), t('community.cityBoard.cols.name'), t('community.cityBoard.cols.actions'), t('community.cityBoard.cols.points'), t('community.cityBoard.cols.last')]
   const lines = (board.value?.entries ?? []).map((r) => [r.rank, r.displayName, r.actionsCount, r.points, r.lastAt ? `${r.lastActionTitle ?? ''} · ${f.dateTime(r.lastAt, false)}` : ''])
   const csv = [head, ...lines].map((l) => l.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n')
   const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }))
