@@ -62,7 +62,8 @@ async function request<T>(method: string, path: string, opts: Options = {}): Pro
 
   if (!res.ok) {
     const problem = data as ProblemDetail | undefined
-    if (res.status === 401 && token) onUnauthorized?.()
+    // doar pentru cereri trimise cu token (un login greșit nu deloghează sesiunea curentă)
+    if (res.status === 401 && headers.Authorization) onUnauthorized?.()
     throw new ApiError(res.status, problem?.detail || problem?.title || `Eroare ${res.status}`, problem)
   }
   return data as T

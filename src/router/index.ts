@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import type { Role } from '@/shared/types/api'
 import { useAuthStore } from '@/shared/stores/auth'
+import { landingFor } from '@/shared/composables/useAuthForm'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -33,7 +34,7 @@ const mobile: RouteRecordRaw = {
     { path: 'tickets', name: 'm-tickets', component: MobilePlaceholder, meta: { title: 'Biletele mele', screen: 'S9', task: 'T07', roles: ['VISITOR', 'LOCAL'] } },
     { path: 'tickets/:code', name: 'm-ticket', component: MobilePlaceholder, meta: { title: 'Bilet', screen: 'S10', task: 'T07', roles: ['VISITOR', 'LOCAL'] } },
     { path: 'saved', name: 'm-saved', component: MobilePlaceholder, meta: { title: 'Salvate', screen: 'S1', task: 'T06' } },
-    { path: 'profile', name: 'm-profile', component: MobilePlaceholder, meta: { title: 'Profil', screen: 'S11', task: 'T03' } },
+    { path: 'profile', name: 'm-profile', component: () => import('@/mobile/views/profile/ProfileView.vue'), meta: { title: 'Profil', screen: 'S11', task: 'T03' } },
     { path: 'offers', name: 'm-offers', component: MobilePlaceholder, meta: { title: 'Oferte', screen: 'S1b', task: 'T10' } },
     { path: 'offers/:id', name: 'm-offer', component: MobilePlaceholder, meta: { title: 'Ofertă', screen: 'S1c', task: 'T10' } },
     { path: 'community', name: 'm-community', component: MobilePlaceholder, meta: { title: 'Comunitate', screen: 'S1d', task: 'T11' } },
@@ -65,7 +66,6 @@ const web: RouteRecordRaw = {
   component: () => import('@/web/layouts/WebLayout.vue'),
   children: [
     { path: '', name: 'w-landing', component: () => import('@/web/views/home/LandingView.vue'), meta: { title: 'Acasă', screen: 'W1', task: 'T06' } },
-    { path: 'login', name: 'w-login', component: () => import('@/web/views/auth/LoginView.vue'), meta: { title: 'Conectare', screen: 'S12', task: 'T03' } },
     { path: 'events', name: 'w-events', component: WebPlaceholder, meta: { title: 'Evenimente', screen: 'W1', task: 'T06' } },
     { path: 'events/:id', name: 'w-event', component: WebPlaceholder, meta: { title: 'Eveniment', screen: 'S3', task: 'T06' } },
     { path: 'places', name: 'w-places', component: WebPlaceholder, meta: { title: 'Obiective', task: 'T05' } },
@@ -104,6 +104,8 @@ export const router = createRouter({
   routes: [
     { path: '/', redirect: (to) => ({ path: '/' + preferredUi(to.query as Record<string, unknown>), query: {} }) },
     mobile,
+    // W0: pagină întreagă, fără WebLayout (ca în design/final/web.html)
+    { path: '/w/login', name: 'w-login', component: () => import('@/web/views/auth/LoginView.vue'), meta: { title: 'Conectare', screen: 'W0', task: 'T03' } },
     web,
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
@@ -113,9 +115,14 @@ export const router = createRouter({
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
   await auth.init()
+  const ui = to.path.startsWith('/w') ? 'w' : 'm'
+  const base = `/${ui}`
+  // deja conectat → login-ul nu mai are rost: mergi unde voiai (?next=) sau acasă la rolul tău (pentru alt cont: Deconectare)
+  if (auth.user && (to.name === 'm-login' || to.name === 'w-login')) {
+    return landingFor(auth.user.role, ui, to.query.next, (p) => router.resolve(p).meta.roles)
+  }
   const roles = to.meta.roles
   if (roles && roles.length) {
-    const base = to.path.startsWith('/w') ? '/w' : '/m'
     if (!auth.isLoggedIn) return { path: `${base}/login`, query: { next: to.fullPath } }
     if (!auth.hasRole(...roles)) return { path: base }
   }
