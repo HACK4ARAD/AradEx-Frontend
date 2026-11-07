@@ -19,7 +19,7 @@ export default defineConfig({
         lang: 'ro',
         start_url: '/m',
         display: 'standalone',
-        background_color: '#F7F7F2',
+        background_color: '#FAFAF7',
         theme_color: '#111111',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },

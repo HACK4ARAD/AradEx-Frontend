@@ -9,17 +9,23 @@ const route = useRoute()
 const auth = useAuthStore()
 const { t } = useI18n()
 
-/** Tab bar: Evenimente · Chat · [Hartă] · Bilete/Panou · Salvate. Firma și Primăria au „Panou” în loc de „Bilete”. */
+/** Tab bar (design/final): Evenimente · Chat · [Hartă] · Bilete/Panou · Transport. Firma și Primăria au „Panou” în loc de „Bilete”.
+ *  Salvate e în Profil. Voluntarul (T18, rutele /m/vol/*) are doar Acțiuni · [Scanează] · Mesaje. */
 const tabs = computed(() => {
+  if (route.path.startsWith('/m/vol/') && route.path !== '/m/vol/login') return [
+    { to: '/m/vol/actions', icon: 'event_available', label: t('nav.volActions'), match: (p: string) => p.startsWith('/m/vol/actions') },
+    { to: '/m/vol/scan', icon: 'qr_code_scanner', label: t('nav.volScan'), center: true, match: (p: string) => p.startsWith('/m/vol/scan') },
+    { to: '/m/vol/messages', icon: 'forum', label: t('nav.volMessages'), match: (p: string) => p.startsWith('/m/vol/messages') },
+  ]
   const panel = auth.hasRole('BUSINESS', 'CITY_HALL')
   return [
-    { to: '/m', icon: 'calendar_month', label: t('nav.events'), match: (p: string) => p === '/m' || p.startsWith('/m/events') || p.startsWith('/m/offers') || p.startsWith('/m/community') },
+    { to: '/m', icon: 'calendar_month', label: t('nav.events'), match: (p: string) => p === '/m' || p.startsWith('/m/events') || p.startsWith('/m/offers') || p.startsWith('/m/community') || p.startsWith('/m/places') || p.startsWith('/m/businesses') },
     { to: '/m/chat', icon: 'chat_bubble', label: t('nav.chat'), match: (p: string) => p.startsWith('/m/chat') },
     { to: '/m/map', icon: 'map', label: t('nav.map'), center: true, match: (p: string) => p.startsWith('/m/map') },
     panel
       ? { to: '/m/panel', icon: 'dashboard', label: t('nav.panel'), match: (p: string) => p.startsWith('/m/panel') }
       : { to: '/m/tickets', icon: 'confirmation_number', label: t('nav.tickets'), match: (p: string) => p.startsWith('/m/tickets') },
-    { to: '/m/saved', icon: 'bookmark', label: t('nav.saved'), match: (p: string) => p.startsWith('/m/saved') },
+    { to: '/m/transport', icon: 'tram', label: t('nav.transport'), match: (p: string) => p.startsWith('/m/transport') },
   ]
 })
 const hideTabs = computed(() => route.meta.hideTabs === true)
@@ -36,7 +42,7 @@ const hideTabs = computed(() => route.meta.hideTabs === true)
         <router-link v-for="tab in tabs" :key="tab.to" :to="tab.to"
           class="flex flex-col items-center gap-0.5 w-[62px] text-[11px] no-underline"
           :class="[tab.center ? 'relative -top-4' : '', tab.match(route.path) ? 'text-ink font-semibold' : 'text-muted']">
-          <span v-if="tab.center" class="w-[54px] h-[54px] rounded-full bg-ink text-white flex items-center justify-center shadow-[0_0_0_5px_#F7F7F2]">
+          <span v-if="tab.center" class="w-[54px] h-[54px] rounded-full bg-ink text-white flex items-center justify-center shadow-[0_0_0_5px_var(--color-bg)]">
             <AppIcon :name="tab.icon" :size="24" />
           </span>
           <template v-else>
