@@ -7,7 +7,7 @@ Frontend-ul AradExperience (Hack4Arad 2026): o singură aplicație Vue cu două 
 Design: **`../AradEx-Plan/design/final/`** — sursa de adevăr: `mobile.html` (aplicația, 36 de ecrane, cu Transport și Voluntar) și `web.html` (site public + panourile Primărie / Admin / Firmă, 37 de pagini), planșele în `design/final/screens/`, tabelul mobil / web în `design/final/README.md`. Prototipurile vechi din `design/` sunt doar istoric. Poze cu licență în `../AradEx-Plan/design/assets/`, copiate în `public/img/` (vezi `../AradEx-Plan/design/README.md`). Stil „Clean Ink” (valorile din `design/final/shared/ui.css`, deja în `base.css`): fundal `#FAFAF7`, ink `#111`, muted `#5C5C5C`, line `#E8E8E3`, accent `#FF5A36`, verde `#3B6D11` / închis `#1F3A12`, galben `#FFC244`, piersică `#FFE8E2`; panouri web cu sidebar întunecat `#0E0E10` pe fundal `#F6F6F3`; carduri albe radius 16, butoane negre radius 14; Inter + Material Symbols Outlined (fonturi locale în `public/fonts`).
 
 ## Stack aprobat
-Vue 3.5 (Composition API, `<script setup lang="ts">`) · Vite 8 · TypeScript strict (`erasableSyntaxOnly`: fără `enum`, folosește union types / `as const`) · Pinia · Vue Router 4 · Tailwind CSS 4 (tokens în `src/shared/styles/base.css`, clase `bg-bg text-ink text-muted border-line bg-soft bg-accent bg-green bg-green-deep bg-yellow bg-peach`; panouri `bg-abg bg-side text-sidetx`) · vue-i18n · @vueuse/core · Leaflet (+ OSM, OSRM) · qrcode (generare) · html5-qrcode (scanare) · vite-plugin-pwa · vitest + @vue/test-utils.
+Vue 3.5 (Composition API, `<script setup lang="ts">`) · Vite 8 · TypeScript strict (`erasableSyntaxOnly`: fără `enum`, folosește union types / `as const`) · Pinia · Vue Router 4 · Tailwind CSS 4 (tokens în `src/shared/styles/base.css`, clase `bg-bg text-ink text-muted border-line bg-soft bg-accent bg-green bg-green-deep bg-yellow bg-peach`; panouri `bg-abg bg-side text-sidetx`) · vue-i18n · @vueuse/core · Leaflet (+ OSM, OSRM) · qrcode (generare) · html5-qrcode (scanare) · vite-plugin-pwa · Capacitor 6 (`@capacitor/core`, `@capacitor/android`, `@capacitor/cli` — aplicația Android, T15) · vitest + @vue/test-utils.
 Fără UI kit-uri (Vuetify etc.), fără Google Maps, fără pachete de icon-uri — componentele de bază sunt ale noastre.
 
 ## Structură — aceleași „layere” ca în BE, pe feature
@@ -38,6 +38,8 @@ npm run dev            # :5173 — /m mobil, /w web
 npm run build          # vue-tsc + vite build + PWA
 npm run test           # vitest
 cp .env.example .env   # VITE_API_URL=http://localhost:8080/api/v1, VITE_DEMO=true
+npm run android:run    # aplicația Android pe emulator/telefon (Capacitor; JDK 21 + Android SDK 34 — ../AradEx-Plan/docs/SETUP.md)
+npm run cap:sync       # doar build + copiere în android/ (apoi `npm run android:open` → Android Studio)
 ```
 
 ## Reguli
