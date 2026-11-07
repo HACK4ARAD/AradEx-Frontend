@@ -130,3 +130,14 @@ Secțiunea „Al doilea PR” din spec, pas cu pas:
 - **Pagina `/community`.** Înainte, verifici în `AradEx-Plan/docs/STATUS.md` dacă T11 e gata (și cine o ține); dacă nu e, pagina arată „în curând”.
 - **Testele:** randarea cardurilor de funcții și starea „în curând” la Comunitate.
 - **Verificarea în browser** la 1280 și 390, apoi PR, merge și verificarea în producție.
+
+### Task 10: Revizia 2, două build-uri separate (branch `feat/T20-separate-builds`)
+- **Configurația:** `vite.config.ts` pe moduri (`web` implicit, `mobile`): alias `@app`, `define` `VITE_APP`, `outDir`, port, PWA doar pe web și doar ca `selfDestroying`.
+- **Codul:**
+  - `src/web/router.ts`, `src/mobile/router.ts`, `src/router/guard.ts`, `src/shared/app.ts` (`APP`, `UI`);
+  - se șterg `src/router/app.ts`, `routes.ts` și `index.ts`;
+  - `main.ts` folosește `@app/router`, fără Capacitor și fără înregistrarea PWA.
+- **Testele:** `routes.test.ts` pe `webRoutes` și `mobileRoutes` (catch-all, `/w/…` pe web, fără `/m/…`); `app.test.ts` se șterge.
+- **Panourile:** se scot butoanele de previzualizare (`CityPlacesView`, `CityEventsView`, `BizDashboardView`, `BizProfileView`).
+- **Scripturile:** `dev:mobile`, `build:mobile`, `check:web` (`scripts/check-web-build.mjs`), `cap:sync` pe `build:mobile`; `capacitor.config.ts` cu `webDir: 'dist-mobile'`; `.gitignore`; `deploy.yml` rulează `npm run check:web` după build.
+- **Docs:** FE `CLAUDE.md`, `README.md` și docs-urile din Plan.

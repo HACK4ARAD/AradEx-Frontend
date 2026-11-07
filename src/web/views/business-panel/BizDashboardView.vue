@@ -10,15 +10,12 @@ import BusinessStats from '@/shared/components/business/BusinessStats.vue'
 import PanelHeader from '@/shared/components/business/PanelHeader.vue'
 import UnverifiedBanner from '@/shared/components/business/UnverifiedBanner.vue'
 import { useBusinessPanel } from '@/shared/composables/useBusiness'
-import { mobilePreviewHref } from '@/router/app'
 import type { AnnouncementCreate } from '@/shared/types/business'
 import BizOfferItem from '@/shared/components/offers/BizOfferItem.vue'
 import CodeValidator from '@/shared/components/offers/CodeValidator.vue'
 import { useBusinessOffers, useCodeValidator } from '@/shared/composables/useOffers'
 
 const router = useRouter()
-/** Pagina publică a firmei e doar în aplicația mobilă: o deschidem într-un tab nou, ca previzualizare. */
-const openPublic = (id: number) => window.open(mobilePreviewHref(`/businesses/${id}`), '_blank', 'noopener')
 const { t } = useI18n()
 const p = useBusinessPanel()
 const annSheet = ref(false)
@@ -42,7 +39,6 @@ async function saveAnnouncement(req: AnnouncementCreate) {
   <template v-else>
     <UnverifiedBanner v-if="!p.me.value.business.verified" />
     <PanelHeader :title="t('business.panel.title')" :subtitle="`${p.me.value.business.name} · ${p.me.value.business.address ?? ''}`">
-      <AppButton variant="ghost" size="sm" icon="visibility" @click="openPublic(p.me.value.business.id)">{{ t('business.panel.openPublic') }}</AppButton>
       <AppButton variant="ghost" size="sm" icon="add" @click="annSheet = true">{{ t('business.panel.newAnnouncement') }}</AppButton>
       <AppButton variant="ghost" size="sm" icon="add" @click="router.push('/business/events/new')">{{ t('business.panel.newEvent') }}</AppButton>
       <AppButton size="sm" icon="add" @click="router.push('/business/offers/new')">{{ t('offers.biz.new') }}</AppButton>
