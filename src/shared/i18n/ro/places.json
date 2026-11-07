@@ -143,11 +143,18 @@
       "duration": "Între 5 și 1800 de secunde",
       "fix": "Verifică câmpurile marcate."
     },
-    "upload": "Încarcă poză",
     "uploading": "Se încarcă…",
     "uploaded": "Poza e încărcată. Apasă „Salvează”.",
-    "uploadHint": "JPEG, PNG, WebP sau GIF, max. 10 MB. Se păstrează în S3.",
-    "external": "Poza e pe alt site",
-    "stored": "Poza e în S3"
+    "stored": "Salvată în S3",
+    "photoChosen": "Poză aleasă",
+    "photoAdd": "Adaugă o poză",
+    "pickFile": "Alege fișier",
+    "photoHint": "JPEG, PNG, WebP sau GIF, max. 10 MB. Poți și să tragi poza aici.",
+    "onSite": "Pe alt site: {host}",
+    "inApp": "Din aplicație",
+    "editLink": "Link",
+    "hideLink": "Ascunde linkul",
+    "remove": "Scoate poza",
+    "photo": "Poză"
   }
 }

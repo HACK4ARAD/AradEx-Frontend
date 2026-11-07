@@ -116,22 +116,25 @@ async function importPhotos() {
       </div>
     </div>
 
-    <div class="bg-white rounded-[16px] border border-line grid lg:grid-cols-[320px_minmax(0,1fr)] overflow-hidden">
+    <div class="bg-white rounded-[16px] border border-line grid grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)] lg:min-h-[calc(100dvh-210px)] overflow-hidden">
       <!-- lista -->
-      <div class="border-b lg:border-b-0 lg:border-r border-line flex flex-col lg:max-h-[calc(100dvh-210px)]">
+      <!-- pe desktop lista ține toată înălțimea editorului (până jos), cu scroll propriu; nu-l lungește ea -->
+      <div class="border-b lg:border-b-0 lg:border-r border-line flex flex-col">
         <div class="p-3 border-b border-line"><AppInput v-model="c.q.value" icon="search" :placeholder="t('places.panel.search')" /></div>
-        <div class="overflow-y-auto max-h-[300px] lg:max-h-none">
-          <div v-if="c.loading.value && !c.items.value.length" class="p-3"><Skeleton :rows="6" :height="52" /></div>
-          <EmptyState v-else-if="c.error.value" icon="cloud_off" :title="t('places.list.error')" :text="c.error.value" :action="t('common.retry')" @action="c.reloadList()" />
-          <router-link v-for="p in c.filtered.value" :key="p.id" :to="`/city/places/${p.id}`"
-            class="flex items-center gap-3 px-3 py-2.5 no-underline text-ink border-b border-line last:border-b-0"
-            :class="selectedId === p.id ? 'bg-soft' : 'hover:bg-bg'" data-test="panel-place">
-            <span class="w-11 h-11 rounded-[10px] bg-[#7a7a72] bg-cover bg-center shrink-0" :style="p.imageUrl ? { backgroundImage: `url('${p.imageUrl}')` } : undefined" />
-            <span class="min-w-0 flex-1">
-              <b class="block text-[13.5px] truncate">{{ p.name }}</b>
-              <span class="block text-[12px] text-muted">{{ t('places.panel.pointsShort', { n: p.guidePointsCount }, p.guidePointsCount) }} · RO<template v-if="p.exteriorOnly"> · {{ t('places.panel.exterior') }}</template></span>
-            </span>
-          </router-link>
+        <div class="relative lg:flex-1">
+          <div class="overflow-y-auto max-h-[300px] lg:max-h-none lg:absolute lg:inset-0" data-test="panel-list">
+            <div v-if="c.loading.value && !c.items.value.length" class="p-3"><Skeleton :rows="6" :height="52" /></div>
+            <EmptyState v-else-if="c.error.value" icon="cloud_off" :title="t('places.list.error')" :text="c.error.value" :action="t('common.retry')" @action="c.reloadList()" />
+            <router-link v-for="p in c.filtered.value" :key="p.id" :to="`/city/places/${p.id}`"
+              class="flex items-center gap-3 px-3 py-2.5 no-underline text-ink border-b border-line last:border-b-0"
+              :class="selectedId === p.id ? 'bg-soft' : 'hover:bg-bg'" data-test="panel-place">
+              <span class="w-11 h-11 rounded-[10px] bg-[#7a7a72] bg-cover bg-center shrink-0" :style="p.imageUrl ? { backgroundImage: `url('${p.imageUrl}')` } : undefined" />
+              <span class="min-w-0 flex-1">
+                <b class="block text-[13.5px] truncate">{{ p.name }}</b>
+                <span class="block text-[12px] text-muted">{{ t('places.panel.pointsShort', { n: p.guidePointsCount }, p.guidePointsCount) }} · RO<template v-if="p.exteriorOnly"> · {{ t('places.panel.exterior') }}</template></span>
+              </span>
+            </router-link>
+          </div>
         </div>
       </div>
 

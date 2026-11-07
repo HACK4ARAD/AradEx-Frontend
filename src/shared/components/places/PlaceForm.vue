@@ -37,7 +37,7 @@ const box = 'w-full bg-white border rounded-[14px] px-3.5 text-[15px] outline-no
       <AppInput v-model="form.parkingHint" :label="t('places.form.parkingHint')" />
       <AppInput v-model="form.tags" :label="t('places.form.tags')" placeholder="istorie, familie" :error="err(errors, 'tags')" />
     </div>
-    <PhotoField v-model="form.imageUrl" :label="t('places.form.imageUrl')" placeholder="https://…" />
+    <PhotoField v-model="form.imageUrl" :label="t('places.form.photo')" />
     <div class="grid gap-3 md:grid-cols-[minmax(0,1fr)_110px]">
       <AppInput v-model="form.imageCredit" :label="t('places.form.imageCredit')" />
       <AppInput v-model="form.rating" :label="t('places.form.rating')" :error="err(errors, 'rating')" />
