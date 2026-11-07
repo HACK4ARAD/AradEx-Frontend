@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { createI18n } from 'vue-i18n'
 import { loadMessages } from './index'
 
 type Tree = Record<string, unknown>
@@ -32,6 +33,15 @@ describe('i18n RO/EN', () => {
       const same = keys.filter((k) => e[k] === r[k])
       // câteva cuvinte sunt la fel în ambele limbi (Restaurant, Sport, Total, Calendar…)
       expect(same.length / keys.length, `${mod}: ${same.slice(0, 5).join(', ')}`).toBeLessThan(0.1)
+    }
+  })
+
+  it('every message compiles (an unescaped @ or | breaks vue-i18n at runtime: write {\'@\'})', () => {
+    for (const [lang, msgs] of [['ro', ro], ['en', en]] as const) {
+      const i18n = createI18n({ legacy: false, locale: lang, messages: { [lang]: msgs }, missingWarn: false, fallbackWarn: false })
+      for (const mod of Object.keys(msgs)) {
+        for (const k of Object.keys(flat(msgs[mod]))) expect(() => i18n.global.t(`${mod}.${k}`), `${lang} ${mod}.${k}`).not.toThrow()
+      }
     }
   })
 })
