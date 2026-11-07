@@ -24,14 +24,13 @@ const auth = useAuthStore()
 const f = useFormat()
 
 // starea (perioadă, tip, pin, traseu cu routeSeq, ținta din `?to=`) e comună cu harta de pe web: shared/composables/useMapScreen
-const { geo, period, kind, selected, mode, directions, items, loading, markers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init } = useMapScreen(route.query.to)
+const { geo, period, kind, selected, mode, directions, items, loading, markers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init, locateMe } = useMapScreen(route.query.to)
 const anyCard = computed(() => !!sel.value || selLayer.value)
 const mapRef = ref<InstanceType<typeof MapView> | null>(null)
 const initials = computed(() => (auth.user?.displayName ?? '').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase())
 
-async function myLocation() {
-  const p = await geo.locate()
-  mapRef.value?.flyTo(p, 16)
+function myLocation() {
+  void locateMe((p) => mapRef.value?.flyTo(p, 16))
 }
 
 onMounted(init)
@@ -62,7 +61,7 @@ onMounted(init)
       <!-- modul de deplasare: alege straturile (transport + biciclete / parcări) și modul traseului -->
       <MapTravelBar v-model="travel" floating class="pointer-events-auto" />
       <!-- perioada (pentru evenimente) și tipurile de pini, pe un singur rând care se derulează -->
-      <div class="flex items-center gap-2 overflow-x-auto pointer-events-auto -mx-4 px-4 pb-1 [scrollbar-width:none]">
+      <div v-if="travel !== 'transit'" class="flex items-center gap-2 overflow-x-auto pointer-events-auto -mx-4 px-4 pb-1 [scrollbar-width:none]">
         <div class="inline-flex shrink-0 p-0.5 rounded-full bg-white/95 shadow-[0_2px_8px_rgba(0,0,0,.1)]" role="tablist">
           <button v-for="p in periods" :key="p" type="button" role="tab" :aria-selected="period === p"
             class="h-8 px-3 rounded-full text-[13px] whitespace-nowrap" :class="period === p ? 'bg-ink text-white font-semibold' : 'text-ink'"

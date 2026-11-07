@@ -29,7 +29,8 @@
     "empty": "Nimic aici",
     "emptyText": "Schimbă perioada, tipul sau căutarea.",
     "reset": "Arată tot",
-    "routing": "Se calculează traseul…"
+    "routing": "Se calculează traseul…",
+    "transitHint": "În modul Transport harta arată doar stațiile, liniile și vehiculele CTP și stațiile de biciclete. Apasă pe o stație pentru sosiri sau alege „Pe jos” ca să vezi din nou evenimentele și locurile."
   },
   "travel": { "label": "Cum te deplasezi", "foot": "Pe jos", "transit": "Transport", "car": "Mașină" },
   "layers": {

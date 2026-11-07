@@ -158,12 +158,13 @@ function toggleLocale() {
         </button>
         <router-link v-if="panelLink" :to="panelLink.to" class="text-[14px] font-semibold no-underline text-ink">{{ panelLink.label }}</router-link>
         <AppButton v-if="!auth.isLoggedIn" variant="ghost" size="sm" @click="router.push('/login')">{{ t('site.nav.login') }}</AppButton>
-        <template v-else>
-          <span class="w-8 h-8 rounded-full bg-ink text-white text-[12px] font-bold flex items-center justify-center">{{ auth.user?.displayName.charAt(0) }}</span>
+        <!-- contul: avatarul duce la profil (Contul meu) sau, pentru Primărie / firmă / Admin, la panou; „Deconectare” e în profil / panou -->
+        <router-link v-else :to="personal ? '/account' : (panelLink?.to ?? '/')" class="flex items-center gap-2.5 no-underline text-ink min-w-0 rounded-full"
+          :aria-label="personal ? t('nav.personal.account') : panelLink?.label" data-test="profile-link">
+          <span class="w-10 h-10 rounded-full bg-ink text-white text-[15px] font-bold flex items-center justify-center shrink-0">{{ auth.user?.displayName.charAt(0) }}</span>
           <span class="text-[14px] font-semibold hidden xl:inline whitespace-nowrap">{{ auth.user?.displayName }}</span>
           <span class="text-[12px] text-muted hidden xl:inline whitespace-nowrap">· {{ t(`auth.role.${auth.user?.role}`) }}</span>
-          <AppButton variant="ghost" size="sm" icon="logout" @click="logout">{{ t('nav.logout') }}</AppButton>
-        </template>
+        </router-link>
         <router-link v-if="!personal" to="/#download" class="hidden sm:inline-flex h-10 px-4 rounded-[12px] bg-ink text-white text-[14px] font-semibold items-center gap-1.5 no-underline shrink-0">
           <AppIcon name="download" :size="18" /> {{ t('site.nav.download') }}
         </router-link>

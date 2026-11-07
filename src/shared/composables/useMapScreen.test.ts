@@ -26,7 +26,7 @@ vi.mock('@/shared/composables/useMapData', async (orig) => ({
   useMapData: () => ({ items: mapItems, loading: ref(false), load: async () => {}, ensure: (k: string) => ensure(k) }),
 }))
 
-import { byDistance, searchItems, useMapScreen } from './useMapScreen'
+import { byDistance, searchItems, useMapScreen, visibleItems } from './useMapScreen'
 
 const item = (key: string, title = key, lat = 46.18, lng = 21.31): MapItem =>
   ({ key, kind: key.split(':')[0] as MapItem['kind'], lat, lng, title, sub: 'Arad', href: '/' })
@@ -154,5 +154,26 @@ describe('travel mode', () => {
     s.travel.value = 'car'
     await nextTick(); await nextTick()
     expect(s.selected.value).toBeNull()
+  })
+
+  it('transit shows only transport: app pins and their open card go away, the route destination stays', async () => {
+    const s = useMapScreen(undefined)
+    await s.init()
+    s.select('event:1')
+    s.travel.value = 'transit'
+    await nextTick()
+    expect(s.visible.value).toEqual([])
+    expect(s.markers.value.some((m) => m.kind === 'event' || m.kind === 'place' || m.kind === 'offer')).toBe(false)
+    expect(s.selected.value).toBeNull()
+    s.travel.value = 'foot'
+    await nextTick()
+    expect(s.visible.value.map((i) => i.key)).toEqual(['event:1', 'place:2', 'offer:3'])
+  })
+
+  it('visibleItems keeps only the route target in transit mode', () => {
+    const items = [item('event:1'), item('place:2')]
+    expect(visibleItems(items, 'all', null, 'transit')).toEqual([])
+    expect(visibleItems(items, 'all', 'place:2', 'transit').map((i) => i.key)).toEqual(['place:2'])
+    expect(visibleItems(items, 'event', null, 'car').map((i) => i.key)).toEqual(['event:1'])
   })
 })

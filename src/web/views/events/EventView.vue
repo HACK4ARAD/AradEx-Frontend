@@ -12,7 +12,8 @@ import TicketQtyRows from '@/shared/components/tickets/TicketQtyRows.vue'
 import MapView from '@/shared/components/map/MapView.vue'
 import NearestStop from '@/shared/components/transit/NearestStop.vue'
 import type { MapMarker } from '@/shared/components/map/types'
-import { googleCalendarUrl, useEventFormat } from '@/shared/composables/useEvents'
+import { useEventFormat } from '@/shared/composables/useEvents'
+import AddToCalendar from '@/shared/components/events/AddToCalendar.vue'
 import { useEventPage } from '@/shared/composables/useEventPage'
 import { useTicketPick } from '@/shared/composables/useTicketOrder'
 
@@ -67,7 +68,7 @@ const btnLg = 'w-full min-h-12 px-5 rounded-[14px] inline-flex items-center just
             <AppIcon :name="e.saved ? 'bookmark' : 'bookmark_border'" :fill="!!e.saved" :size="18" />{{ e.saved ? t('events.saved') : t('events.save') }}
           </button>
           <button type="button" :class="chip" @click="share"><AppIcon name="ios_share" :size="18" />{{ t('events.detail.share') }}</button>
-          <a :href="googleCalendarUrl(e)" target="_blank" rel="noopener" :class="chip"><AppIcon name="event_available" :size="18" />{{ t('events.detail.addToCalendar') }}</a>
+          <AddToCalendar :event="e" :class="chip" />
           <router-link :to="mapTo" :class="chip"><AppIcon name="directions" :size="18" />{{ t('events.detail.directions') }}</router-link>
         </div>
 
@@ -138,9 +139,7 @@ const btnLg = 'w-full min-h-12 px-5 rounded-[14px] inline-flex items-center just
             <button v-else-if="e.capacity" type="button" :class="btnLg" class="bg-ink text-white mt-2.5" :disabled="joining || e.spotsLeft === 0" @click="joinFree">
               {{ e.spotsLeft === 0 ? t('events.detail.soldOut') : t('events.detail.register') }}
             </button>
-            <a v-else :href="googleCalendarUrl(e)" target="_blank" rel="noopener" :class="btnLg" class="bg-white border border-line text-ink mt-2.5">
-              <AppIcon name="event_available" :size="20" />{{ t('events.detail.addToCalendar') }}
-            </a>
+            <AddToCalendar v-else :event="e" :icon-size="20" :class="btnLg" class="bg-white border border-line text-ink mt-2.5" />
           </template>
 
           <template v-else>
