@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // T06 · S3 Detaliu eveniment — design/final `/event/:id`: hero cu poză + credit, categorie + Popular, tipul de bilete, dată, loc, organizator,
 // descriere, „Trimite / Raportează”, bara de jos cu preț și acțiunea principală.
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/components'
@@ -10,6 +10,9 @@ import { directionsUrl, googleCalendarUrl, useEventFormat, useSaveEvent } from '
 import { shareLink, useEventDetail } from '@/shared/composables/useEventDetail'
 import { useBack } from '@/shared/composables/useBack'
 import { useUiStore } from '@/shared/stores/ui'
+import { useAuthStore } from '@/shared/stores/auth'
+import { ticketsApi } from '@/shared/api/tickets'
+import { cacheTicket, useMyTickets, useTicketErrors } from '@/shared/composables/useTickets'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,6 +24,29 @@ const saver = useSaveEvent()
 const id = computed(() => Number(route.params.id))
 const { event: e, loading, notFound, reload } = useEventDetail(id)
 const extSheet = ref(false)
+const auth = useAuthStore()
+const mine = useMyTickets()
+const errorText = useTicketErrors()
+const joining = ref(false)
+onMounted(() => { if (auth.isLoggedIn) void mine.load() })
+/** T07: biletul / înscrierea mea la acest eveniment (pentru „Ești înscris · vezi codul”). */
+const myTicket = computed(() => mine.upcoming.value.find((x) => x.eventId === id.value) ?? null)
+
+/** T07: „Înscrie-te · gratuit” — înscriere directă (fără S4/S5), apoi S6. */
+async function joinFree() {
+  if (!e.value || joining.value) return
+  if (!auth.user) { await router.push({ path: '/m/login', query: { next: route.fullPath } }); return }
+  joining.value = true
+  try {
+    const tk = await ticketsApi.buy(e.value.id, { qtyAdult: 1, qtyChild: 0, email: auth.user.email })
+    cacheTicket(auth.user.id, tk)
+    await router.push(`/m/confirm/${tk.code}`)
+  } catch (err) {
+    ui.toast(errorText(err), 'error')
+  } finally {
+    joining.value = false
+  }
+}
 
 const ended = computed(() => !!e.value && new Date(e.value.endAt ?? e.value.startAt).getTime() < Date.now())
 const dur = computed(() => (e.value ? fmt.durationMin(e.value) : null))
@@ -130,7 +156,8 @@ function openExternal() {
         <button v-else type="button" class="flex-1 min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold" @click="router.push(`/m/events/${e.id}/tickets`)">{{ t('events.detail.buy') }}</button>
       </template>
       <template v-else-if="e.ticketType === 'FREE'">
-        <button v-if="e.capacity" type="button" class="flex-1 min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold" @click="router.push(`/m/events/${e.id}/tickets`)">{{ t('events.detail.register') }}</button>
+        <router-link v-if="e.capacity && myTicket" :to="`/m/tickets/${myTicket.code}`" class="flex-1 min-h-[52px] rounded-[16px] bg-soft text-ink text-[16px] font-semibold flex items-center justify-center no-underline">{{ t('events.detail.registered') }}</router-link>
+        <button v-else-if="e.capacity" type="button" class="flex-1 min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold disabled:opacity-60" :disabled="joining || e.spotsLeft === 0" @click="joinFree">{{ e.spotsLeft === 0 ? t('events.detail.soldOut') : t('events.detail.register') }}</button>
         <a v-else :href="googleCalendarUrl(e)" target="_blank" rel="noopener" class="flex-1 min-h-[52px] rounded-[16px] bg-white border border-line text-ink text-[16px] font-semibold flex items-center justify-center gap-2 no-underline">
           <AppIcon name="event_available" :size="18" />{{ t('events.detail.addToCalendar') }}
         </a>

@@ -1,13 +1,18 @@
 <script setup lang="ts">
 // T06 · W6 Detaliu eveniment — design/final `#/events/:id`: hero cu titlu, acțiuni (Salvează, Trimite, Calendar, Indicații), despre,
 // organizator; în dreapta cutia de bilete (T07 adaugă plata) și locul.
-import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import EventImage from '@/shared/components/events/EventImage.vue'
 import EventTicketBox from '@/web/components/events/EventTicketBox.vue'
-import { directionsUrl, googleCalendarUrl, useEventFormat, useSaveEvent } from '@/shared/composables/useEvents'
+import TicketDrawers from '@/web/components/events/TicketDrawers.vue'
+import { ticketsApi } from '@/shared/api/tickets'
+import { cacheTicket, useMyTickets, useTicketErrors } from '@/shared/composables/useTickets'
+import { useAuthStore } from '@/shared/stores/auth'
+import type { TicketDto } from '@/shared/types/tickets'
+import { directionsUrl, useEventFormat, useSaveEvent } from '@/shared/composables/useEvents'
 import { shareLink, useEventDetail } from '@/shared/composables/useEventDetail'
 import { useUiStore } from '@/shared/stores/ui'
 
@@ -20,6 +25,37 @@ const id = computed(() => Number(route.params.id))
 const { event: e, loading, notFound, reload } = useEventDetail(id)
 const dur = computed(() => (e.value ? fmt.durationMin(e.value) : null))
 const busy = ref(false)
+const router = useRouter()
+const auth = useAuthStore()
+const mine = useMyTickets()
+const errorText = useTicketErrors()
+onMounted(() => { if (auth.isLoggedIn) void mine.load() })
+/** T07: biletul / înscrierea mea la acest eveniment. */
+const myTicket = computed(() => mine.upcoming.value.find((x) => x.eventId === id.value) ?? null)
+const payOpen = ref(false)
+const shown = ref<TicketDto | null>(null)
+const order = ref({ adult: 1, child: 0 })
+function requireLogin(): boolean {
+  if (auth.isLoggedIn) return true
+  ui.toast(t('tickets.loginToBuy'))
+  void router.push({ path: '/w/login', query: { next: route.fullPath } })
+  return false
+}
+function startPay(o: { adult: number; child: number }) {
+  if (!requireLogin()) return
+  order.value = { ...o }
+  payOpen.value = true
+}
+async function joinFree() {
+  if (!e.value || !requireLogin() || !auth.user) return
+  try {
+    const tk = await ticketsApi.buy(e.value.id, { qtyAdult: 1, qtyChild: 0, email: auth.user.email })
+    cacheTicket(auth.user.id, tk)
+    shown.value = tk
+    await Promise.all([mine.load(), reload()])
+  } catch (err) { ui.toast(errorText(err), 'error') }
+}
+async function afterBuy() { await Promise.all([mine.load(), reload()]) }
 
 async function share() {
   if (!e.value) return
@@ -57,7 +93,7 @@ const chip = 'h-9 px-3.5 rounded-full inline-flex items-center gap-1.5 border bo
         <div class="flex gap-2 flex-wrap mt-3.5 mb-[22px]">
           <button type="button" :class="chip" :aria-pressed="!!e.saved" @click="toggleSave"><AppIcon :name="e.saved ? 'bookmark' : 'bookmark_border'" :fill="!!e.saved" :size="16" />{{ e.saved ? t('events.saved') : t('events.save') }}</button>
           <button type="button" :class="chip" @click="share"><AppIcon name="ios_share" :size="16" />{{ t('events.detail.share') }}</button>
-          <a :href="googleCalendarUrl(e)" target="_blank" rel="noopener" :class="chip"><AppIcon name="event_available" :size="16" />{{ t('events.detail.addToCalendar') }}</a>
+          <a :href="ticketsApi.icsUrl(e.id)" :class="chip"><AppIcon name="event_available" :size="16" />{{ t('events.detail.addToCalendar') }}</a>
           <a :href="directionsUrl(e.lat, e.lng)" target="_blank" rel="noopener" :class="chip"><AppIcon name="directions" :size="16" />{{ t('events.detail.directions') }}</a>
         </div>
 
@@ -76,7 +112,23 @@ const chip = 'h-9 px-3.5 rounded-full inline-flex items-center gap-1.5 border bo
       </div>
 
       <aside class="lg:sticky lg:top-[84px] flex flex-col gap-3.5">
-        <EventTicketBox :event="e" @changed="reload" />
+        <EventTicketBox :event="e" @changed="reload">
+          <template #buy="{ order: o, ended }">
+            <button v-if="myTicket" type="button" class="w-full h-12 rounded-[14px] bg-ink text-white text-[15px] font-semibold inline-flex items-center justify-center gap-2" @click="shown = myTicket">
+              <AppIcon name="qr_code_2" :size="18" />{{ t('tickets.ticket.myTicket', { code: myTicket.code }) }}</button>
+            <button v-else type="button" class="w-full h-12 rounded-[14px] bg-ink text-white text-[15px] font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-45"
+              :disabled="ended || o.adult + o.child === 0 || e.spotsLeft === 0" @click="startPay(o)">
+              <AppIcon name="lock" :size="18" />{{ ended ? t('events.detail.ended') : e.spotsLeft === 0 ? t('events.detail.soldOut') : t('tickets.continueToPay') }}</button>
+          </template>
+          <template #register="{ ended }">
+            <button v-if="e.capacity && myTicket" type="button" class="w-full h-12 mt-2.5 rounded-[14px] bg-ink text-white text-[15px] font-semibold inline-flex items-center justify-center gap-2" @click="shown = myTicket">
+              <AppIcon name="qr_code_2" :size="18" />{{ t('tickets.ticket.myRegistration') }}</button>
+            <button v-else-if="e.capacity" type="button" class="w-full h-12 mt-2.5 rounded-[14px] bg-ink text-white text-[15px] font-semibold disabled:opacity-45" :disabled="ended || e.spotsLeft === 0" @click="joinFree">
+              {{ ended ? t('events.detail.ended') : e.spotsLeft === 0 ? t('events.detail.soldOut') : t('events.detail.register') }}</button>
+            <a v-else :href="ticketsApi.icsUrl(e.id)" class="w-full h-12 mt-2.5 rounded-[14px] bg-white border border-line text-ink text-[15px] font-semibold inline-flex items-center justify-center gap-2 no-underline">
+              <AppIcon name="event_available" :size="18" />{{ t('events.detail.addToCalendar') }}</a>
+          </template>
+        </EventTicketBox>
         <div class="bg-white border border-line rounded-[16px] overflow-hidden">
           <div class="flex items-center gap-3 p-[18px]">
             <span class="w-8 h-8 rounded-full bg-soft flex items-center justify-center shrink-0"><AppIcon name="location_on" :size="18" /></span>
@@ -86,5 +138,6 @@ const chip = 'h-9 px-3.5 rounded-full inline-flex items-center gap-1.5 border bo
         </div>
       </aside>
     </div>
+    <TicketDrawers v-model:pay="payOpen" v-model:ticket="shown" :event="e" :adult="order.adult" :child="order.child" @bought="afterBuy" />
   </template>
 </template>
