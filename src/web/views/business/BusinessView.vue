@@ -8,7 +8,6 @@ import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import AnnouncementItem from '@/shared/components/business/AnnouncementItem.vue'
 import BusinessContact from '@/shared/components/business/BusinessContact.vue'
 import PublicEventRow from '@/shared/components/business/PublicEventRow.vue'
-import OfferCard from '@/shared/components/offers/OfferCard.vue'
 import { directionsUrl, useBusinessPage } from '@/shared/composables/useBusiness'
 
 const route = useRoute()
@@ -50,12 +49,6 @@ const maps = computed(() => (b.value ? directionsUrl(b.value.lat, b.value.lng, b
 
     <div class="grid gap-6 mt-6 lg:grid-cols-[minmax(0,1fr)_340px]">
       <div class="min-w-0">
-        <template v-if="data.offers.length">
-          <h2 class="text-[20px] font-semibold m-0 mb-3">{{ t('business.public.offers') }}</h2>
-          <div class="grid gap-3.5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 mb-7">
-            <OfferCard v-for="o in data.offers" :key="o.id" :offer="o" :to="{ path: '/w/offers', query: { offer: o.id } }" compact />
-          </div>
-        </template>
         <h2 class="text-[20px] font-semibold m-0 mb-3">{{ t('business.public.events') }}</h2>
         <div v-if="data.events.length" class="flex flex-col gap-2.5">
           <PublicEventRow v-for="e in data.events" :key="e.id" :event="e" :to="`/w/events/${e.id}`" />

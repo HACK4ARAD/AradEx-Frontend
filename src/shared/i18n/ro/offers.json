@@ -39,7 +39,7 @@
     "cta": "Revendică oferta",
     "show": "Arată codul",
     "login": "Conectează-te ca să revendici oferta.",
-    "done": "Oferta e a ta. Codul e și în Contul meu.",
+    "done": "Oferta e a ta. O găsești și în Bilete.",
     "yourCode": "Codul tău",
     "hint": "Arată codul la casă sau la intrare. Firma îl validează o singură dată.",
     "used": "Folosit {date}",
@@ -50,12 +50,6 @@
     "ISSUED": "Activ",
     "USED": "Folosit",
     "CANCELLED": "Anulat"
-  },
-  "mine": {
-    "title": "Ofertele mele",
-    "empty": "Nicio ofertă revendicată",
-    "emptyText": "Revendică o ofertă și codul apare aici.",
-    "browse": "Vezi ofertele"
   },
   "biz": {
     "title": "Oferte",
@@ -121,5 +115,8 @@
     "errUsed": "Codul a fost deja folosit.",
     "errOther": "Codul e pentru oferta altei firme.",
     "errCancelled": "Codul a fost anulat."
+  },
+  "claimed": {
+    "title": "Oferte revendicate"
   }
 }

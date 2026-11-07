@@ -56,9 +56,7 @@ async function saveAnnouncement(req: AnnouncementCreate) {
         <div v-if="topOffers.length" class="flex flex-col gap-2.5 mb-5">
           <BizOfferItem v-for="o in topOffers" :key="o.id" :offer="o" />
         </div>
-        <div v-else-if="!offers.loading.value" class="bg-white rounded-[16px] border border-line mb-5">
-          <EmptyState icon="sell" :title="t('offers.biz.empty')" :text="t('offers.biz.emptyText')" :action="t('offers.biz.new')" @action="router.push('/w/business/offers/new')" />
-        </div>
+        <EmptyState v-else-if="!offers.loading.value" class="mb-5" icon="sell" :title="t('offers.biz.empty')" :text="t('offers.biz.emptyText')" :action="t('offers.biz.new')" @action="router.push('/w/business/offers/new')" />
         <div class="flex items-center justify-between mb-2.5">
           <b class="text-[15px]">{{ t('business.panel.upcomingTitle') }} · {{ p.me.value.stats.upcomingEvents }}</b>
           <router-link to="/w/business/events" class="text-[13px] text-muted no-underline flex items-center">{{ t('business.panel.seeAll') }}<AppIcon name="chevron_right" :size="18" /></router-link>
@@ -66,9 +64,7 @@ async function saveAnnouncement(req: AnnouncementCreate) {
         <div v-if="nextEvents.length" class="flex flex-col gap-2.5">
           <BusinessEventItem v-for="e in nextEvents" :key="e.id" :event="e" />
         </div>
-        <div v-else class="bg-white rounded-[16px] border border-line">
-          <EmptyState icon="event" :title="t('business.events.empty')" :text="t('business.events.emptyText')" :action="t('business.events.new')" @action="router.push('/w/business/events/new')" />
-        </div>
+        <EmptyState v-else icon="event" :title="t('business.events.empty')" :text="t('business.events.emptyText')" :action="t('business.events.new')" @action="router.push('/w/business/events/new')" />
       </div>
 
       <div class="flex flex-col gap-4">
@@ -82,7 +78,7 @@ async function saveAnnouncement(req: AnnouncementCreate) {
           <ul v-if="p.activity.value.length" class="list-none p-0 m-0 mt-2 flex flex-col gap-2 text-[14px]">
             <li v-for="(a, i) in p.activity.value" :key="i">{{ a.text }}</li>
           </ul>
-          <EmptyState v-else icon="history" :title="t('business.activity.empty')" :text="t('business.activity.emptyText')" />
+          <p v-else class="text-[13.5px] text-muted m-0 mt-2">{{ t('business.activity.emptyText') }}</p>
         </div>
       </div>
     </div>

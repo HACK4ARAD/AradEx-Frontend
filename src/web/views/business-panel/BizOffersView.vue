@@ -58,9 +58,7 @@ async function remove(x: OfferDto) {
     </PanelHeader>
     <Skeleton v-if="o.loading.value" :rows="3" :height="80" />
     <EmptyState v-else-if="o.error.value" icon="cloud_off" :title="t('business.loadError')" :action="t('common.retry')" @action="o.load" />
-    <div v-else-if="!o.items.value.length" class="bg-white rounded-[16px] border border-line">
-      <EmptyState icon="sell" :title="t('offers.biz.empty')" :text="t('offers.biz.emptyText')" :action="t('offers.biz.new')" @action="router.push('/w/business/offers/new')" />
-    </div>
+    <EmptyState v-else-if="!o.items.value.length" icon="sell" :title="t('offers.biz.empty')" :text="t('offers.biz.emptyText')" :action="t('offers.biz.new')" @action="router.push('/w/business/offers/new')" />
     <div v-else class="flex flex-col gap-2.5 max-w-[960px]">
       <BizOfferItem v-for="x in o.items.value" :key="x.id" :offer="x" actions :can-publish="verified"
         @toggle="toggle(x)" @edit="router.push(`/w/business/offers/${x.id}`)" @remove="remove(x)" />

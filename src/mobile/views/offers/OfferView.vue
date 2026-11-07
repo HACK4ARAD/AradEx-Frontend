@@ -43,14 +43,15 @@ async function onRedeem() {
     </div>
   </div>
 
-  <div class="pt-4 pb-24">
+  <div class="pt-4 pb-28">
     <Skeleton v-if="loading" :rows="3" />
     <EmptyState v-else-if="notFound" icon="sell" :title="t('offers.detail.notFound')" :text="t('offers.detail.notFoundText')" :action="t('offers.title')" @action="router.push('/m/offers')" />
     <EmptyState v-else-if="error || !offer" icon="cloud_off" :title="t('business.loadError')" :action="t('common.retry')" @action="reload" />
     <OfferDetailBody v-else :offer="offer" :business-link="`/m/businesses/${offer.businessId}`" />
   </div>
 
-  <div v-if="offer" class="fixed bottom-[96px] left-1/2 -translate-x-1/2 w-full max-w-[480px] px-5">
+  <!-- bara de jos din design (`bottombar`), peste tab bar, ca la detaliul evenimentului (T06) -->
+  <div v-if="offer" class="fixed left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[480px] z-40 px-5 pt-3 pb-[max(30px,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur border-t border-line flex">
     <AppButton block :loading="redeeming" :icon="active ? 'qr_code_2' : 'redeem'" @click="onRedeem">
       {{ active ? t('offers.redeem.show') : t('offers.redeem.cta') }}
     </AppButton>

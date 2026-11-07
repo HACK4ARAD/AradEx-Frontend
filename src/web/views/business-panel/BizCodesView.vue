@@ -22,9 +22,7 @@ onMounted(() => validator.loadRecent())
     <div class="min-w-0">
       <b class="block text-[15px] mb-2.5">{{ t('offers.codes.recent') }}</b>
       <Skeleton v-if="validator.loadingRecent.value" :rows="3" />
-      <div v-else-if="!validator.recent.value.length" class="bg-white rounded-[16px] border border-line">
-        <EmptyState icon="qr_code_2" :title="t('offers.codes.recentEmpty')" :text="t('offers.codes.recentEmptyText')" />
-      </div>
+      <EmptyState v-else-if="!validator.recent.value.length" icon="qr_code_2" :title="t('offers.codes.recentEmpty')" :text="t('offers.codes.recentEmptyText')" />
       <div v-else class="flex flex-col gap-2">
         <RedemptionItem v-for="r in validator.recent.value" :key="r.id" :redemption="r" />
       </div>
