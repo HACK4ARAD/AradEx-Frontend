@@ -1,6 +1,7 @@
 import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { aiApi } from '@/shared/api/ai'
+import { ApiError } from '@/shared/api/client'
 import { itinerariesApi } from '@/shared/api/itineraries'
 import { useFormat } from '@/shared/composables/useFormat'
 import { useUiStore } from '@/shared/stores/ui'
@@ -9,7 +10,7 @@ import type { ItineraryDto, ItineraryRequest } from '@/shared/types/plan'
 
 /**
  * T13 · E1 planificatorul: formularul (cât timp, când, de la ce oră, cum te deplasezi, interese, „Altceva?”) → cererea
- * POST /ai/itinerary, apoi salvarea imediată (POST /itineraries) ca itinerariul să aibă `id` și link de trimis.
+ * POST /ai/itinerary, apoi salvarea imediată (POST /itineraries) ca itinerariul să aibă cod de partajare și link de trimis.
  */
 export const TIME_OPTIONS = ['3h', 'half', 'day', '2d'] as const
 export type TimeOption = (typeof TIME_OPTIONS)[number]
@@ -60,18 +61,24 @@ export function nextDay(iso: string): string {
   return d.toISOString().slice(0, 10)
 }
 
+/** După 21:00 la Arad nu mai încape un plan pentru azi (ziua se termină la 22:00): formularul pornește pe mâine. */
+export function startsTomorrow(now: Date = new Date()): boolean {
+  const h = Number(new Intl.DateTimeFormat('en-GB', { hour: '2-digit', hourCycle: 'h23', timeZone: 'Europe/Bucharest' }).format(now))
+  return h >= 21
+}
+
 export function nextStartTime(current: string): string {
   const i = START_TIMES.indexOf(current as (typeof START_TIMES)[number])
   return START_TIMES[(i + 1) % START_TIMES.length]
 }
 
 export function usePlanner() {
-  const { locale } = useI18n()
+  const { t, locale } = useI18n()
   const ui = useUiStore()
   const f = useFormat()
   const today = f.todayIso()
 
-  const form = reactive<PlanForm>({ time: 'half', date: today, startTime: '10:00', transport: 'WALK', interests: ['history', 'food'], text: '' })
+  const form = reactive<PlanForm>({ time: 'half', date: startsTomorrow() ? nextDay(today) : today, startTime: '10:00', transport: 'WALK', interests: ['history', 'food'], text: '' })
   const generating = ref(false)
 
   /** Ziua de azi și ziua următoare („Sâm., 7 nov.”). */
@@ -84,15 +91,28 @@ export function usePlanner() {
   }
   function cycleStart() { form.startTime = nextStartTime(form.startTime) }
 
-  /** Generează și salvează; întoarce itinerariul salvat (cu `id`) sau null după o eroare (toast, formularul rămâne). */
+  /**
+   * Generează și salvează; întoarce itinerariul salvat (cu `shareCode`) sau null după o eroare (toast, formularul rămâne).
+   * Un program fără opriri nu se salvează. 429 și lipsa rețelei au mesaje traduse.
+   */
   async function generate(): Promise<ItineraryDto | null> {
     if (generating.value) return null
     generating.value = true
     try {
       const draft = await aiApi.itinerary(buildRequest(form, locale.value))
+      if (!draft.stops?.length) {
+        ui.toast(t('plan.errors.noStops'), 'error', undefined, 6000)
+        return null
+      }
       return await itinerariesApi.save(draft)
     } catch (e) {
-      ui.error(e)
+      if (e instanceof ApiError && e.status === 429) ui.toast(t('plan.errors.tooMany'), 'error')
+      else if (e instanceof ApiError && e.status === 400 && /too late/i.test(e.message)) {
+        form.date = nextDay(today)
+        ui.toast(t('plan.errors.tooLate'), 'error', undefined, 6000)
+      }
+      else if (e instanceof ApiError && e.status === 0) ui.toast(t('plan.errors.network'), 'error')
+      else ui.error(e)
       return null
     } finally {
       generating.value = false

@@ -57,9 +57,29 @@ export function navigateUrl(to: GeoPoint, t: Transport): string {
   return t === 'PUBLIC' ? url.replace(/travelmode=\w+/, 'travelmode=transit') : url
 }
 
-/** „Cum ajung” → harta cu traseul spre oprire. */
+/** Site-ul public: linkul de partajare merge și din aplicația de iOS (unde `location.origin` e `capacitor://localhost`). */
+export const SITE_URL = ((import.meta.env.VITE_SITE_URL as string | undefined) || 'https://aradexperience.site').replace(/\/+$/, '')
+
+/** Linkul de trimis: pagina publică a itinerariului, după codul de partajare (id-ul nu se deschide decât pentru proprietar). */
+export function shareUrl(shareCode: string): string {
+  return `${SITE_URL}/itinerary/${encodeURIComponent(shareCode)}`
+}
+
+/** „Cum ajung” → harta aplicației cu traseul spre obiectiv sau eveniment (ofertele merg direct în Google Maps: `navigateUrl`). */
 export function mapTarget(s: Pick<ItineraryStop, 'kind' | 'refId'>): string {
   return `/map?to=${s.kind.toLowerCase()}:${s.refId}`
+}
+
+/**
+ * Tot traseul unei zile în Google Maps: de la prima oprire, prin cele din mijloc (cel mult 9), la ultima. Google nu primește
+ * opriri intermediare cu transportul public, așa că acolo traseul e pe jos.
+ */
+export function routeUrl(stops: GeoPoint[], t: Transport): string | null {
+  if (stops.length < 2) return null
+  const p = (s: GeoPoint) => `${s.lat},${s.lng}`
+  const mid = stops.slice(1, -1).slice(0, 9).map(p).join('|')
+  const mode = t === 'CAR' ? 'driving' : 'walking'
+  return `https://www.google.com/maps/dir/?api=1&origin=${p(stops[0])}&destination=${p(stops[stops.length - 1])}${mid ? `&waypoints=${encodeURIComponent(mid)}` : ''}&travelmode=${mode}`
 }
 
 /** Pagina opririi: obiectivul (cu ghidul), evenimentul sau oferta. */

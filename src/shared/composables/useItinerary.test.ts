@@ -8,7 +8,7 @@ vi.mock('@/shared/api/itineraries', () => ({ itinerariesApi: { get: (id: string)
 vi.mock('vue-i18n', async (orig) => ({ ...(await orig<typeof import('vue-i18n')>()), useI18n: () => ({ t: (k: string) => k, locale: { value: 'ro' } }) }))
 
 import {
-  buildRoute, daysOf, legTotals, legsOf, loadDone, mapTarget, navigateUrl, progressPct, saveDone, stopHref, stopsForDay, toggleDone, useItinerary,
+  buildRoute, daysOf, legTotals, legsOf, loadDone, mapTarget, navigateUrl, progressPct, routeUrl, shareUrl, saveDone, stopHref, stopsForDay, toggleDone, useItinerary,
 } from './useItinerary'
 
 const stop = (order: number, day: 1 | 2 = 1, over: Partial<ItineraryStop> = {}): ItineraryStop => ({
@@ -47,10 +47,18 @@ describe('links', () => {
   it('map target and detail page per stop kind', () => {
     expect(mapTarget({ kind: 'PLACE', refId: 3 })).toBe('/map?to=place:3')
     expect(mapTarget({ kind: 'EVENT', refId: 5 })).toBe('/map?to=event:5')
-    expect(mapTarget({ kind: 'OFFER', refId: 9 })).toBe('/map?to=offer:9')
     expect(stopHref({ kind: 'PLACE', refId: 3 })).toBe('/places/3')
     expect(stopHref({ kind: 'EVENT', refId: 5 })).toBe('/events/5')
     expect(stopHref({ kind: 'OFFER', refId: 9 })).toBe('/offers/9')
+  })
+  it('the whole day in Google Maps: origin, waypoints, destination; public transport is walked', () => {
+    const pts = [{ lat: 1, lng: 2 }, { lat: 3, lng: 4 }, { lat: 5, lng: 6 }]
+    expect(routeUrl(pts, 'CAR')).toBe('https://www.google.com/maps/dir/?api=1&origin=1,2&destination=5,6&waypoints=3%2C4&travelmode=driving')
+    expect(routeUrl(pts.slice(0, 2), 'PUBLIC')).toBe('https://www.google.com/maps/dir/?api=1&origin=1,2&destination=3,4&travelmode=walking')
+    expect(routeUrl(pts.slice(0, 1), 'WALK')).toBeNull()
+  })
+  it('the share link is the public site page by share code, also from the iOS app', () => {
+    expect(shareUrl('AX-I-7K3Q9Z')).toBe('https://aradexperience.site/itinerary/AX-I-7K3Q9Z')
   })
   it('Google Maps directions in the itinerary mode', () => {
     const p = { lat: 46.1, lng: 21.3 }

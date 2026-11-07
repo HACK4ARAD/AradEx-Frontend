@@ -47,7 +47,8 @@
     "newPlan": "New plan",
     "share": "Share",
     "notFound": "This itinerary doesn't exist or was deleted.",
-    "loadError": "We couldn't load the itinerary."
+    "loadError": "We couldn't load the itinerary.",
+    "saveError": "We couldn't save the itinerary. Try again."
   },
   "map": {
     "title": "Your route · {km} · {min}",
@@ -77,5 +78,30 @@
     "error": "We couldn't load the itineraries.",
     "retry": "Try again",
     "footnote": "Times and prices are approximate."
+  },
+  "errors": {
+    "tooMany": "Too many plans in one minute. Try again a little later.",
+    "network": "You're offline. Check your connection and try again.",
+    "noStops": "No stops matched your choices. Try another day, another way to travel or more time.",
+    "tooLate": "It's too late to plan for today (days end at 22:00). We switched to tomorrow."
+  },
+  "web": {
+    "back": "Home",
+    "shared": "Itinerary shared from the AradExperience app",
+    "day": "Day {n}",
+    "directions": "Directions",
+    "details": "Details",
+    "guideBadge": "audio guide",
+    "wholeRoute": "Whole route in Google Maps",
+    "appTitle": "Continue in the app",
+    "appText": "In the app you tick off stops, see the route on the map and listen to the audio guide at each landmark.",
+    "save": "Save to my account",
+    "saved": "Saved. Find it in the app under Profile › Your itineraries.",
+    "signIn": "Sign in to save it",
+    "android": "Android",
+    "ios": "iPhone",
+    "soon": "Coming soon",
+    "notFound": "This itinerary doesn't exist or the link is wrong.",
+    "parking": "Parking: {hint}"
   }
 }

@@ -47,7 +47,8 @@
     "newPlan": "Plan nou",
     "share": "Trimite",
     "notFound": "Itinerariul nu există sau a fost șters.",
-    "loadError": "Nu am putut încărca itinerariul."
+    "loadError": "Nu am putut încărca itinerariul.",
+    "saveError": "Nu am putut salva itinerariul. Încearcă din nou."
   },
   "map": {
     "title": "Traseul tău · {km} · {min}",
@@ -77,5 +78,30 @@
     "error": "Nu am putut încărca itinerariile.",
     "retry": "Reîncearcă",
     "footnote": "Orele și prețurile sunt orientative."
+  },
+  "errors": {
+    "tooMany": "Ai făcut prea multe planuri într-un minut. Mai încearcă puțin mai târziu.",
+    "network": "Nu ai conexiune. Verifică internetul și încearcă din nou.",
+    "noStops": "Nu am găsit opriri pentru alegerile tale. Încearcă altă zi, alt transport sau mai mult timp.",
+    "tooLate": "E prea târziu pentru un plan azi (ziua se termină la 22:00). Am trecut pe mâine."
+  },
+  "web": {
+    "back": "Acasă",
+    "shared": "Itinerariu trimis din aplicația AradExperience",
+    "day": "Ziua {n}",
+    "directions": "Indicații",
+    "details": "Detalii",
+    "guideBadge": "ghid audio",
+    "wholeRoute": "Tot traseul în Google Maps",
+    "appTitle": "Continuă în aplicație",
+    "appText": "În aplicație bifezi opririle, vezi traseul pe hartă și asculți ghidul audio la fiecare obiectiv.",
+    "save": "Salvează în contul meu",
+    "saved": "Salvat. Îl găsești în aplicație, la Profil › Itinerariile tale.",
+    "signIn": "Conectează-te ca să-l salvezi",
+    "android": "Android",
+    "ios": "iPhone",
+    "soon": "În curând",
+    "notFound": "Itinerariul nu există sau linkul e greșit.",
+    "parking": "Parcare: {hint}"
   }
 }

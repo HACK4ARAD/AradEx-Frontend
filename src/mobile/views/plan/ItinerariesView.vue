@@ -43,7 +43,7 @@ const { items, loading, failed, load, progress, coverOf, loggedIn } = useMyItine
     <EmptyState v-else-if="failed && !items.length" icon="cloud_off" :title="t('plan.list.error')" :action="t('plan.list.retry')" @action="load" />
     <EmptyState v-else-if="!items.length" icon="route" :title="t('plan.list.emptyTitle')" :text="t('plan.list.emptyText')" :action="t('plan.list.create')" @action="router.push('/plan')" />
     <template v-else>
-      <router-link v-for="it in items" :key="it.id ?? it.shareCode" :to="`/itinerary/${it.id ?? it.shareCode}`"
+      <router-link v-for="it in items" :key="it.shareCode ?? it.id" :to="`/itinerary/${it.shareCode}`"
         class="flex items-center w-full mb-3 overflow-hidden rounded-[20px] bg-white border border-line text-ink no-underline">
         <div class="w-[110px] h-[110px] shrink-0 bg-soft bg-cover bg-center flex items-center justify-center text-muted" :style="coverOf(it) ? { backgroundImage: `url('${coverOf(it)}')` } : undefined">
           <AppIcon v-if="!coverOf(it)" name="route" :size="36" />

@@ -75,4 +75,31 @@ describe('useChat', () => {
     expect(c.items.value).toHaveLength(1)
     expect(useChat().items.value).toHaveLength(1)
   })
+
+  it('sends only the last 12 messages, each cut to 1000 characters', async () => {
+    const long = 'x'.repeat(1500)
+    const past = Array.from({ length: 20 }, (_, n) => ({ from: n % 2 === 0 ? 'me' : 'bot', text: n === 19 ? long : `m${n}` }))
+    sessionStorage.setItem('ax.chat', JSON.stringify(past))
+    chat.mockResolvedValue({ reply: 'ok', suggestedEventIds: [], quickReplies: [], offline: false })
+    const c = useChat()
+    await c.send('ultima')
+    const sent = chat.mock.calls[0][0].messages as { role: string, content: string }[]
+    expect(sent).toHaveLength(12)
+    expect(sent[11]).toEqual({ role: 'user', content: 'ultima' })
+    expect(sent[10].content).toHaveLength(1000)
+  })
+
+  it('a reply that arrives after "new chat" is dropped', async () => {
+    let answer: (v: unknown) => void = () => {}
+    chat.mockReturnValue(new Promise((r) => { answer = r }))
+    const c = useChat()
+    const pending = c.send('Ce fac azi?')
+    c.reset()
+    expect(c.typing.value).toBe(false)
+    answer({ reply: 'răspuns vechi', suggestedEventIds: [], quickReplies: [], offline: false })
+    await pending
+    expect(c.items.value).toHaveLength(1)
+    expect(c.items.value[0].starter).toBe(true)
+  })
 })
+

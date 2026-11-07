@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // T13 · E1 — Planifică-ți vizita (design/final mobile `/plan`): cât timp, când + de la ce oră, cum te deplasezi, interese,
 // „Altceva?”, „Generează programul”. Cât lucrează AradBot: ecranul de așteptare pe tot ecranul (fără tab bar), apoi
-// itinerariul salvat (`/itinerary/:id`, cu replace). Logica: shared/composables/usePlanner.
-import { ref } from 'vue'
+// itinerariul salvat (`/itinerary/:shareCode`, cu replace). Logica: shared/composables/usePlanner.
+import { onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
@@ -19,10 +19,14 @@ const chipCls = (on: boolean) => (on ? 'bg-ink text-white border-ink font-semibo
 
 /** ecranul de așteptare rămâne până se deschide itinerariul (fără să clipească formularul între salvare și navigare) */
 const leaving = ref(false)
+/** omul a plecat de pe ecran cât lucra AradBot: nu-l mai ducem la itinerariu */
+let gone = false
+onBeforeUnmount(() => { gone = true })
 async function go() {
   leaving.value = true
   const saved = await generate()
-  if (saved) await router.replace(`/itinerary/${saved.id ?? saved.shareCode}`)
+  if (gone) return
+  if (saved?.shareCode) await router.replace(`/itinerary/${saved.shareCode}`)
   else leaving.value = false
 }
 </script>

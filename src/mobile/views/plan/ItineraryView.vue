@@ -2,11 +2,12 @@
 // T13 · E2 — Programul tău (design/final mobile `/itinerary/:id`): hero cu prima oprire, „Făcut de AradBot”, cererea ta +
 // „Modifică în chat”, rezumatul, inelul de progres, ziua (la 2 zile), timeline-ul cu bife, „Cum ajung” / „Ghidul” / „Detalii”
 // și drumul dintre opriri; jos „Vezi pe hartă”, salvare și plan nou. Logica: shared/composables/useItinerary.
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
-import { MODE_ICON, mapTarget, stopHref, useItinerary, useItineraryFormat } from '@/shared/composables/useItinerary'
+import { MODE_ICON, mapTarget, navigateUrl, shareUrl, stopHref, useItinerary, useItineraryFormat } from '@/shared/composables/useItinerary'
+import { itinerariesApi } from '@/shared/api/itineraries'
 import { useBack } from '@/shared/composables/useBack'
 import { useShare } from '@/shared/composables/useShare'
 import { useAuthStore } from '@/shared/stores/auth'
@@ -39,12 +40,28 @@ function pickDay(d: 1 | 2) {
 }
 function doShare() {
   const v = it.value
-  if (!v) return
-  void share(v.title, `${window.location.origin}/itinerary/${v.shareCode ?? v.id ?? id.value}`)
+  if (!v?.shareCode) return
+  void share(v.title, shareUrl(v.shareCode))
 }
-function bookmark() {
-  if (auth.user) ui.toast(t('plan.detail.saved'), 'success')
-  else ui.toast(t('plan.detail.signIn'), 'info', { label: t('plan.detail.signInAction'), onClick: () => void router.push({ path: '/login', query: { next: route.fullPath } }) }, 6000)
+/** „Salvează”: cu cont, POST /itineraries/{code}/save (fără proprietar → al meu; al altcuiva → copia mea, cu cod nou). */
+const saving = ref(false)
+async function bookmark() {
+  const v = it.value
+  if (!auth.user) {
+    ui.toast(t('plan.detail.signIn'), 'info', { label: t('plan.detail.signInAction'), onClick: () => void router.push({ path: '/login', query: { next: route.fullPath } }) }, 6000)
+    return
+  }
+  if (!v?.shareCode || saving.value) return
+  saving.value = true
+  try {
+    const mine = await itinerariesApi.saveToMine(v.shareCode)
+    ui.toast(t('plan.detail.saved'), 'success')
+    if (mine.shareCode && mine.shareCode !== v.shareCode) await router.replace({ path: `/itinerary/${mine.shareCode}`, query: route.query })
+  } catch {
+    ui.toast(t('plan.detail.saveError'), 'error')
+  } finally {
+    saving.value = false
+  }
 }
 </script>
 
@@ -132,7 +149,10 @@ function bookmark() {
               <AppIcon name="local_parking" :size="18" class="shrink-0" /><span>{{ s.parkingHint }}</span>
             </div>
             <div class="flex gap-2 mt-2.5">
-              <router-link :to="mapTarget(s)" class="flex-1 min-h-9 px-3 rounded-[12px] bg-white border border-line text-ink text-[13px] font-semibold flex items-center justify-center gap-1.5 no-underline">
+              <a v-if="s.kind === 'OFFER'" :href="navigateUrl(s, it.transport)" target="_blank" rel="noopener"
+                class="flex-1 min-h-9 px-3 rounded-[12px] bg-white border border-line text-ink text-[13px] font-semibold flex items-center justify-center gap-1.5 no-underline">
+                <AppIcon name="directions" :size="16" />{{ t('plan.detail.howToGet') }}</a>
+              <router-link v-else :to="mapTarget(s)" class="flex-1 min-h-9 px-3 rounded-[12px] bg-white border border-line text-ink text-[13px] font-semibold flex items-center justify-center gap-1.5 no-underline">
                 <AppIcon name="directions" :size="16" />{{ t('plan.detail.howToGet') }}</router-link>
               <router-link :to="stopHref(s)" class="flex-1 min-h-9 px-3 rounded-[12px] bg-white border border-line text-ink text-[13px] font-semibold flex items-center justify-center gap-1.5 no-underline">
                 <AppIcon :name="s.hasGuide && s.kind === 'PLACE' ? 'headphones' : 'info'" :size="16" />{{ s.hasGuide && s.kind === 'PLACE' ? t('plan.detail.guide') : t('plan.detail.details') }}</router-link>
@@ -150,7 +170,7 @@ function bookmark() {
     <div class="fixed left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[480px] z-40 px-5 pt-3 pb-[max(30px,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur border-t border-line flex items-center gap-3">
       <router-link :to="mapLink" class="flex-1 min-h-[52px] px-5 rounded-[16px] bg-ink text-white text-[16px] font-semibold flex items-center justify-center gap-2 no-underline">
         <AppIcon name="map" :size="18" />{{ t('plan.detail.onMap') }}</router-link>
-      <button type="button" class="min-h-[52px] px-3.5 rounded-[16px] bg-white border border-line flex items-center justify-center" :aria-label="t('plan.detail.save')" @click="bookmark">
+      <button type="button" class="min-h-[52px] px-3.5 rounded-[16px] bg-white border border-line flex items-center justify-center" :aria-label="t('plan.detail.save')" :disabled="saving" @click="bookmark">
         <AppIcon name="bookmark" :size="18" /></button>
       <router-link to="/plan" class="min-h-[52px] px-3.5 rounded-[16px] bg-white border border-line text-ink flex items-center justify-center no-underline" :aria-label="t('plan.detail.newPlan')">
         <AppIcon name="refresh" :size="18" /></router-link>
