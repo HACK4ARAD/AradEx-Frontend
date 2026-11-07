@@ -212,7 +212,8 @@
     "on": "activ",
     "optional": "opțional (T17)",
     "complete": "completă",
-    "partial": "parțial",
+    "uiOnly": "doar interfața",
+    "enHint": "Butoanele și textele aplicației sunt traduse; evenimentele, locurile, ghidurile audio, ofertele și acțiunile sunt doar în română.",
     "planned": "planificat"
   },
   "errors": {

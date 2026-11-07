@@ -212,7 +212,8 @@
     "on": "active",
     "optional": "optional (T17)",
     "complete": "complete",
-    "partial": "partial",
+    "uiOnly": "interface only",
+    "enHint": "Buttons and app text are translated; events, places, audio guides, offers and actions are in Romanian only.",
     "planned": "planned"
   },
   "errors": {

@@ -16,7 +16,17 @@ const map = shallowRef<google.maps.Map | null>(null)
 let Marker: typeof google.maps.marker.AdvancedMarkerElement | null = null
 let markers: google.maps.marker.AdvancedMarkerElement[] = []
 let routeLine: google.maps.Polyline | null = null
+let transitLines: google.maps.Polyline[] = []
 let meMarker: google.maps.marker.AdvancedMarkerElement | null = null
+
+/** Liniile transportului, subțiri, sub traseul ales (zIndex mai mic). */
+function drawLines() {
+  if (!map.value) return
+  for (const l of transitLines) l.setMap(null)
+  transitLines = (props.lines ?? []).map((l) => new google.maps.Polyline({
+    map: map.value, path: l.path.map(([lat, lng]) => ({ lat, lng })), strokeColor: l.color, strokeWeight: 3, strokeOpacity: 0.55, clickable: false, zIndex: 1,
+  }))
+}
 
 function drawMarkers() {
   if (!map.value || !Marker) return
@@ -36,8 +46,8 @@ function drawRoute() {
   if (!props.route || props.route.length < 2) return
   const path = props.route.map(([lat, lng]) => ({ lat, lng }))
   routeLine = new google.maps.Polyline(props.routeApproximate
-    ? { path, map: map.value, strokeOpacity: 0, icons: [{ icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, strokeColor: '#111', scale: 3 }, offset: '0', repeat: '12px' }] }
-    : { path, map: map.value, strokeColor: '#1D5FD1', strokeWeight: 5, strokeOpacity: 0.9 })
+    ? { path, map: map.value, strokeOpacity: 0, icons: [{ icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, strokeColor: '#111', scale: 3 }, offset: '0', repeat: '12px' }], zIndex: 10 }
+    : { path, map: map.value, strokeColor: '#1D5FD1', strokeWeight: 5, strokeOpacity: 0.9, zIndex: 10 })
   const bounds = new google.maps.LatLngBounds()
   path.forEach((p) => bounds.extend(p))
   const pad = fitInsets(props.insets, el.value?.clientHeight ?? 0)
@@ -62,6 +72,7 @@ onMounted(async () => {
       disableDefaultUI: true, clickableIcons: false, gestureHandling: 'greedy',
     })
     map.value.addListener('click', () => emit('select', null))
+    drawLines()
     drawMarkers()
     drawMe()
     drawRoute()
@@ -73,11 +84,13 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   for (const m of markers) m.map = null
   routeLine?.setMap(null)
+  for (const l of transitLines) l.setMap(null)
   if (meMarker) meMarker.map = null
   map.value = null
 })
 
 watch(() => [props.markers, props.selectedId], drawMarkers)
+watch(() => props.lines, drawLines)
 watch(() => [props.route, props.routeApproximate], drawRoute)
 watch(() => props.me, drawMe)
 

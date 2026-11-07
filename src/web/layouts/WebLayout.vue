@@ -149,7 +149,7 @@ function toggleLocale() {
   <div v-else class="min-h-dvh bg-bg flex flex-col">
     <header class="h-16 bg-white border-b border-line flex items-center px-4 md:px-7 gap-3 md:gap-7 sticky top-0 z-20">
       <router-link to="/" class="font-bold text-[16px] flex items-center gap-2 no-underline text-ink shrink-0">
-        <span class="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {{ t('app.name') }}
+        <img src="@/shared/assets/logo-ax.png" alt="AradExperience" class="h-[18px] w-auto shrink-0" /> {{ t('app.name') }}
       </router-link>
       <nav class="hidden gap-1 text-[14px] font-medium" :class="personal ? 'lg:flex' : 'md:flex'">
         <router-link v-for="n in topNav" :key="n.to" :to="n.to" class="no-underline h-9 px-3 rounded-[10px] inline-flex items-center whitespace-nowrap"
@@ -182,7 +182,7 @@ function toggleLocale() {
     </main>
     <footer class="border-t border-line bg-white">
       <div class="max-w-[1280px] mx-auto px-4 md:px-8 py-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[14px] text-muted">
-        <span class="font-bold text-ink flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {{ t('app.name') }}</span>
+        <span class="font-bold text-ink flex items-center gap-2"><img src="@/shared/assets/logo-ax.png" alt="AradExperience" class="h-[18px] w-auto shrink-0" /> {{ t('app.name') }}</span>
         <router-link to="/privacy" class="no-underline text-muted hover:text-ink">{{ t('site.footer.privacy') }}</router-link>
         <a v-if="CONTACT_EMAIL" :href="`mailto:${CONTACT_EMAIL}`" class="no-underline text-muted hover:text-ink">{{ t('site.footer.contact') }}: {{ CONTACT_EMAIL }}</a>
         <span class="ml-auto">{{ t('site.footer.made') }}</span>

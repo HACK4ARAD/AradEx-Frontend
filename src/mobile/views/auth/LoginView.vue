@@ -29,7 +29,7 @@ const firmDemo = [
       <AppIcon name="arrow_back" />
     </button>
     <div class="flex items-center gap-2 text-[15px] font-bold mt-3 mb-4">
-      <span class="w-2.5 h-2.5 rounded-full bg-accent" /> {{ t('app.name') }}
+      <img src="@/shared/assets/logo-ax.png" alt="AradExperience" class="h-[18px] w-auto shrink-0" /> {{ t('app.name') }}
     </div>
 
     <PhoneLogin v-if="mode === 'phone'" :demo-phones="demoPhones" />
