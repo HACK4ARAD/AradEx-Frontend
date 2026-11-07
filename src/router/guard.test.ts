@@ -63,4 +63,16 @@ describe('guard in the mobile app', () => {
     signIn('VISITOR')
     expect(await go(mobileRouter(), '/panel')).toBe('/')
   })
+
+  it('keeps a volunteer inside the 3 volunteer tabs (T18)', async () => {
+    signIn('VOLUNTEER')
+    expect(await go(mobileRouter(), '/')).toBe('/vol/actions')
+    expect(await go(mobileRouter(), '/tickets')).toBe('/vol/actions')
+    expect(await go(mobileRouter(), '/vol/messages')).toBe('/vol/messages')
+  })
+
+  it('does not let other roles into the volunteer tabs', async () => {
+    signIn('LOCAL')
+    expect(await go(mobileRouter(), '/vol/scan')).toBe('/')
+  })
 })

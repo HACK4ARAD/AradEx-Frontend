@@ -16,6 +16,7 @@ import * as P from '@/web/components/community/panel'
 import { useFormat } from '@/shared/composables/useFormat'
 import { initials, useActionRegistrations, useCityCommunity, useLeaderboard, type ScanResult } from '@/shared/composables/useCommunity'
 import { useUiStore } from '@/shared/stores/ui'
+import { useCityVolunteers } from '@/shared/composables/useVolunteer'
 import type { LeaderboardPeriod, RegistrationDto } from '@/shared/types/community'
 
 const route = useRoute()
@@ -27,6 +28,9 @@ const city = useCityCommunity()
 const selected = ref<number | null>(null)
 const regs = useActionRegistrations(selected)
 const lb = useLeaderboard(ref<LeaderboardPeriod>('month'))
+/** T18: voluntarii alocați acțiunii deschise (cine scanează aici, câte scanări, coordonatorul). */
+const vols = useCityVolunteers()
+const scanners = computed(() => (current.value ? vols.items.value.filter((v) => v.actionIds.includes(current.value!.id)) : []))
 const busyId = ref<number | null>(null)
 const bulk = ref(false)
 const code = ref('')
@@ -74,6 +78,7 @@ function syncSelected() {
 onMounted(async () => {
   await city.loadActions()
   lb.load()
+  void vols.load()
   syncSelected()
 })
 watch(() => route.query.a, syncSelected)
@@ -241,8 +246,20 @@ async function manual() {
 
       <div class="flex flex-col gap-3.5">
         <div :class="P.CARD">
-          <div :class="P.CH"><div><h2 :class="P.CH_TITLE">{{ t('community.validate.scannersTitle') }}</h2><div :class="P.HINT">{{ t('community.validate.scannersHint') }}</div></div></div>
-          <div class="flex items-start gap-2.5 text-[13px] text-muted rounded-[10px] bg-soft p-3"><AppIcon name="smartphone" :size="18" class="shrink-0" />{{ t('community.validate.fieldApp') }}</div>
+          <div :class="P.CH"><div><h2 :class="P.CH_TITLE">{{ t('volunteer.validate.title') }}</h2><div :class="P.HINT">{{ t('volunteer.validate.hint') }}</div></div>
+            <router-link to="/city/volunteers/new" :class="P.BTN_SM_SEC"><AppIcon name="person_add" :size="15" />{{ t('volunteer.validate.add') }}</router-link></div>
+          <div v-if="scanners.length" data-test="scanners">
+            <div v-for="v in scanners" :key="v.id" :class="P.LROW">
+              <span class="w-8 h-8 rounded-full bg-ink text-white flex items-center justify-center font-bold text-[12px] shrink-0">{{ initials(v.name) }}</span>
+              <div class="min-w-0 flex-1"><b class="block text-[13.5px] truncate">{{ v.name }}</b>
+                <div :class="P.TS">{{ t('volunteer.validate.row', { code: v.loginCode, n: v.scans, name: v.coordinatorName ?? '—' }) }}</div></div>
+              <span v-if="v.status === 'SUSPENDED' || v.expired" :class="[P.PILL, v.status === 'SUSPENDED' ? 'bg-bad-soft text-bad' : 'bg-soft text-muted']">{{ t(`volunteer.panel.status.${v.status === 'SUSPENDED' ? 'SUSPENDED' : 'EXPIRED'}`) }}</span>
+              <router-link :to="{ path: '/city/messages', query: { v: v.id } }" :class="P.BTN_SM_SEC" :aria-label="t('volunteer.panel.message')"><AppIcon name="forum" :size="15" /></router-link>
+            </div>
+          </div>
+          <div v-else class="flex items-start gap-2.5 text-[13px] text-muted rounded-[10px] bg-soft p-3">
+            <AppIcon name="badge" :size="18" class="shrink-0" /><span><b class="block text-ink">{{ t('volunteer.validate.empty') }}</b>{{ t('volunteer.validate.emptyText') }}</span>
+          </div>
           <form class="flex gap-2 mt-2.5" @submit.prevent="manual">
             <input v-model="code" :class="P.INPUT" :placeholder="t('community.validate.manualPh')" autocomplete="off" :aria-label="t('community.validate.manualLabel')">
             <button type="submit" :class="P.BTN" :disabled="manualBusy || !code.trim()">{{ t('community.scan.confirm') }}</button>

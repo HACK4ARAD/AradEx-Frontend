@@ -46,3 +46,9 @@ body { margin: 0; min-height: 100dvh; }
 
 /* Leaflet: containerul trebuie să aibă înălțime explicită */
 .leaflet-container { font-family: inherit; }
+
+/* Indiciul din câmpuri (placeholder): culoare fixă. Tailwind 4 îl colorează cu `color-mix(…, currentcolor …)`, pe care WebView-ul
+   Android mai vechi îl calculează transparent (indiciile din aplicația Android nu se vedeau). Clasele `placeholder:` îl suprascriu. */
+@layer base {
+  ::placeholder { color: #9A9A94; opacity: 1; }
+}
