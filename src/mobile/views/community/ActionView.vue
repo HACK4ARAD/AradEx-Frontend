@@ -8,7 +8,7 @@ import { AppButton, AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/com
 import RegistrationTicket from '@/shared/components/community/RegistrationTicket.vue'
 import { useBack } from '@/shared/composables/useBack'
 import { useFormat } from '@/shared/composables/useFormat'
-import { directionsUrl, isActiveRegistration, isEnded, spotsLeft, useAction } from '@/shared/composables/useCommunity'
+import { isActiveRegistration, isEnded, spotsLeft, useAction } from '@/shared/composables/useCommunity'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 
@@ -34,7 +34,8 @@ const more = computed(() => (a.value ? Math.max(0, a.value.registeredCount - a.v
 const isStaff = computed(() => auth.hasRole('CITY_HALL'))
 const canRegister = computed(() => auth.role === 'LOCAL' || auth.role === 'VISITOR')
 
-const mapsUrl = computed(() => (a.value ? directionsUrl(a.value) : ''))
+// T08: harta aplicației, cu traseul spre acțiune
+const mapTo = computed(() => (a.value ? { path: '/map', query: { to: `action:${a.value.id}` } } : '/map'))
 /** Link Google Calendar fără login (FEATURES §2): ore în UTC, format YYYYMMDDTHHMMSSZ. */
 const calendarUrl = computed(() => {
   if (!a.value) return ''
@@ -107,7 +108,7 @@ async function share() {
       <div class="flex items-center gap-3 py-3.5 border-b border-line">
         <AppIcon name="location_on" class="text-muted" />
         <span class="flex-1 font-medium text-[15px] min-w-0">{{ a.locationName }}<small v-if="a.address" class="block text-muted text-[13px] font-normal">{{ a.address }}</small></span>
-        <a :href="mapsUrl" target="_blank" rel="noopener" class="h-8 px-3 rounded-full border border-line text-[13px] font-semibold flex items-center gap-1 no-underline text-ink shrink-0"><AppIcon name="directions" :size="16" />{{ t('community.action.directions') }}</a>
+        <router-link :to="mapTo" class="h-8 px-3 rounded-full border border-line text-[13px] font-semibold flex items-center gap-1 no-underline text-ink shrink-0"><AppIcon name="directions" :size="16" />{{ t('community.action.directions') }}</router-link>
       </div>
       <div class="flex items-start gap-3 py-3.5">
         <AppIcon name="group" class="text-muted" />

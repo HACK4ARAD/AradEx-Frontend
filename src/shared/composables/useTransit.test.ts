@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { effectScope, nextTick, ref } from 'vue'
-import { arrivalWhen, lineName, nextPerLine, transitMarkers, useNearestStop, useVisiblePolling, NEAREST_MAX_KM } from './useTransit'
+import { arrivalWhen, lineName, nextPerLine, transitMarkers, useNearestStop, useVisiblePolling, vehicleTitle, NEAREST_MAX_KM } from './useTransit'
 import type { StopArrivalsDto, TransitArrivalDto, TransitStopDto, TransitVehicleDto } from '@/shared/types/transit'
 
 const visibility = ref<'visible' | 'hidden'>('visible')
@@ -35,13 +35,14 @@ describe('texts', () => {
 })
 
 describe('transitMarkers', () => {
-  it('maps stops and live vehicles to the MapView marker format, skipping stale vehicles', () => {
+  it('maps stops and live vehicles to the MapView marker format (short pin label), skipping stale vehicles', () => {
     const v = (id: string, stale: boolean): TransitVehicleDto =>
       ({ id, routeId: 13, routeShortName: '3', mode: 'TRAM', headsign: 'Gara', lat: 46.18, lng: 21.31, stale })
-    expect(transitMarkers([stop], [v('334', false), v('9', true)], t)).toEqual([
-      { id: 'stop:239', lat: 46.1753, lng: 21.3178, kind: 'stop', label: 'Primariei 1' },
-      { id: 'vehicle:334', lat: 46.18, lng: 21.31, kind: 'vehicle', label: 'transit.tram(3) → Gara' },
+    expect(transitMarkers([stop], [v('334', false), v('9', true)])).toEqual([
+      { id: 'stop:239', lat: 46.1753, lng: 21.3178, kind: 'stop', label: '' },
+      { id: 'vehicle:334', lat: 46.18, lng: 21.31, kind: 'vehicle', label: '3' },
     ])
+    expect(vehicleTitle(t, v('334', false))).toBe('transit.tram(3) → Gara')
   })
 })
 

@@ -1,4 +1,5 @@
 import { computed, ref, watch, type Ref } from 'vue'
+import { intlLocale } from '@/shared/composables/useFormat'
 import { cityCommunityApi, communityApi } from '@/shared/api/community'
 import { ApiError } from '@/shared/api/client'
 import { useUiStore } from '@/shared/stores/ui'
@@ -38,7 +39,7 @@ export function levelFor(points: number): Level {
 // ---------------------------------------------------------------- ajutoare de afișare (ora Aradului)
 
 const TZ = 'Europe/Bucharest'
-const fmt = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('ro-RO', { timeZone: TZ, ...o })
+const fmt = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(intlLocale(), { timeZone: TZ, ...o })
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
 /** Data din colțul cardului: { dow: 'SÂM', day: '7', mon: 'NOV' }. */

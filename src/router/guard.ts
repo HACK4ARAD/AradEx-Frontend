@@ -1,4 +1,6 @@
-import type { Router } from 'vue-router'
+import { watch } from 'vue'
+import type { RouteLocationNormalizedLoaded, Router } from 'vue-router'
+import { i18n } from '@/shared/i18n'
 import type { Role } from '@/shared/types/common'
 import type { Ui } from '@/shared/composables/useAuthForm'
 import { useAuthStore } from '@/shared/stores/auth'
@@ -18,6 +20,25 @@ declare module 'vue-router' {
 export function routeRoles(router: Router, path: string): Role[] | undefined | null {
   const r = router.resolve(path)
   return r.name ? r.meta.roles : null
+}
+
+/**
+ * Titlul paginii în limba curentă: textul `nav.routes.<numele rutei>` (rutele web) sau `home.routes.<numele rutei>`
+ * (rutele aplicației; `home.json` nu intră în build-ul web), altfel `meta.title` (română).
+ * Folosit în bara panourilor web și în titlul tab-ului din browser.
+ */
+export function routeTitle(r: Pick<RouteLocationNormalizedLoaded, 'name' | 'meta'>): string {
+  if (r.name) {
+    for (const key of [`nav.routes.${String(r.name)}`, `home.routes.${String(r.name)}`]) {
+      if (i18n.global.te(key)) return i18n.global.t(key)
+    }
+  }
+  return r.meta.title ?? ''
+}
+
+function setDocumentTitle(r: Pick<RouteLocationNormalizedLoaded, 'name' | 'meta'>) {
+  const title = routeTitle(r)
+  if (title) document.title = `${title} · AradExperience`
 }
 
 /** Paginile de login ale unei aplicații: numele rutelor și, doar în aplicația mobilă, login-ul voluntarilor. */
@@ -43,7 +64,9 @@ export function installGuard(router: Router, ui: Ui, logins: Logins): void {
       }
       if (!auth.hasRole(...roles)) return { path: '/' }
     }
-    if (to.meta.title) document.title = `${to.meta.title} · AradExperience`
+    setDocumentTitle(to)
     return true
   })
+  // la schimbarea limbii (RO/EN) titlul tab-ului se traduce fără navigare
+  watch(i18n.global.locale, () => setDocumentTitle(router.currentRoute.value))
 }

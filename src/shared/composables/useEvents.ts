@@ -2,7 +2,7 @@ import { computed, reactive, ref, shallowRef, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { eventsApi } from '@/shared/api/events'
-import { useFormat } from '@/shared/composables/useFormat'
+import { intlLocale, useFormat } from '@/shared/composables/useFormat'
 import { useGeo } from '@/shared/composables/useGeo'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
@@ -54,7 +54,7 @@ export function useEventFormat() {
   function when(e: Pick<EventSummary, 'startAt' | 'endAt'>, startOnly = false): string {
     const day = isToday(e.startAt) ? t('events.today') : f.dateTime(e.startAt, false)
     if (!sameDay(e.startAt, e.endAt)) {
-      const short = (iso: string) => new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short', timeZone: TZ }).format(new Date(iso))
+      const short = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'short', timeZone: TZ }).format(new Date(iso))
       return `${t('events.daily', { from: short(e.startAt), to: short(e.endAt!) })} · ${f.timeRange(e.startAt)}`
     }
     return `${day} · ${f.timeRange(e.startAt, startOnly ? undefined : e.endAt)}`
@@ -83,7 +83,7 @@ export function useEventFormat() {
 
   /** „🔥 Popular · 86 participă” / „26 au salvat”. */
   function hotLabel(e: EventSummary & { savesCount?: number }): string {
-    return e.participantsCount >= 50 ? t('events.going', { n: e.participantsCount.toLocaleString('ro-RO') }) : t('events.savedBy', { n: e.savesCount ?? 20 })
+    return e.participantsCount >= 50 ? t('events.going', { n: e.participantsCount.toLocaleString(intlLocale()) }) : t('events.savedBy', { n: e.savesCount ?? 20 })
   }
 
   function durationMin(e: Pick<EventSummary, 'startAt' | 'endAt'>): number | null {

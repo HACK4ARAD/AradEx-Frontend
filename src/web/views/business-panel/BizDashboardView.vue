@@ -9,7 +9,7 @@ import BusinessEventItem from '@/shared/components/business/BusinessEventItem.vu
 import BusinessStats from '@/shared/components/business/BusinessStats.vue'
 import PanelHeader from '@/shared/components/business/PanelHeader.vue'
 import UnverifiedBanner from '@/shared/components/business/UnverifiedBanner.vue'
-import { useBusinessPanel } from '@/shared/composables/useBusiness'
+import { activityLine, useBusinessPanel } from '@/shared/composables/useBusiness'
 import type { AnnouncementCreate } from '@/shared/types/business'
 import BizOfferItem from '@/shared/components/offers/BizOfferItem.vue'
 import CodeValidator from '@/shared/components/offers/CodeValidator.vue'
@@ -75,7 +75,7 @@ async function saveAnnouncement(req: AnnouncementCreate) {
         <div class="bg-white rounded-[16px] border border-line p-4">
           <b class="block text-[15px]">{{ t('business.activity.title') }}</b>
           <ul v-if="p.activity.value.length" class="list-none p-0 m-0 mt-2 flex flex-col gap-2 text-[14px]">
-            <li v-for="(a, i) in p.activity.value" :key="i">{{ a.text }}</li>
+            <li v-for="(a, i) in p.activity.value" :key="i">{{ activityLine(a, t) }}</li>
           </ul>
           <p v-else class="text-[13.5px] text-muted m-0 mt-2">{{ t('business.activity.emptyText') }}</p>
         </div>

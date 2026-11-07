@@ -50,6 +50,9 @@ jobs:
       - run: npm run build
         env:
           VITE_DEMO: "true"
+          # T08: cheia de browser Google Maps (restricționată pe domeniu); lipsă = harta folosește rezerva Leaflet
+          VITE_GOOGLE_MAPS_KEY: ${{ secrets.GOOGLE_MAPS_KEY }}
+          VITE_GOOGLE_MAPS_MAP_ID: ${{ vars.GOOGLE_MAPS_MAP_ID }}
       # web-ul nu are voie să conțină nimic din aplicația mobilă (build separat, `npm run build:mobile`)
       - run: npm run check:web
 

@@ -44,17 +44,24 @@ export function nextPerLine(arrivals: TransitArrivalDto[], max = 2): TransitArri
 }
 
 /**
- * Markerele pentru `MapView` (T08): stațiile (`stop:<id>`) și vehiculele live (`vehicle:<id>`). Vehiculele cu poziție
- * învechită (`stale`, > 120 s) nu apar — nu le arătăm ca live.
+ * Markerele pentru `MapView` (T08): stațiile (`stop:<id>`) și vehiculele live (`vehicle:<id>`). `label` e textul mic din
+ * pin (`MapMarker.label`, pus ca HTML de Leaflet): la vehicule numărul liniei din seed („3”, „39b”), la stații nimic —
+ * numele stației și „Tramvaiul 3 → Gara” se iau din `stopTitle` / `vehicleTitle` pentru cardul de jos.
+ * Vehiculele cu poziție învechită (`stale`, > 120 s) nu apar — nu le arătăm ca live.
  */
-export function transitMarkers(stops: TransitStopDto[], vehicles: TransitVehicleDto[], t: T): TransitMarker[] {
-  const out: TransitMarker[] = stops.map((s) => ({ id: `stop:${s.id}`, lat: s.lat, lng: s.lng, kind: 'stop', label: s.name }))
+export function transitMarkers(stops: TransitStopDto[], vehicles: TransitVehicleDto[]): TransitMarker[] {
+  const out: TransitMarker[] = stops.map((s) => ({ id: `stop:${s.id}`, lat: s.lat, lng: s.lng, kind: 'stop', label: '' }))
   for (const v of vehicles) {
     if (v.stale) continue
-    const name = lineName(t, v)
-    out.push({ id: `vehicle:${v.id}`, lat: v.lat, lng: v.lng, kind: 'vehicle', label: v.headsign ? `${name} → ${v.headsign}` : name })
+    out.push({ id: `vehicle:${v.id}`, lat: v.lat, lng: v.lng, kind: 'vehicle', label: v.routeShortName ?? '' })
   }
   return out
+}
+
+/** Titlul unui vehicul pentru cardul de pe hartă: „Tramvaiul 3 → Gara”. */
+export function vehicleTitle(t: T, v: TransitVehicleDto): string {
+  const name = lineName(t, v)
+  return v.headsign ? `${name} → ${v.headsign}` : name
 }
 
 /**

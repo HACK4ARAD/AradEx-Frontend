@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { intlLocale } from '@/shared/composables/useFormat'
 import { AppIcon } from '@/shared/components'
 import type { BusinessStats } from '@/shared/types/business'
 
@@ -11,7 +12,7 @@ const items = [
   { key: 'codesUsed', icon: 'qr_code_2' },
   { key: 'pointsPayments', icon: 'toll' },
 ] as const
-const nf = new Intl.NumberFormat('ro-RO')
+const nf = { format: (n: number) => new Intl.NumberFormat(intlLocale()).format(n) }   // reactiv la RO/EN
 </script>
 
 <template>
