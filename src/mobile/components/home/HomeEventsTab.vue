@@ -1,18 +1,63 @@
 <script setup lang="ts">
-// T06 · tab-ul Evenimente din Acasă (S1): chips Azi / Weekend / 7 zile + lista de EventCard din GET /events.
-import { ref } from 'vue'
+// T06 · tab-ul Evenimente din Acasă (S1) — design/final `/home` mode „ev”: planificator (vizitator), chips, număr, lista de EventCard.
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AppChip, EmptyState } from '@/shared/components'
+import { useRouter } from 'vue-router'
+import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
+import EventCard from '@/shared/components/events/EventCard.vue'
+import EventFiltersSheet from '@/shared/components/events/EventFiltersSheet.vue'
+import { periodRange, useEventFilters, useEventList, useSaveEvent } from '@/shared/composables/useEvents'
+import { useAuthStore } from '@/shared/stores/auth'
+import type { EventQuery } from '@/shared/types/events'
 
+type Period = 'near' | 'today' | 'weekend' | 'week'
 const { t } = useI18n()
-const period = ref<'today' | 'weekend' | 'week'>('today')
+const router = useRouter()
+const auth = useAuthStore()
+const period = ref<Period>('today')
+const { active, query: filterQuery, byDistance } = useEventFilters()
+const saver = useSaveEvent()
+
+const query = computed<EventQuery>(() => ({
+  ...filterQuery.value,
+  ...(period.value === 'near' ? { sort: 'distance' as const, radiusKm: 15 } : periodRange(period.value)),
+}))
+const { items, loading, reload, geo } = useEventList(query)
+const list = computed(() => byDistance(items.value))
+const isVisitor = computed(() => !auth.user || auth.user.role === 'VISITOR')
+
+function choose(p: Period) {
+  period.value = p
+  if (p === 'near') void geo.locate()
+}
+const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' }, { key: 'today' }, { key: 'weekend' }, { key: 'week' }]
 </script>
 
 <template>
-  <div class="flex gap-2 flex-wrap my-3">
-    <AppChip :active="period === 'today'" @click="period = 'today'">{{ t('home.today') }}</AppChip>
-    <AppChip :active="period === 'weekend'" @click="period = 'weekend'">{{ t('home.weekend') }}</AppChip>
-    <AppChip :active="period === 'week'" @click="period = 'week'">{{ t('home.week') }}</AppChip>
+  <button v-if="isVisitor" type="button" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] bg-ink text-white mb-3.5 text-left" @click="router.push('/m/plan')">
+    <AppIcon name="auto_awesome" />
+    <span class="flex-1 min-w-0"><b class="block text-[15px]">{{ t('home.planCta') }}</b><span class="text-[13px] opacity-[.78]">{{ t('home.planCtaSub') }}</span></span>
+    <AppIcon name="chevron_right" />
+  </button>
+
+  <div class="flex gap-2 overflow-x-auto -mx-5 px-5 py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <button v-for="c in chips" :key="c.key" type="button" :aria-pressed="period === c.key"
+      class="min-h-11 px-4 rounded-full inline-flex items-center gap-1.5 shrink-0 text-[14px] font-medium border whitespace-nowrap transition-colors"
+      :class="period === c.key ? 'bg-ink text-white border-ink font-semibold' : 'bg-white border-line text-ink'" @click="choose(c.key)">
+      <AppIcon v-if="c.icon" :name="c.icon" :size="18" />{{ c.key === 'near' ? t('events.nearMe') : t(`events.period.${c.key}`) }}
+    </button>
   </div>
-  <EmptyState icon="event" :title="t('common.empty')" text="Lista de evenimente vine în T06 (docs/PLAN.md)." />
+
+  <div class="flex items-center justify-between mt-3.5 mb-2.5">
+    <span class="text-muted text-[14px]">{{ t('events.count', list.length) }}<template v-if="active"> · {{ t('events.filtered') }}</template></span>
+    <span class="text-muted text-[12.5px]">{{ t('events.realAndDemo') }}</span>
+  </div>
+
+  <Skeleton v-if="loading && !list.length" :rows="2" :height="300" />
+  <template v-else-if="list.length">
+    <EventCard v-for="e in list" :key="e.id" :event="e" :to="`/m/events/${e.id}`" @toggle-save="saver.toggle(e, '/m/login')" />
+  </template>
+  <EmptyState v-else icon="event_busy" :title="t('events.empty.title')" :text="t('events.empty.text')" :action="t('events.empty.action')" @action="choose('week'); reload()" />
+
+  <EventFiltersSheet :count="list.length" />
 </template>

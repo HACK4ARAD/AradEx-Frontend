@@ -1,5 +1,5 @@
 // Firme · T09. Oglinda DTO-urilor din docs/API.md; se schimbă în același PR cu secțiunea din API.md.
-import type { EventSummary, TicketType } from './events'
+import type { EventSummary } from './events'
 import type { OfferSummary } from './offers'
 
 export type BusinessCategory = 'CAFE' | 'RESTAURANT' | 'PRODUCER' | 'WINERY' | 'SHOP' | 'OTHER'
@@ -27,15 +27,5 @@ export interface BusinessPageDto { business: BusinessDto; offers: OfferSummary[]
 export type BusinessActivityType = 'CODE_USED' | 'OFFER_SAVED' | 'OFFER_REDEEMED' | 'TICKET' | 'POINTS_PAYMENT'
 export interface BusinessActivityDto { items: { type: BusinessActivityType; text: string; at: string }[] }
 
-/**
- * EventCreate + EventCategory: introduse de T09 pentru `/business/events` (în `events.ts` nu există încă).
- * T06 le folosește pentru `POST /events` importându-le de aici (sau le mută în `events.ts` și le șterge de aici —
- * același nume în două module ar da conflict în `types/api.ts`, care re-exportă tot).
- */
-export type EventCategory = 'CONCERT' | 'THEATRE' | 'FAMILY' | 'EXHIBITION' | 'SPORT' | 'OUTDOOR' | 'FAIR' | 'FOOD'
-export interface EventCreate {
-  title: string; description: string; category: EventCategory; placeId?: number
-  locationName?: string; address?: string; lat?: number; lng?: number
-  startAt: string; endAt?: string; ticketType: TicketType; priceAdult?: number; priceChild?: number
-  externalUrl?: string; capacity?: number; imageUrl?: string
-}
+/** EventCreate / EventCategory stau în `events.ts` (T06); reexportate aici pentru codul T09 care le importă din `business`. */
+export type { EventCategory, EventCreate } from './events'

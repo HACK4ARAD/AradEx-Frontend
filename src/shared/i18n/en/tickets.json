@@ -1,1 +1,99 @@
-{}
+{
+  "onlyHere": "Doar în AradExperience",
+  "adult": "Adult",
+  "child": "Copil (3–12 ani)",
+  "childShort": "Copil",
+  "registration": "Înscriere",
+  "less": "Scade",
+  "more": "Crește",
+  "total": "Total",
+  "continueToPay": "Continuă spre plată",
+  "webPayNote": "Plată demonstrativă. Biletul apare în „Contul meu › Bilete” cu cod QR.",
+  "freeEntry": "Intrare liberă",
+  "externalNote": "Biletele cumpărate acolo nu apar în aplicație.",
+  "count": "0 bilete | 1 bilet | {n} bilete",
+  "pick": {
+    "title": "Alege biletele",
+    "label": "Bilete",
+    "noPaper": "Biletele ajung direct în aplicație. Nu trebuie printate.",
+    "onlyLeft": "Mai sunt doar {n} locuri. Alege mai puține bilete.",
+    "soldOut": "Nu mai sunt bilete.",
+    "continue": "Continuă spre plată",
+    "ended": "Evenimentul s-a încheiat."
+  },
+  "checkout": {
+    "title": "Plată",
+    "yourOrder": "Comanda ta",
+    "email": "E-mail pentru bilete",
+    "emailHint": "Îți trimitem aici o copie a biletelor.",
+    "payWith": "Plătești cu",
+    "savedCard": "Card salvat •••• 4821",
+    "newCard": "Card nou",
+    "demoNote": "Plată demonstrativă: nu se procesează bani. Prin plată accepți condițiile organizatorului.",
+    "pay": "Plătește {total}",
+    "emptyTitle": "Niciun bilet ales",
+    "emptyText": "Alege întâi un eveniment.",
+    "badEmail": "Introdu o adresă de e-mail validă.",
+    "drawerTitle": "Plată demonstrativă",
+    "drawerNote": "Nu se procesează bani. Prin plată accepți condițiile organizatorului.",
+    "confirmedToast": "Rezervarea e confirmată. Am trimis o copie pe e-mail."
+  },
+  "confirm": {
+    "paid": "Rezervarea e confirmată",
+    "free": "Te-ai înscris",
+    "text": "{tickets} pentru {day}, ora {time}. Le găsești în Biletele mele, chiar și offline.",
+    "textOne": "{tickets} pentru {day}, ora {time}. Îl găsești în Biletele mele, chiar și offline.",
+    "copy": "Am trimis o copie la {email}.",
+    "seeTicket": "Vezi biletul",
+    "seeCode": "Vezi codul QR",
+    "addCalendar": "Adaugă în calendar",
+    "backToEvents": "Înapoi la evenimente"
+  },
+  "mine": {
+    "title": "Biletele mele",
+    "upcoming": "Viitoare",
+    "past": "Trecute",
+    "section": "Bilete și înscrieri",
+    "emptyUp": "Încă nu ai bilete",
+    "emptyPast": "Nu ai bilete la evenimente trecute",
+    "emptyText": "Biletele cumpărate în aplicație apar aici. Pe cele de pe site-ul organizatorului le găsești în e-mail.",
+    "find": "Caută evenimente",
+    "offline": "Biletele funcționează și offline.",
+    "offlineShown": "Ești offline — vezi biletele salvate pe telefon.",
+    "loginText": "Conectează-te ca să-ți vezi biletele.",
+    "webSub": "Biletele cumpărate în aplicație. Pe cele de pe site-ul organizatorului le găsești în e-mail.",
+    "fullscreen": "Arată pe tot ecranul",
+    "calendar": "Calendar",
+    "emptyWeb": "Încă nu ai bilete viitoare",
+    "emptyWebText": "Caută evenimente și rezervă."
+  },
+  "status": {
+    "CONFIRMED": "Confirmat",
+    "USED": "Folosit",
+    "CANCELLED": "Anulat"
+  },
+  "ticket": {
+    "title": "Bilet",
+    "registration": "Înscriere",
+    "free": "gratuit",
+    "show": "Arată acest cod la intrare. Funcționează și offline.",
+    "showWeb": "Arată codul la intrare. Funcționează și offline, în aplicație.",
+    "manage": "Gestionează rezervarea",
+    "manageSoon": "Anularea biletelor vine după hackathon.",
+    "notFound": "Biletul nu există sau nu e al tău.",
+    "myTicket": "Biletul meu · {code}",
+    "myRegistration": "Înscrierea mea",
+    "sendPhone": "Trimite pe telefon",
+    "account": "Contul meu",
+    "sendPhoneSoon": "Deschide aplicația pe telefon: biletul e deja acolo, în Biletele mele."
+  },
+  "join": {
+    "registered": "Te-ai înscris. Codul QR e în Biletele mele."
+  },
+  "errors": {
+    "soldOut": "Nu mai sunt destule locuri. Alege mai puține bilete.",
+    "already": "Ești deja înscris la acest eveniment.",
+    "ended": "Evenimentul s-a încheiat."
+  },
+  "loginToBuy": "Conectează-te ca să cumperi bilete."
+}

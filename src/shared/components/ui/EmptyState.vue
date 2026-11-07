@@ -6,12 +6,11 @@ defineEmits<{ action: [] }>()
 </script>
 
 <template>
-  <div class="flex flex-col items-center text-center py-10 px-6 gap-3">
-    <span class="w-14 h-14 rounded-full bg-white border border-line flex items-center justify-center">
-      <AppIcon :name="icon ?? 'inbox'" :size="26" class="text-muted" />
-    </span>
-    <div class="font-semibold text-[17px]">{{ title }}</div>
-    <p v-if="text" class="text-muted text-[14px] leading-relaxed m-0">{{ text }}</p>
-    <AppButton v-if="action" variant="secondary" size="sm" class="mt-2" @click="$emit('action')">{{ action }}</AppButton>
+  <!-- design/final emptyState(): card alb, icon mare gri, titlu, text, buton negru mic -->
+  <div class="bg-white rounded-[20px] border border-line shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.05)] text-center px-5 py-9">
+    <AppIcon :name="icon ?? 'inbox'" :size="40" class="text-muted" />
+    <h3 class="mt-3 mb-1.5 text-[18px] font-semibold">{{ title }}</h3>
+    <p v-if="text" class="text-muted text-[14px] leading-[1.45] m-0">{{ text }}</p>
+    <AppButton v-if="action" size="sm" class="mt-3.5 mx-auto" @click="$emit('action')">{{ action }}</AppButton>
   </div>
 </template>

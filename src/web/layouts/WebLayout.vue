@@ -113,9 +113,9 @@ function toggleLocale() {
       <router-link to="/w" class="font-bold text-[16px] flex items-center gap-2 no-underline text-ink shrink-0">
         <span class="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {{ t('app.name') }}
       </router-link>
-      <nav class="hidden md:flex gap-6 text-[14px] font-medium">
-        <router-link v-for="n in topNav" :key="n.to" :to="n.to" class="no-underline"
-          :class="route.path.startsWith(n.to) ? 'text-ink font-semibold' : 'text-muted hover:text-ink'">{{ n.label }}</router-link>
+      <nav class="hidden md:flex gap-1 text-[14px] font-medium">
+        <router-link v-for="n in topNav" :key="n.to" :to="n.to" class="no-underline h-9 px-3 rounded-[10px] inline-flex items-center"
+          :class="route.path.startsWith(n.to) ? 'bg-soft text-ink font-semibold' : 'text-muted hover:text-ink'">{{ n.label }}</router-link>
       </nav>
       <div class="ml-auto flex items-center gap-2 md:gap-2.5 min-w-0">
         <button type="button" class="h-8 px-2.5 rounded-full border border-line text-[12px] font-semibold uppercase" :aria-label="t('profile.language')" @click="toggleLocale">
