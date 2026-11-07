@@ -6,6 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/components'
 import EventImage from '@/shared/components/events/EventImage.vue'
+import NearestStop from '@/shared/components/transit/NearestStop.vue'
 import { directionsUrl, googleCalendarUrl, useEventFormat, useSaveEvent } from '@/shared/composables/useEvents'
 import { shareLink, useEventDetail } from '@/shared/composables/useEventDetail'
 import { useBack } from '@/shared/composables/useBack'
@@ -136,6 +137,8 @@ function openExternal() {
           <AppIcon name="directions" :size="18" />{{ t('events.detail.directions') }}
         </a>
       </div>
+      <!-- T22: stația CTP cea mai apropiată de locul evenimentului + următoarele sosiri -->
+      <NearestStop :lat="e.lat" :lng="e.lng" bordered />
       <router-link v-if="e.organizerBusinessId" :to="`/businesses/${e.organizerBusinessId}`" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
         <AppIcon name="storefront" class="text-muted" />
         <div class="flex-1 min-w-0">
