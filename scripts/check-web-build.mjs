@@ -4,8 +4,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
 const dir = process.argv[2] ?? 'dist'
-// urme sigure ale aplicației mobile: numele rutelor și titluri care există doar în src/router/mobile.ts
-const markers = ['m-home', 'm-vol-scan', 'm-transport-trip', 'm-itinerary-map', 'Intră ca voluntar']
+// urme sigure ale aplicației mobile: orice nume de rută `m-…` (src/router/mobile.ts), layout-ul și un titlu doar din aplicație
+const markers = [/['"`]m-[a-z][a-z-]*['"`]/g, /MobileLayout/g, /Intră ca voluntar/g]
 
 function files(d) {
   return readdirSync(d).flatMap((f) => {
@@ -17,7 +17,7 @@ function files(d) {
 const found = []
 for (const f of files(dir)) {
   const text = readFileSync(f, 'utf8')
-  for (const m of markers) if (text.includes(`'${m}'`) || text.includes(`"${m}"`) || text.includes(`\`${m}\``)) found.push(`${f}: ${m}`)
+  for (const m of markers) for (const hit of new Set(text.match(m) ?? [])) found.push(`${f}: ${hit}`)
 }
 const manifest = files(dir).filter((f) => f.endsWith('.webmanifest'))
 

@@ -69,7 +69,7 @@ npm run cap:sync       # build:mobile + copiere în android/ (apoi `npm run andr
 - Nu pune chei API în FE (OpenAI e doar în BE). Nu duplica un ecran în `web/` copiind codul din `mobile/`. Nu adăuga librării fără motiv notat în descrierea PR-ului. Designul se modifică doar în `../AradEx-Plan/design/`.
 
 ## Culoare (4 oameni în paralel)
-Din T02 fiecare rută are fișierul ei de view (`meta.task` din router spune al cui e) și fiecare modul are fișierele lui de texte, tipuri și API. Fiecare story lucrează **doar** în fișierele lui; `router/index.ts`, layout-urile, navigația, `client.ts`, `components/ui/`, `components/qr/`, `useGeo`, `i18n/index.ts` și fișierele index (`types/api.ts`, `api/index.ts`, `components/index.ts`), plus cochiliile `HomeView`, `LandingView`, `PanelView`, `AccountView`, sunt ale lui P1 și nu se mai ating (ce îți lipsește ceri în PR-ul lui P1). Poți importa orice, dar nu modifici fișierele altui story.
+Din T02 fiecare rută are fișierul ei de view (`meta.task` din router spune al cui e) și fiecare modul are fișierele lui de texte, tipuri și API. Fiecare story lucrează **doar** în fișierele lui; `router/` (rutele, guard-ul), `mobile/router.ts`, `web/router.ts`, layout-urile, navigația, `client.ts`, `components/ui/`, `components/qr/`, `useGeo`, `i18n/index.ts` și fișierele index (`types/api.ts`, `api/index.ts`, `components/index.ts`), plus cochiliile `HomeView`, `LandingView`, `PanelView`, `AccountView`, sunt ale lui P1 și nu se mai ating (ce îți lipsește ceri în PR-ul lui P1). Poți importa orice, dar nu modifici fișierele altui story.
 
 | Story | Fișierele tale (în `src/`) |
 |---|---|

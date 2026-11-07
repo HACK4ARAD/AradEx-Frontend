@@ -1,4 +1,5 @@
 import type { RouteLocation, RouteLocationRaw, RouteRecordRaw } from 'vue-router'
+import type { Logins } from './guard'
 
 /** Linkurile vechi de panou (`/w/city/…`, de exemplu din bookmark-uri) duc la aceeași cale fără prefix. */
 function stripPrefix(to: RouteLocation): RouteLocationRaw {
@@ -10,6 +11,9 @@ function stripPrefix(to: RouteLocation): RouteLocationRaw {
  * Web-ul (build-ul `npm run build`, aradexperience.site) = site-ul de prezentare al aplicației mobile + panourile (Primărie,
  * firme, Admin), fără prefix în URL. Nu conține nimic din aplicația mobilă (build separat, `npm run build:mobile`).
  */
+/** Login-ul panourilor (W0). */
+export const WEB_LOGINS: Logins = { names: ['w-login'] }
+
 export const webRoutes: RouteRecordRaw[] = [
   // W0: pagină întreagă, fără WebLayout (ca în design/final/web.html)
   { path: '/login', name: 'w-login', component: () => import('@/web/views/auth/LoginView.vue'), meta: { title: 'Conectare', screen: 'W0', task: 'T03' } },
