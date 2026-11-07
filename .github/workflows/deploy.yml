@@ -1,6 +1,7 @@
 # Deploy PWA pe AWS la push pe main: teste + build Vite -> S3 -> invalidare CloudFront.
-# Acces AWS prin OIDC (fără chei în GitHub). Bucket-ul, distribuția și URL-ul API vin din SSM (/aradex/web/*),
-# scrise de AradEx-Infrastructure/terraform.
+# Acces AWS cu cheile utilizatorului IAM aradex-gha-frontend (secretele repo-ului AWS_ACCESS_KEY_ID /
+# AWS_SECRET_ACCESS_KEY, puse de AradEx-Infrastructure/scripts/github-keys.sh; organizația AWS nu permite OIDC).
+# Bucket-ul, distribuția și URL-ul API vin din SSM (/aradex/web/*), scrise de AradEx-Infrastructure/terraform.
 name: Deploy web
 
 on:
@@ -14,11 +15,9 @@ concurrency:
 
 permissions:
   contents: read
-  id-token: write
 
 env:
   AWS_REGION: eu-north-1
-  AWS_ROLE_ARN: arn:aws:iam::712710404828:role/aradex-gha-frontend
 
 jobs:
   deploy:
@@ -34,7 +33,8 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Read deploy config from SSM
