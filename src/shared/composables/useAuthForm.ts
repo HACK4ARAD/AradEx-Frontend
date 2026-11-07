@@ -91,14 +91,15 @@ export function safeNext(next: unknown): string | null {
 }
 
 /**
- * Unde ajunge utilizatorul după login (sau dacă deschide login-ul deja conectat): `next` dacă e sigur și rolul are voie
- * pe ruta respectivă, altfel pagina rolului. `rolesOf(path)` = `meta.roles` al rutei (din router.resolve).
+ * Unde ajunge utilizatorul după login (sau dacă deschide login-ul deja conectat): `next` dacă e sigur, e o rută a aplicației
+ * curente și rolul are voie pe ea, altfel pagina rolului. `rolesOf(path)` = `meta.roles` al rutei (din router.resolve),
+ * sau `null` dacă nu există o asemenea rută în aplicația curentă.
  */
-export function landingFor(role: Role, ui: Ui, next: unknown, rolesOf: (path: string) => Role[] | undefined): string {
+export function landingFor(role: Role, ui: Ui, next: unknown, rolesOf: (path: string) => Role[] | undefined | null): string {
   const target = safeNext(next)
   if (target) {
     const roles = rolesOf(target)
-    if (!roles?.length || role === 'ADMIN' || roles.includes(role)) return target
+    if (roles !== null && (!roles?.length || role === 'ADMIN' || roles.includes(role))) return target
   }
   return homeFor(role, ui)
 }
