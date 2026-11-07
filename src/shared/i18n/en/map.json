@@ -30,5 +30,15 @@
     "emptyText": "Change the period, the type or the search.",
     "reset": "Show everything",
     "routing": "Working out the route…"
+  },
+  "travel": { "label": "How you get around", "foot": "On foot", "transit": "Transit", "car": "Car" },
+  "layers": {
+    "tram": "Trams",
+    "bus": "Buses",
+    "bikes": "Bikes",
+    "footHint": "Sights, events and offers; routes are on foot.",
+    "transitHint": "CTP lines, live vehicles and bike-sharing stations.",
+    "carHint": "Paid parking, coloured by zone; routes are by car.",
+    "bikesMissing": "{n} of {total} bike stations have a public location."
   }
 }

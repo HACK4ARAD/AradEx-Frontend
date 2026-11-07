@@ -1,27 +1,35 @@
 import type { GeoPoint } from '@/shared/types/common'
 
-/** Un pin pe hartă (T08); `stop` / `vehicle` = transportul public (T22). */
+/** Un pin pe hartă (T08); `stop` / `vehicle` = transportul public (T22); `parking` / `bike` = parcările și bicicletele. */
 export interface MapMarker {
   id: string
   lat: number
   lng: number
-  kind: 'event' | 'place' | 'offer' | 'action' | 'stop' | 'vehicle'
+  kind: 'event' | 'place' | 'offer' | 'action' | 'stop' | 'vehicle' | 'parking' | 'bike'
   /** text mic în pin (de ex. numărul opririi din itinerar sau linia tramvaiului) */
   label?: string
+  /** culoarea pinului `#rrggbb` (variabila CSS `--pin`, de ex. zona parcării), unde stilul tipului o folosește */
+  color?: string
 }
 
-/** O linie desenată sub pini (traseele transportului public, T22): puncte [lat, lng] și culoarea `#rrggbb`. */
+/** O linie desenată sub pini (traseele transportului public, T22; străzile cu parcări): puncte [lat, lng] și culoarea `#rrggbb`. */
 export interface MapLine {
   id: string
   path: [number, number][]
   color: string
+  /** grosimea (px, implicit LINE_WEIGHT) și opacitatea (implicit LINE_OPACITY) */
+  weight?: number
+  opacity?: number
 }
+
+export const LINE_WEIGHT = 3
+export const LINE_OPACITY = 0.55
 
 /** Proprietățile comune ale hărții (Google Maps sau rezerva Leaflet). */
 export interface MapProps {
   markers: MapMarker[]
   selectedId?: string | null
-  /** linii subțiri sub pini (stratul „Transport”) */
+  /** linii sub pini (straturile „Transport” și „Parcări”) */
   lines?: MapLine[]
   /** traseul de desenat, puncte [lat, lng] */
   route?: [number, number][] | null
@@ -47,6 +55,7 @@ export function pinElement(m: MapMarker, selected: boolean): HTMLDivElement {
   const el = document.createElement('div')
   el.className = `ax-pin ax-pin--${m.kind}${selected ? ' ax-pin--sel' : ''}`
   el.textContent = m.label ?? ''
+  if (m.color) el.style.setProperty('--pin', m.color)
   return el
 }
 

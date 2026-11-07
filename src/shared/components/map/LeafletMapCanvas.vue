@@ -6,7 +6,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { GeoPoint } from '@/shared/types/common'
 import { ARAD_CENTER } from '@/shared/composables/useGeo'
-import { fitInsets, type MapMarker, type MapProps } from './types'
+import { LINE_OPACITY, LINE_WEIGHT, fitInsets, pinElement, type MapMarker, type MapProps } from './types'
 
 const props = withDefaults(defineProps<MapProps>(),
   { selectedId: null, route: null, routeApproximate: false, me: null, center: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
@@ -22,20 +22,21 @@ let meLayer: L.Marker | null = null
 
 function icon(m: MapMarker, selected: boolean) {
   return L.divIcon({
-    className: '',
-    html: `<div class="ax-pin ax-pin--${m.kind}${selected ? ' ax-pin--sel' : ''}">${m.label ?? ''}</div>`,
+    // pinii au mărimi diferite (stație 18, parcare 22, restul 26 px): cutia de 26 px îi centrează pe coordonată
+    className: 'ax-pin-box',
+    html: pinElement(m, selected),
     iconSize: [26, 26],
     iconAnchor: [13, 13],
   })
 }
 
-/** Liniile transportului, subțiri și sub traseul ales (care rămâne deasupra). */
+/** Liniile straturilor (transport, parcări), sub traseul ales (care rămâne deasupra). */
 function drawLines() {
   if (!map.value) return
   lineLayer?.clearLayers()
   lineLayer ??= L.layerGroup().addTo(map.value)
   for (const l of props.lines ?? []) {
-    L.polyline(l.path, { color: l.color, weight: 3, opacity: 0.55, interactive: false }).addTo(lineLayer)
+    L.polyline(l.path, { color: l.color, weight: l.weight ?? LINE_WEIGHT, opacity: l.opacity ?? LINE_OPACITY, interactive: false }).addTo(lineLayer)
   }
   routeLayer?.bringToFront()
 }

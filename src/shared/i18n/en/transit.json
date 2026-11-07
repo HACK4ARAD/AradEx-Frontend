@@ -13,7 +13,6 @@
     "noLive": "No live data right now",
     "noArrivals": "No arrivals coming up"
   },
-  "layer": "Transit",
   "card": {
     "stop": "CTP stop",
     "vehicle": "Live now",

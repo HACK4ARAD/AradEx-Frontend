@@ -43,7 +43,13 @@ defineExpose({
 .ax-pin--action { background: #3B6D11; }
 .ax-pin--stop { background: #fff; border-color: #1D5FD1; width: 18px; height: 18px; }
 .ax-pin--vehicle { background: #1D5FD1; }
+/* stratul „Parcări”: „P” pe alb, marginea în culoarea zonei (`--pin`, din MapMarker.color) */
+.ax-pin--parking { width: 22px; height: 22px; border-radius: 7px; background: #fff; color: #111; border-color: var(--pin, #111); font-size: 11.5px; }
+/* stațiile de biciclete: eticheta e ligatura Material Symbols „pedal_bike” */
+.ax-pin--bike { background: #0F8A5F; font: 400 15px 'Material Symbols Outlined'; font-feature-settings: 'liga'; }
 .ax-pin--sel { transform: scale(1.3); }
+/* Leaflet: cutia divIcon (26 × 26, ancorată la centru) centrează pinii mai mici */
+.leaflet-marker-icon.ax-pin-box { display: flex; align-items: center; justify-content: center; }
 .ax-me {
   width: 18px; height: 18px; border-radius: 50%; background: #1D5FD1; border: 3px solid #fff;
   box-shadow: 0 0 0 10px rgba(29, 95, 209, .18);

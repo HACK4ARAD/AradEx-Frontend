@@ -1,0 +1,29 @@
+{
+  "attribution": "Sursa: Recons · © OpenStreetMap contributors",
+  "loadError": "Parcările nu s-au putut încărca. Încearcă din nou.",
+  "card": {
+    "kicker": "Parcare cu plată",
+    "zone": "Zona",
+    "zoneName": "Zona {n} · {color}",
+    "spaces": "Locuri",
+    "tariff": "Tarif",
+    "maxStay": "Durată maximă",
+    "schedule": "Program",
+    "perHour": "{amount} / oră ({via})",
+    "plusVat": "{amount} + TVA",
+    "viaMeter": "parcometru",
+    "viaSms": "SMS, cod {code}",
+    "viaSmsPlain": "SMS",
+    "noTariff": "Nespecificat de sursă",
+    "noMaxStay": "Nespecificată de sursă",
+    "weekdays": "L–V 08:00–17:00 cu plată; seara și în weekend gratuit",
+    "sundayObor": "Duminică 08:00–14:00 cu plată (zona Pieței Obor)",
+    "approximate": "Locație aproximativă (strada de referință)"
+  },
+  "color": {
+    "0": "verde",
+    "1": "roșie",
+    "2": "galbenă",
+    "3": "albastră"
+  }
+}

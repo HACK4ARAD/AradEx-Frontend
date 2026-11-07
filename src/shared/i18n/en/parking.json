@@ -1,0 +1,29 @@
+{
+  "attribution": "Source: Recons · © OpenStreetMap contributors",
+  "loadError": "Could not load the parking data. Try again.",
+  "card": {
+    "kicker": "Paid parking",
+    "zone": "Zone",
+    "zoneName": "Zone {n} · {color}",
+    "spaces": "Spaces",
+    "tariff": "Rate",
+    "maxStay": "Maximum stay",
+    "schedule": "Hours",
+    "perHour": "{amount} / hour ({via})",
+    "plusVat": "{amount} + VAT",
+    "viaMeter": "parking meter",
+    "viaSms": "SMS, code {code}",
+    "viaSmsPlain": "SMS",
+    "noTariff": "Not stated by the source",
+    "noMaxStay": "Not stated by the source",
+    "weekdays": "Mon–Fri 08:00–17:00 paid; evenings and weekends free",
+    "sundayObor": "Sunday 08:00–14:00 paid (Obor Market area)",
+    "approximate": "Approximate location (reference street)"
+  },
+  "color": {
+    "0": "green",
+    "1": "red",
+    "2": "yellow",
+    "3": "blue"
+  }
+}

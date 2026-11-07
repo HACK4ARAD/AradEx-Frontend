@@ -2,13 +2,18 @@
 // T23 · W9 — harta pe web (design/final web `/map`): pe ≥lg în stânga cardul cu căutare, perioadă, tipuri și lista sortată după
 // distanță (rândul selectat se deschide cu „Arată traseul” pe jos / mașină și „Deschide”), în dreapta harta cu pinul selectat și traseul.
 // Pe telefon harta e sus (~55vh) și lista dedesubt. Starea e comună cu harta din aplicație (shared/composables/useMapScreen),
-// inclusiv `?to=kind:id` care deschide direct traseul.
+// inclusiv `?to=kind:id` care deschide direct traseul. Modul de deplasare (Pe jos / Transport / Mașină) alege straturile hărții:
+// liniile CTP + stațiile de biciclete, respectiv parcările cu plată.
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import TransitPinCard from '@/shared/components/transit/TransitPinCard.vue'
+import ParkingPinCard from '@/shared/components/parking/ParkingPinCard.vue'
+import BikePinCard from '@/shared/components/bikes/BikePinCard.vue'
 import MapView from '@/shared/components/map/MapView.vue'
+import MapTravelBar from '@/shared/components/map/MapTravelBar.vue'
+import MapLayerPanel from '@/shared/components/map/MapLayerPanel.vue'
 import { MAP_KINDS, MAP_PERIODS, byDistance, searchItems, toMarkers, useMapScreen } from '@/shared/composables/useMapScreen'
 import { googleMapsUrl } from '@/shared/composables/useDirections'
 import { useFormat } from '@/shared/composables/useFormat'
@@ -18,10 +23,10 @@ const { t } = useI18n()
 const route = useRoute()
 const f = useFormat()
 
-const { geo, period, kind, target, selected, mode, directions, items, loading, visible, sel, selTransit, transit, routing, showRoute, select, init } = useMapScreen(route.query.to)
+const { geo, period, kind, target, selected, mode, directions, items, loading, visible, layerMarkers, lines, sel, selTransit, selParking, selBike, travel, transit, parking, showBikes, routing, showRoute, select, init } = useMapScreen(route.query.to)
 const q = ref('')
 const listed = computed(() => byDistance(searchItems(visible.value, q.value, target.value), geo.position.value))
-const markers = computed(() => [...toMarkers(listed.value.map((r) => r.item)), ...transit.markers.value])
+const markers = computed(() => [...toMarkers(listed.value.map((r) => r.item)), ...layerMarkers.value])
 const selKm = computed(() => listed.value.find((r) => r.item.key === selected.value)?.km ?? null)
 
 const mapRef = ref<InstanceType<typeof MapView> | null>(null)
@@ -66,7 +71,11 @@ onMounted(init)
           <AppIcon name="search" :size="20" />
           <input v-model="q" type="search" class="flex-1 min-w-0 bg-transparent outline-none text-ink text-[14.5px] placeholder:text-muted" :placeholder="t('map.search')" :aria-label="t('map.search')">
         </label>
-        <div class="flex flex-wrap gap-1.5" role="tablist">
+        <!-- modul de deplasare: straturile (transport + biciclete / parcări) și modul traseului; dedesubt comutatoarele / legenda lui -->
+        <MapTravelBar v-model="travel" />
+        <MapLayerPanel :modes="transit.modes.value" :zones="parking.zones.value" v-model:bikes="showBikes" :travel="travel" class="px-1"
+          @toggle-mode="transit.toggleMode" />
+        <div class="flex flex-wrap gap-1.5 pt-2.5 border-t border-line" role="tablist">
           <button v-for="p in MAP_PERIODS" :key="p" type="button" role="tab" :aria-selected="period === p"
             class="h-9 px-3.5 rounded-full text-[13.5px] border" :class="period === p ? 'bg-ink text-white border-ink font-semibold' : 'bg-white text-ink border-line'"
             @click="period = p">{{ t(`map.period.${p}`) }}</button>
@@ -75,10 +84,6 @@ onMounted(init)
           <button v-for="k in MAP_KINDS" :key="k" type="button" :aria-pressed="kind === k"
             class="h-8 px-3 rounded-full text-[12.5px] border" :class="kind === k ? 'bg-ink text-white border-ink font-semibold' : 'bg-white text-ink border-line'"
             @click="kind = k">{{ t(`map.kind.${k}`) }}</button>
-          <button type="button" :aria-pressed="transit.on.value"
-            class="h-8 px-3 rounded-full text-[12.5px] border inline-flex items-center gap-1"
-            :class="transit.on.value ? 'bg-[#1D5FD1] text-white border-[#1D5FD1] font-semibold' : 'bg-white text-ink border-line'"
-            @click="transit.on.value = !transit.on.value"><AppIcon name="tram" :size="15" />{{ t('transit.layer') }}</button>
         </div>
         <div v-if="!loading" class="text-muted text-[12.5px]">
           {{ t('map.web.results', listed.length) }} · {{ geo.isFallback.value ? t('map.web.sortedCenter') : t('map.web.sortedYou') }}
@@ -129,9 +134,13 @@ onMounted(init)
     <section class="relative isolate order-first lg:order-none h-[55vh] min-h-[320px] lg:h-[calc(100dvh-150px)] rounded-[16px] overflow-hidden border border-line bg-soft">
       <MapView ref="mapRef" :markers="markers" :selected-id="selected" :route="directions?.line ?? null"
         :route-approximate="directions?.approximate" :me="geo.isFallback.value ? null : geo.position.value"
-        :zoom="14" :insets="{ top: 60, bottom: sel ? 150 : 60 }" :lines="transit.lines.value" @select="onPin" />
-      <!-- T22: atribuirea obligatorie a datelor de transport, cât stratul e pornit -->
-      <div v-if="transit.on.value" class="absolute left-3 top-3 z-[500] px-2.5 py-1 rounded-full bg-white/90 text-[11.5px] text-muted shadow-sm pointer-events-none">{{ t('transit.attribution') }}</div>
+        :zoom="14" :insets="{ top: 60, bottom: sel ? 150 : 60 }" :lines="lines" @select="onPin" />
+      <!-- T22 / Parcări / Biciclete: atribuirea obligatorie a datelor, cât stratul e pornit -->
+      <div v-if="transit.on.value || parking.on.value" class="absolute left-3 right-16 top-3 z-[500] flex flex-col items-start gap-1 pointer-events-none">
+        <span v-if="parking.on.value" class="px-2.5 py-1 rounded-full bg-white/90 text-[11.5px] text-muted shadow-sm">{{ t('parking.attribution') }}</span>
+        <span v-if="transit.on.value" class="px-2.5 py-1 rounded-full bg-white/90 text-[11.5px] text-muted shadow-sm">{{ t('transit.attribution') }}</span>
+        <span v-if="transit.on.value && showBikes" class="px-2.5 py-1 rounded-full bg-white/90 text-[11.5px] text-muted shadow-sm">{{ t('bikes.attribution') }}</span>
+      </div>
 
       <div class="absolute right-3 top-3 z-[500] flex flex-col gap-2">
         <button type="button" class="w-10 h-10 rounded-[12px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomIn')" @click="mapRef?.zoomBy(1)"><AppIcon name="add" /></button>
@@ -143,6 +152,9 @@ onMounted(init)
 
       <!-- pinul selectat: pe ≥lg doar informațiile traseului (lista are restul); pe telefon și acțiunile, ca să nu derulezi până la listă -->
       <TransitPinCard v-if="selTransit" :pick="selTransit" :stops="transit.stops.value" class="absolute left-3 right-16 bottom-3 z-[500] max-w-[420px]" @close="select(null)" />
+      <!-- cardul parcării e înalt: pe ≥lg peste hartă, pe telefon sub ea (vezi după <section>), ca harta să rămână vizibilă -->
+      <ParkingPinCard v-else-if="selParking && parking.data.value" :spot="selParking" :data="parking.data.value" class="hidden lg:block absolute left-3 right-16 bottom-3 z-[500] max-w-[420px]" @close="select(null)" />
+      <BikePinCard v-else-if="selBike" :station="selBike" class="absolute left-3 right-16 bottom-3 z-[500] max-w-[420px]" @close="select(null)" />
       <div v-else-if="sel" class="absolute left-3 right-16 bottom-3 z-[500] max-w-[460px] bg-white rounded-[16px] p-3.5 shadow-[0_10px_30px_rgba(17,17,17,.18)] flex-col gap-2"
         :class="routing ? 'flex' : 'flex lg:hidden'">
         <div class="flex items-start gap-2">
@@ -168,5 +180,6 @@ onMounted(init)
         </div>
       </div>
     </section>
+    <ParkingPinCard v-if="selParking && parking.data.value" :spot="selParking" :data="parking.data.value" class="lg:hidden order-first border border-line !shadow-none" @close="select(null)" />
   </div>
 </template>

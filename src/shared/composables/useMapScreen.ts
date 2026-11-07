@@ -1,9 +1,11 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { MapMarker } from '@/shared/components/map/types'
+import type { MapLine, MapMarker } from '@/shared/components/map/types'
 import { filterItems, parseTarget, useMapData, type MapItem, type MapKind, type MapPeriod } from '@/shared/composables/useMapData'
 import { distanceKm, fetchDirections, type Directions, type TravelMode } from '@/shared/composables/useDirections'
 import { useGeo } from '@/shared/composables/useGeo'
+import { useParkingLayer } from '@/shared/composables/useParkingLayer'
+import { BIKE_STATIONS, bikeMarkers, findBike } from '@/shared/data/bikes/bikes'
 import { useTransitLayer } from '@/shared/composables/useTransitLayer'
 import { useUiStore } from '@/shared/stores/ui'
 import type { GeoPoint } from '@/shared/types/common'
@@ -15,6 +17,14 @@ import type { GeoPoint } from '@/shared/types/common'
  */
 export const MAP_PERIODS: MapPeriod[] = ['today', 'weekend', 'week']
 export const MAP_KINDS: ('all' | MapKind)[] = ['all', 'event', 'place', 'offer', 'action']
+
+/** Modul de deplasare al hărții: ce straturi se văd și cum se calculează traseul. */
+export type Travel = 'foot' | 'transit' | 'car'
+export const MAP_TRAVEL: { id: Travel; icon: string }[] = [
+  { id: 'foot', icon: 'directions_walk' },
+  { id: 'transit', icon: 'directions_bus' },
+  { id: 'car', icon: 'directions_car' },
+]
 
 /** Căutarea din lista web: titlu + subtitlu, fără diacritice și fără majuscule; ținta rămâne. */
 export function searchItems(items: MapItem[], q: string, keep?: string | null): MapItem[] {
@@ -47,12 +57,35 @@ export function useMapScreen(to: unknown) {
   const { items, loading, load, ensure } = useMapData(period)
 
   const visible = computed(() => filterItems(items.value, kind.value, target.value))
-  // T23: stratul „Transport” (stații + vehicule live), pornit din chip-ul lui
+  // Modul de deplasare alege straturile: „Transport” = liniile CTP + vehiculele live (T23) + stațiile de biciclete,
+  // „Mașină” = parcările cu plată (Recons). Traseul din cardul pinului pornește în modul ales (pe jos / cu mașina).
+  const travel = ref<Travel>('foot')
   const transit = useTransitLayer()
-  const markers = computed<MapMarker[]>(() => [...toMarkers(visible.value), ...transit.markers.value])
+  // parcările nu s-au încărcat: mesaj și înapoi la „Pe jos”, să nu rămână modul „Mașină” cu o hartă goală
+  const parking = useParkingLayer(() => { ui.toast(t('parking.loadError'), 'error'); travel.value = 'foot' })
+  /** al treilea comutator al modului „Transport”, lângă Tramvaie / Autobuze */
+  const showBikes = ref(true)
+  const bikes = computed(() => (transit.on.value && showBikes.value ? BIKE_STATIONS : []))
+  watch(travel, (tr) => {
+    transit.on.value = tr === 'transit'
+    parking.on.value = tr === 'car'
+    mode.value = tr === 'car' ? 'car' : 'foot'
+  })
+
+  const markers = computed<MapMarker[]>(() => [...toMarkers(visible.value), ...layerMarkers.value])
+  /** pinii straturilor (parcări, biciclete, transport), peste pinii aplicației */
+  const layerMarkers = computed<MapMarker[]>(() => [...parking.markers.value, ...bikeMarkers(bikes.value), ...transit.markers.value])
+  /** liniile straturilor: străzile cu parcări sub traseele transportului */
+  const lines = computed<MapLine[]>(() => [...parking.lines.value, ...transit.lines.value])
   const sel = computed(() => items.value.find((i) => i.key === selected.value) ?? null)
   /** pinul selectat e o stație sau un vehicul: cardul de transport în locul celui de pin */
   const selTransit = computed(() => transit.find(selected.value))
+  /** pinul selectat e o parcare: cardul parcării */
+  const selParking = computed(() => parking.find(selected.value))
+  /** pinul selectat e o stație de biciclete */
+  const selBike = computed(() => findBike(selected.value, bikes.value))
+  /** e deschis un card de strat (transport, parcare, bicicletă) */
+  const selLayer = computed(() => !!(selTransit.value || selParking.value || selBike.value))
   const routing = computed(() => !!sel.value && target.value === sel.value.key)
 
   let routeSeq = 0
@@ -78,7 +111,7 @@ export function useMapScreen(to: unknown) {
 
   watch(mode, () => { if (routing.value) void showRoute() })
   // pinul selectat a dispărut (altă perioadă): închidem cardul și traseul, să nu rămână o linie fără destinație
-  watch([sel, selTransit], ([s, tr]) => { if (!s && !tr && selected.value) select(null) })
+  watch([sel, selLayer], ([s, l]) => { if (!s && !l && selected.value) select(null) })
 
   /** Încarcă pinii; ținta din `?to=` poate fi în afara perioadei afișate: ensure o aduce și deschide direct traseul. */
   async function init() {
@@ -88,7 +121,7 @@ export function useMapScreen(to: unknown) {
     else { ui.toast(t('map.notFound'), 'info'); target.value = null; selected.value = null }
   }
 
-  return { geo, period, kind, target, selected, mode, directions, items, loading, visible, markers, sel, selTransit, transit, routing, showRoute, select, init }
+  return { geo, period, kind, target, selected, mode, directions, items, loading, visible, markers, layerMarkers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init }
 }
 
 export function toMarkers(items: MapItem[]): MapMarker[] {

@@ -13,7 +13,6 @@
     "noLive": "Fără date live acum",
     "noArrivals": "Nicio sosire în următoarea perioadă"
   },
-  "layer": "Transport",
   "card": {
     "stop": "Stație CTP",
     "vehicle": "Live acum",
