@@ -57,7 +57,20 @@ export function hourlyTariff(data: Pick<ParkingData, 'tariffs'>, zone: number): 
   return null
 }
 
-export const parkingKey = (s: Pick<ParkingSpot, 'id'>) => `parking:${s.id}`
+type Translate = (key: string, params?: Record<string, unknown>) => string
+
+/**
+ * Textul tarifului pe card, din câmpurile sursei: lei prin `money`, altă monedă cu codul ei; „+ TVA” doar când sursa spune
+ * că TVA-ul nu e inclus (`vat: false`); parcometru sau SMS cu codul. Ex.: „0,50 EUR + TVA / oră (SMS, cod 101)”.
+ */
+export function tariffText(h: HourlyTariff, t: Translate, money: (lei: number) => string, num: (n: number) => string): string {
+  const price = h.currency === 'RON' ? money(h.amount) : `${num(h.amount)} ${h.currency}`
+  const amount = h.vat === false ? t('parking.card.plusVat', { amount: price }) : price
+  const via = h.via === 'meter' ? t('parking.card.viaMeter') : h.smsCode ? t('parking.card.viaSms', { code: h.smsCode }) : t('parking.card.viaSmsPlain')
+  return t('parking.card.perHour', { amount, via })
+}
+
+export const parkingKey =(s: Pick<ParkingSpot, 'id'>) => `parking:${s.id}`
 
 /** Traseele străzilor, colorate pe zonă (sub pini, mai groase decât liniile de transport). */
 export function parkingLines(spots: ParkingSpot[]): MapLine[] {

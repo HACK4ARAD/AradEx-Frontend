@@ -22,7 +22,8 @@ let meLayer: L.Marker | null = null
 
 function icon(m: MapMarker, selected: boolean) {
   return L.divIcon({
-    className: '',
+    // pinii au mărimi diferite (stație 18, parcare 22, restul 26 px): cutia de 26 px îi centrează pe coordonată
+    className: 'ax-pin-box',
     html: pinElement(m, selected),
     iconSize: [26, 26],
     iconAnchor: [13, 13],

@@ -73,7 +73,8 @@ onMounted(init)
         </label>
         <!-- modul de deplasare: straturile (transport + biciclete / parcări) și modul traseului; dedesubt comutatoarele / legenda lui -->
         <MapTravelBar v-model="travel" />
-        <MapLayerPanel v-model:modes="transit.modes.value" v-model:bikes="showBikes" :travel="travel" class="px-1" />
+        <MapLayerPanel :modes="transit.modes.value" :zones="parking.zones.value" v-model:bikes="showBikes" :travel="travel" class="px-1"
+          @toggle-mode="transit.toggleMode" />
         <div class="flex flex-wrap gap-1.5 pt-2.5 border-t border-line" role="tablist">
           <button v-for="p in MAP_PERIODS" :key="p" type="button" role="tab" :aria-selected="period === p"
             class="h-9 px-3.5 rounded-full text-[13.5px] border" :class="period === p ? 'bg-ink text-white border-ink font-semibold' : 'bg-white text-ink border-line'"

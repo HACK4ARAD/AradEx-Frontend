@@ -48,6 +48,8 @@ defineExpose({
 /* stațiile de biciclete: eticheta e ligatura Material Symbols „pedal_bike” */
 .ax-pin--bike { background: #0F8A5F; font: 400 15px 'Material Symbols Outlined'; font-feature-settings: 'liga'; }
 .ax-pin--sel { transform: scale(1.3); }
+/* Leaflet: cutia divIcon (26 × 26, ancorată la centru) centrează pinii mai mici */
+.leaflet-marker-icon.ax-pin-box { display: flex; align-items: center; justify-content: center; }
 .ax-me {
   width: 18px; height: 18px; border-radius: 50%; background: #1D5FD1; border: 3px solid #fff;
   box-shadow: 0 0 0 10px rgba(29, 95, 209, .18);

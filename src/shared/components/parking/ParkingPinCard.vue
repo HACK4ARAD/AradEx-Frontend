@@ -5,7 +5,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import { intlLocale, useFormat } from '@/shared/composables/useFormat'
-import { ZONE_COLORS, hourlyTariff, type ParkingData, type ParkingSpot } from '@/shared/data/parking/parking'
+import { ZONE_COLORS, hourlyTariff, tariffText, type ParkingData, type ParkingSpot } from '@/shared/data/parking/parking'
 
 const props = defineProps<{ spot: ParkingSpot; data: Pick<ParkingData, 'tariffs'> }>()
 const emit = defineEmits<{ close: [] }>()
@@ -16,8 +16,7 @@ const color = computed(() => ZONE_COLORS[props.spot.zone])
 const tariff = computed(() => {
   const h = hourlyTariff(props.data, props.spot.zone)
   if (!h) return t('parking.card.noTariff')
-  if (h.via === 'meter' && h.currency === 'RON') return t('parking.card.perHourMeter', { amount: f.money(h.amount) })
-  return t('parking.card.perHourSms', { amount: new Intl.NumberFormat(intlLocale(), { minimumFractionDigits: 2 }).format(h.amount), code: h.smsCode ?? '—' })
+  return tariffText(h, t, f.money, (n) => new Intl.NumberFormat(intlLocale(), { minimumFractionDigits: 2 }).format(n))
 })
 const rows = computed(() => [
   { label: t('parking.card.zone'), value: t('parking.card.zoneName', { n: props.spot.zone, color: t(`parking.color.${props.spot.zone}`) }) },

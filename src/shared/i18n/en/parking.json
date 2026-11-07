@@ -1,6 +1,6 @@
 {
-  "layer": "Parking",
   "attribution": "Source: Recons · © OpenStreetMap contributors",
+  "loadError": "Could not load the parking data. Try again.",
   "card": {
     "kicker": "Paid parking",
     "zone": "Zone",
@@ -9,8 +9,11 @@
     "tariff": "Rate",
     "maxStay": "Maximum stay",
     "schedule": "Hours",
-    "perHourMeter": "{amount} / hour (parking meter)",
-    "perHourSms": "{amount} EUR + VAT / hour (SMS, code {code})",
+    "perHour": "{amount} / hour ({via})",
+    "plusVat": "{amount} + VAT",
+    "viaMeter": "parking meter",
+    "viaSms": "SMS, code {code}",
+    "viaSmsPlain": "SMS",
     "noTariff": "Not stated by the source",
     "noMaxStay": "Not stated by the source",
     "weekdays": "Mon–Fri 08:00–17:00 paid; evenings and weekends free",

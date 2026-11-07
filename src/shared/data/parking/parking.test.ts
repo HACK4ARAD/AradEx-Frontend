@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { effectScope, nextTick } from 'vue'
-import { ZONE_COLORS, findParking, hourlyTariff, loadParking, parkingLines, parkingMarkers, type ParkingSpot, type ParkingTariff } from './parking'
+import { ZONE_COLORS, findParking, hourlyTariff, loadParking, parkingLines, parkingMarkers, tariffText, type ParkingSpot, type ParkingTariff } from './parking'
 import data from './parking.json'
 import { useParkingLayer } from '@/shared/composables/useParkingLayer'
 
@@ -26,6 +26,22 @@ describe('hourlyTariff', () => {
   })
   it('finds an hourly rate for every zone that has spots in the real data', () => {
     for (const z of new Set(data.spots.map((s) => s.zone))) expect(hourlyTariff(data, z), `zone ${z}`).not.toBeNull()
+  })
+})
+
+describe('tariffText', () => {
+  const t = (k: string, p?: Record<string, unknown>) => (p ? `${k.split('.').pop()}(${Object.values(p).join('|')})` : k.split('.').pop()!)
+  const money = (n: number) => `${n} lei`
+  const num = (n: number) => n.toFixed(2).replace('.', ',')
+  it('meter in lei: money format, no VAT suffix when the source does not say', () => {
+    expect(tariffText({ via: 'meter', amount: 3, currency: 'RON', vat: null }, t, money, num)).toBe('perHour(3 lei|viaMeter)')
+  })
+  it('SMS in EUR without VAT: currency code, + VAT and the SMS code', () => {
+    expect(tariffText({ via: 'sms', amount: 0.5, currency: 'EUR', vat: false, smsCode: '101' }, t, money, num))
+      .toBe('perHour(plusVat(0,50 EUR)|viaSms(101))')
+  })
+  it('uses the fields of the tariff: VAT included → no suffix, no code → plain SMS', () => {
+    expect(tariffText({ via: 'sms', amount: 2, currency: 'RON', vat: true }, t, money, num)).toBe('perHour(2 lei|viaSmsPlain)')
   })
 })
 

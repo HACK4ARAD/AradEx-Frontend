@@ -61,7 +61,8 @@ export function useMapScreen(to: unknown) {
   // „Mașină” = parcările cu plată (Recons). Traseul din cardul pinului pornește în modul ales (pe jos / cu mașina).
   const travel = ref<Travel>('foot')
   const transit = useTransitLayer()
-  const parking = useParkingLayer()
+  // parcările nu s-au încărcat: mesaj și înapoi la „Pe jos”, să nu rămână modul „Mașină” cu o hartă goală
+  const parking = useParkingLayer(() => { ui.toast(t('parking.loadError'), 'error'); travel.value = 'foot' })
   /** al treilea comutator al modului „Transport”, lângă Tramvaie / Autobuze */
   const showBikes = ref(true)
   const bikes = computed(() => (transit.on.value && showBikes.value ? BIKE_STATIONS : []))

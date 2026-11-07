@@ -44,7 +44,8 @@ onMounted(init)
       :route-approximate="directions?.approximate" :me="geo.isFallback.value ? null : geo.position.value"
       :insets="{ top: 170, bottom: routing ? 480 : 330 }" :lines="lines" @select="select" />
     <!-- Transport / Mașină: comutatoarele și legenda modului, cu sursele obligatorii ale datelor (cardurile le au și ele) -->
-    <MapLayerPanel v-if="travel !== 'foot' && !anyCard" v-model:modes="transit.modes.value" v-model:bikes="showBikes" :travel="travel" attributions
+    <MapLayerPanel v-if="travel !== 'foot' && !anyCard" :modes="transit.modes.value" :zones="parking.zones.value" v-model:bikes="showBikes" :travel="travel" attributions
+      @toggle-mode="transit.toggleMode"
       class="absolute left-4 right-[72px] bottom-[104px] z-[500] bg-white/95 rounded-[16px] px-3 py-2.5 shadow-[0_4px_16px_rgba(0,0,0,.14)]" />
 
     <div class="absolute left-0 right-0 top-0 z-[500] px-4 pt-[max(12px,env(safe-area-inset-top))] flex flex-col gap-2.5 pointer-events-none">
@@ -73,7 +74,7 @@ onMounted(init)
       </div>
     </div>
 
-    <div class="absolute right-4 z-[500] flex flex-col gap-2" :class="!anyCard ? 'bottom-[130px]' : routing ? 'bottom-[456px]' : selParking ? 'bottom-[400px]' : selBike ? 'bottom-[350px]' : 'bottom-[300px]'">
+    <div class="absolute right-4 z-[500] flex flex-col gap-2" :class="!anyCard ? 'bottom-[130px]' : routing ? 'bottom-[456px]' : selParking ? 'bottom-[400px]' : selLayer ? 'bottom-[350px]' : 'bottom-[300px]'">
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomIn')" @click="mapRef?.zoomBy(1)"><AppIcon name="add" /></button>
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomOut')" @click="mapRef?.zoomBy(-1)"><AppIcon name="remove" /></button>
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center text-[#1D5FD1]" :aria-label="t('map.myLocation')" @click="myLocation"><AppIcon name="my_location" fill /></button>

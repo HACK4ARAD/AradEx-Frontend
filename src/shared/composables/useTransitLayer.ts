@@ -83,11 +83,16 @@ export function useTransitLayer() {
 
   /** Tramvaie / Autobuze afișate (modul „Transport” al hărții) */
   const modes = ref<TransitMode[]>(['TRAM', 'BUS'])
-  const shown = computed(() => filterTransitModes(modes.value, routes.value, stops.value, vehicles.value))
+  function toggleMode(m: TransitMode) {
+    modes.value = modes.value.includes(m) ? modes.value.filter((x) => x !== m) : [...modes.value, m]
+  }
+  // liniile + stațiile separat de vehicule: vehiculele se schimbă la 30 s, iar liniile nu trebuie redesenate atunci
+  const shownStatic = computed(() => filterTransitModes(modes.value, routes.value, stops.value, []))
+  const shownVehicles = computed(() => filterTransitModes(modes.value, routes.value, [], vehicles.value).vehicles)
 
-  const markers = computed<TransitMarker[]>(() => (on.value ? transitMarkers(shown.value.stops, shown.value.vehicles) : []))
-  const lines = computed<MapLine[]>(() => (on.value ? transitLines(shown.value.routes) : []))
-  const find = (id: string | null) => (on.value ? findTransit(id, shown.value.stops, shown.value.vehicles) : null)
+  const markers = computed<TransitMarker[]>(() => (on.value ? transitMarkers(shownStatic.value.stops, shownVehicles.value) : []))
+  const lines = computed<MapLine[]>(() => (on.value ? transitLines(shownStatic.value.routes) : []))
+  const find = (id: string | null) => (on.value ? findTransit(id, shownStatic.value.stops, shownVehicles.value) : null)
 
-  return { on, modes, stops, vehicles, live, markers, lines, find }
+  return { on, modes, toggleMode, stops, vehicles, live, markers, lines, find }
 }
