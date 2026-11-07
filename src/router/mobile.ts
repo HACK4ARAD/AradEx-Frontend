@@ -1,9 +1,13 @@
 import type { RouteRecordRaw } from 'vue-router'
+import type { Logins } from './guard'
 
 /**
- * Aplicația mobilă (iOS + Android, Capacitor): toate ecranele, fără prefix în URL. Vezi docs/API.md §Rute FE.
+ * Aplicația mobilă (iOS + Android, Capacitor; build-ul `npm run build:mobile`): toate ecranele, fără prefix în URL. Vezi docs/API.md §Rute FE.
  * Fiecare rută are fișierul ei de view în `mobile/views/<feature>/`; story-ul din `meta.task` completează doar acel fișier.
  */
+/** Login-ul aplicației (S12) și al voluntarilor (T18, cod de 6 cifre). */
+export const MOBILE_LOGINS: Logins = { names: ['m-login', 'm-vol-login'], volunteer: '/vol/login' }
+
 export const mobileRoutes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -46,4 +50,6 @@ export const mobileRoutes: RouteRecordRaw[] = [
       { path: 'vol/messages', name: 'm-vol-messages', component: () => import('@/mobile/views/volunteer/VolMessagesView.vue'), meta: { title: 'Mesaje', task: 'T18', roles: ['VOLUNTEER'] } },
     ],
   },
+  // orice altă cale → Acasă
+  { path: '/:pathMatch(.*)*', redirect: '/' },
 ]

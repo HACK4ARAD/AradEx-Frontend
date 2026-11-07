@@ -1,9 +1,19 @@
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouteLocation, RouteLocationRaw, RouteRecordRaw } from 'vue-router'
+import type { Logins } from './guard'
+
+/** Linkurile vechi de panou (`/w/city/…`, de exemplu din bookmark-uri) duc la aceeași cale fără prefix. */
+function stripPrefix(to: RouteLocation): RouteLocationRaw {
+  const rest = to.params.rest
+  return { path: '/' + (Array.isArray(rest) ? rest.join('/') : (rest ?? '')), query: to.query, hash: to.hash }
+}
 
 /**
- * Aplicația web = site-ul de prezentare al aplicației mobile + panourile (Primărie, firme, Admin), fără prefix în URL.
- * Paginile publice ale aplicației (agendă, ghid, hartă, oferte, chat, cont…) sunt doar în aplicația mobilă.
+ * Web-ul (build-ul `npm run build`, aradexperience.site) = site-ul de prezentare al aplicației mobile + panourile (Primărie,
+ * firme, Admin), fără prefix în URL. Nu conține nimic din aplicația mobilă (build separat, `npm run build:mobile`).
  */
+/** Login-ul panourilor (W0). */
+export const WEB_LOGINS: Logins = { names: ['w-login'] }
+
 export const webRoutes: RouteRecordRaw[] = [
   // W0: pagină întreagă, fără WebLayout (ca în design/final/web.html)
   { path: '/login', name: 'w-login', component: () => import('@/web/views/auth/LoginView.vue'), meta: { title: 'Conectare', screen: 'W0', task: 'T03' } },
@@ -54,4 +64,7 @@ export const webRoutes: RouteRecordRaw[] = [
       },
     ],
   },
+  { path: '/w/:rest(.*)*', redirect: stripPrefix },
+  // orice altă cale → prezentarea
+  { path: '/:pathMatch(.*)*', redirect: '/' },
 ]

@@ -5,6 +5,7 @@ import { tokenStore, setUnauthorizedHandler } from '@/shared/api/client'
 import { i18n, setLocale, type Locale } from '@/shared/i18n'
 import type { Role } from '@/shared/types/common'
 import type { RegisterRequest, UpdateMeRequest, UserDto } from '@/shared/types/auth'
+import { APP } from '@/shared/app'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserDto | null>(null)
@@ -98,10 +99,10 @@ export const useAuthStore = defineStore('auth', () => {
   setUnauthorizedHandler(() => {
     logout()
     if (!ready.value) return
-    import('@/router').then(({ router }) => {
+    import('@app/router').then(({ router }) => {
       const current = router.currentRoute.value
       if (!current.meta.roles?.length) return
-      const login = current.meta.roles.includes('VOLUNTEER') ? '/vol/login' : '/login'
+      const login = APP === 'mobile' && current.meta.roles.includes('VOLUNTEER') ? '/vol/login' : '/login'
       router.push({ path: login, query: { next: current.fullPath } })
     })
   })
