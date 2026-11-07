@@ -1,10 +1,10 @@
 <script setup lang="ts">
-// T05 · W8 · ghid virtual. Fișierul e al story-ului T05: înlocuiește placeholder-ul cu ecranul din design/final.
-import { useRoute } from 'vue-router'
-import PlaceholderScreen from '@/shared/components/ui/PlaceholderScreen.vue'
-const route = useRoute()
+// T05 · W7/W8 nu se mai fac (decizia din 7 nov, docs/PLAN.md): ghidul virtual există doar în aplicația mobilă,
+// pe web rămâne panoul „Obiective & ghiduri” (/w/city/places). Ruta se scoate din router în T20 (P1); până atunci duce la site.
+import { useRouter } from 'vue-router'
+useRouter().replace('/w')
 </script>
 
 <template>
-  <PlaceholderScreen :title="String(route.meta.title ?? '')" :screen="route.meta.screen" :task="route.meta.task" />
+  <span />
 </template>
