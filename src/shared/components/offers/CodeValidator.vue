@@ -31,7 +31,7 @@ function toggleScan() { scanning.value = !scanning.value; scanKey.value++ }
 <template>
   <div class="flex flex-col gap-3">
     <form class="flex gap-2" @submit.prevent="submit()">
-      <input v-model="code" :placeholder="t('offers.codes.placeholder')" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Cod"
+      <input v-model="code" :placeholder="t('offers.codes.placeholder')" autocomplete="off" autocapitalize="characters" spellcheck="false" :aria-label="t('offers.codes.colCode')"
         class="flex-1 min-w-0 h-12 px-3.5 bg-white border border-line rounded-[14px] font-mono text-[16px] uppercase outline-none focus:border-ink" />
       <AppButton type="submit" :loading="v.checking.value" class="whitespace-nowrap">{{ t('offers.codes.validate') }}</AppButton>
     </form>

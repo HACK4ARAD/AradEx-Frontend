@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import StatusPill from '@/shared/components/business/StatusPill.vue'
-import { useFormat } from '@/shared/composables/useFormat'
+import { intlLocale, useFormat } from '@/shared/composables/useFormat'
 import type { OfferDto } from '@/shared/types/offers'
 
 /** O ofertă în panoul firmei (W16 + E5): poză, titlu, valabilitate, afișări / folosite, stare + Pauză/Publică, Editează, Șterge. */
@@ -11,7 +11,7 @@ const props = defineProps<{ offer: OfferDto; actions?: boolean; canPublish?: boo
 defineEmits<{ edit: []; remove: []; toggle: [] }>()
 const { t } = useI18n()
 const f = useFormat()
-const nf = new Intl.NumberFormat('ro-RO')
+const nf = { format: (n: number) => new Intl.NumberFormat(intlLocale()).format(n) }   // reactiv la RO/EN
 const until = computed(() => (props.offer.validUntil ? t('offers.until', { date: f.dateTime(props.offer.validUntil + 'T12:00:00+02:00', false) }) : t('offers.permanent')))
 </script>
 
