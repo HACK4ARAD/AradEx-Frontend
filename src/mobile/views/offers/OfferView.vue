@@ -2,7 +2,7 @@
 // T10 · S1c · detaliul ofertei: poză, insigne, valabilitate, detalii, firma; jos „Revendică oferta” → sheet cu QR + cod
 // („Arată codul la casă”). Dacă am deja un cod activ, butonul devine „Arată codul”.
 // T11 — plata cu puncte (design/final `offer`): oferta doar pe puncte are un singur buton verde „Plătește cu N de puncte”;
-// oferta normală cu `pointsPrice` are în plus butonul „N p”; ambele dezactivate dacă soldul nu ajunge.
+// oferta normală cu `pointsPrice` are în plus butonul „N p”; ambele estompate dacă soldul nu ajunge (la apăsare, toast cu câte puncte ai și câte îți trebuie).
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -77,11 +77,11 @@ async function onRedeem() {
   <!-- bara de jos din design (`bottombar`), peste tab bar, ca la detaliul evenimentului (T06) -->
   <div v-if="offer" class="fixed left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[480px] z-40 px-5 pt-3 pb-[max(30px,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur border-t border-line flex">
     <AppButton v-if="active" block icon="qr_code_2" @click="sheet = true">{{ t('offers.redeem.show') }}</AppButton>
-    <AppButton v-else-if="pointsOnly" block icon="stars" class="!bg-green" :loading="redeeming" :disabled="auth.isLoggedIn && (!canEarn || !enough)" @click="onPay">
+    <AppButton v-else-if="pointsOnly" block icon="stars" class="!bg-green" :class="{ 'opacity-45': auth.isLoggedIn && canEarn && !enough }" :loading="redeeming" :disabled="auth.isLoggedIn && !canEarn" @click="onPay">
       {{ t('offers.redeem.payPoints', { n: price }) }}
     </AppButton>
     <template v-else>
-      <AppButton v-if="price && canEarn" variant="secondary" class="!w-auto !px-3.5 mr-2.5 shrink-0" :disabled="redeeming || !enough" @click="onPay">
+      <AppButton v-if="price && canEarn" variant="secondary" class="!w-auto !px-3.5 mr-2.5 shrink-0" :class="{ 'opacity-45': !enough }" :disabled="redeeming" @click="onPay">
         {{ t('offers.redeem.pointsShort', { n: price }) }}
       </AppButton>
       <AppButton block :loading="redeeming" icon="redeem" @click="onRedeem">{{ t('offers.redeem.cta') }}</AppButton>

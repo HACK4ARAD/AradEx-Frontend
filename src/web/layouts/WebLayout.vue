@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppButton } from '@/shared/components'
@@ -57,6 +57,9 @@ const sidebar = computed<NavGroup[] | null>(() => {
 /** Pe ecrane sub lg (telefon, tabletă) sidebar-ul panourilor e un meniu care se deschide din bara de sus (☰); se închide la navigare. */
 const menuOpen = ref(false)
 watch(() => route.fullPath, () => { menuOpen.value = false })
+const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') menuOpen.value = false }
+window.addEventListener('keydown', onKey)
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 const isRoot = (to: string) => to === '/city' || to === '/admin' || to === '/business'
 const isActive = (to: string) => route.path === to || (!isRoot(to) && route.path.startsWith(to + '/'))

@@ -52,6 +52,7 @@ const regPill = (r: RegistrationDto) => r.status === 'CONFIRMED' ? { tone: 'ok' 
   : r.status === 'NO_SHOW' ? { tone: 'no' as const, label: t('community.tickets.rejected') } : { tone: 'pending' as const, label: t('community.tickets.pending') }
 const leaving = ref(false)
 async function leave(r: RegistrationDto) {
+  if (leaving.value) return
   leaving.value = true
   try {
     await communityApi.cancel(r.actionId)
@@ -63,7 +64,7 @@ async function leave(r: RegistrationDto) {
 function openReg(r: RegistrationDto) {
   shown.value = {
     title: r.actionTitle, sub: `${f.dateTime(r.actionStartAt)} · ${r.locationName}`, code: r.code, note: t('community.tickets.note'), pill: regPill(r),
-    action: r.status === 'REGISTERED' ? { label: t('community.tickets.leave'), onClick: () => void leave(r), busy: leaving.value } : undefined,
+    action: r.status === 'REGISTERED' ? { label: t('community.tickets.leave'), onClick: () => void leave(r), get busy() { return leaving.value } } : undefined,
   }
 }
 const count = (tk: TicketDto) => tk.ticketType === 'FREE' ? t('tickets.registration') : t('tickets.count', tk.qtyAdult + tk.qtyChild)

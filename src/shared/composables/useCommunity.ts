@@ -2,6 +2,7 @@ import { computed, ref, watch, type Ref } from 'vue'
 import { cityCommunityApi, communityApi } from '@/shared/api/community'
 import { ApiError } from '@/shared/api/client'
 import { useUiStore } from '@/shared/stores/ui'
+import { useAuthStore } from '@/shared/stores/auth'
 import { bucharestIso, splitBucharest } from '@/shared/composables/useEventForm'
 import type {
   ActionCategory, ActionCreate, ActionDto, ActionSummary, CityDashboardDto, ConfirmResultDto, LeaderboardDto, LeaderboardPeriod,
@@ -163,7 +164,12 @@ export function usePoints() {
   const loading = ref(true)
   async function load() {
     loading.value = true
-    try { points.value = await communityApi.myPoints() } catch (e) { ui.error(e) } finally { loading.value = false }
+    try {
+      points.value = await communityApi.myPoints()
+      // soldul din sesiune (tile-ul Comunitate de pe Acasă, Profil) ar rămâne altfel cel de la login după o plată sau o confirmare
+      const u = useAuthStore().user
+      if (u) u.pointsBalance = points.value.balance
+    } catch (e) { ui.error(e) } finally { loading.value = false }
   }
   const level = computed(() => levelFor(points.value?.balance ?? 0))
   return { points, level, loading, load }
