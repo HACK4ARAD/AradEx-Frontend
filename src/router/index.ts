@@ -39,12 +39,23 @@ const mobile: RouteRecordRaw = {
     { path: 'community', name: 'm-community', component: MobilePlaceholder, meta: { title: 'Comunitate', screen: 'S1d', task: 'T11' } },
     { path: 'community/actions/:id', name: 'm-action', component: MobilePlaceholder, meta: { title: 'Acțiune comunitară', screen: 'S1e', task: 'T11' } },
     { path: 'community/leaderboard', name: 'm-leaderboard', component: MobilePlaceholder, meta: { title: 'Clasament', screen: 'S1f', task: 'T11' } },
+    { path: 'places', name: 'm-places', component: MobilePlaceholder, meta: { title: 'Obiective', task: 'T05' } },
     { path: 'places/:id', name: 'm-place', component: MobilePlaceholder, meta: { title: 'Ghid virtual', screen: 'E3', task: 'T05' } },
     { path: 'plan', name: 'm-plan', component: MobilePlaceholder, meta: { title: 'Planifică-ți vizita', screen: 'E1', task: 'T13' } },
+    { path: 'itineraries', name: 'm-itineraries', component: MobilePlaceholder, meta: { title: 'Itinerariile mele', task: 'T13' } },
     { path: 'itinerary/:id', name: 'm-itinerary', component: MobilePlaceholder, meta: { title: 'Programul tău', screen: 'E2', task: 'T13' } },
     { path: 'itinerary/:id/map', name: 'm-itinerary-map', component: MobilePlaceholder, meta: { title: 'Traseul tău', screen: 'E4', task: 'T13', hideTabs: true } },
     { path: 'businesses/:id', name: 'm-business', component: MobilePlaceholder, meta: { title: 'Firmă', task: 'T09' } },
     { path: 'panel', name: 'm-panel', component: MobilePlaceholder, meta: { title: 'Panou', screen: 'E5/E7', task: 'T09/T11', roles: ['BUSINESS', 'CITY_HALL'] } },
+    // T19 · Transport în comun (tab în navbar): destinație → trasee → hartă cu tot drumul
+    { path: 'transport', name: 'm-transport', component: MobilePlaceholder, meta: { title: 'Transport în comun', task: 'T19' } },
+    { path: 'transport/lines/:id/:dir', name: 'm-transport-line', component: MobilePlaceholder, meta: { title: 'Linie de tramvai', task: 'T19' } },
+    { path: 'transport/trip/:to', name: 'm-transport-trip', component: MobilePlaceholder, meta: { title: 'Traseul tău', task: 'T19', hideTabs: true } },
+    // T18 · Voluntar (cont creat de Primărie, intră cu cod); T18 adaugă rolul VOLUNTEER și `roles` pe rutele de mai jos
+    { path: 'vol/login', name: 'm-vol-login', component: MobilePlaceholder, meta: { title: 'Intră ca voluntar', task: 'T18', hideTabs: true } },
+    { path: 'vol/actions', name: 'm-vol-actions', component: MobilePlaceholder, meta: { title: 'Acțiunile mele', task: 'T18' } },
+    { path: 'vol/scan', name: 'm-vol-scan', component: MobilePlaceholder, meta: { title: 'Scanează', task: 'T18' } },
+    { path: 'vol/messages', name: 'm-vol-messages', component: MobilePlaceholder, meta: { title: 'Mesaje', task: 'T18' } },
   ],
 }
 
@@ -66,8 +77,10 @@ const web: RouteRecordRaw = {
     { path: 'chat', name: 'w-chat', component: WebPlaceholder, meta: { title: 'Chat', screen: 'W13', task: 'T12' } },
     { path: 'account/:section?', name: 'w-account', component: WebPlaceholder, meta: { title: 'Contul meu', screen: 'W14', task: 'T07', roles: ['VISITOR', 'LOCAL', 'BUSINESS', 'CITY_HALL'] } },
     { path: 'businesses/:id', name: 'w-business-public', component: WebPlaceholder, meta: { title: 'Firmă', screen: 'W15', task: 'T09' } },
-    { path: 'business/:section?', name: 'w-business', component: WebPlaceholder, meta: { title: 'Panou firmă', screen: 'W4', task: 'T09', roles: ['BUSINESS'] } },
-    { path: 'city/:section?', name: 'w-city', component: WebPlaceholder, meta: { title: 'Panou Primărie', screen: 'W2', task: 'T11', roles: ['CITY_HALL'] } },
+    { path: 'business/:section?/:sub?', name: 'w-business', component: WebPlaceholder, meta: { title: 'Panou firmă', screen: 'W4', task: 'T09', roles: ['BUSINESS'] } },
+    // Panoul Primăriei îl folosește și Adminul (ADMIN are voie peste tot): events, places, actions, validate, volunteers, messages, leaderboard, partners
+    { path: 'city/:section?/:sub?', name: 'w-city', component: WebPlaceholder, meta: { title: 'Panou Primărie', screen: 'W2', task: 'T11', roles: ['CITY_HALL'] } },
+    // Doar Admin: dashboard, content (conținut & moderare), users, settings
     { path: 'admin/:section?', name: 'w-admin', component: WebPlaceholder, meta: { title: 'Administrare', screen: 'W3', task: 'T14', roles: ['ADMIN'] } },
   ],
 }
