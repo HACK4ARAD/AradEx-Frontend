@@ -8,9 +8,14 @@
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "lint": "vue-tsc --noEmit -p tsconfig.app.json"
+    "lint": "vue-tsc --noEmit -p tsconfig.app.json",
+    "cap:sync": "vite build && cap sync android",
+    "android:run": "npm run cap:sync && cap run android",
+    "android:open": "cap open android"
   },
   "dependencies": {
+    "@capacitor/android": "^6.2.3",
+    "@capacitor/core": "^6.2.3",
     "@tailwindcss/vite": "^4.3.4",
     "@vueuse/core": "^15.0.0",
     "html5-qrcode": "^2.3.8",
@@ -24,6 +29,7 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.2.3",
     "@types/leaflet": "^1.9.22",
     "@types/node": "^24.19.2",
     "@types/qrcode": "^1.5.6",
