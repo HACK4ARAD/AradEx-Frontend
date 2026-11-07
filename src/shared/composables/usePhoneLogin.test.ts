@@ -156,4 +156,31 @@ describe('usePhoneLogin', () => {
     expect(f.error.value).toBe('auth.errors.nameRequired')
     expect(api.otpRegister).not.toHaveBeenCalled()
   })
+
+  it('after 5 wrong codes asks for a new code and goes back to the number', async () => {
+    api.otpRequest.mockResolvedValue({ retryAfterSeconds: 60 })
+    api.otpVerify.mockRejectedValue(new ApiError(401, 'Invalid or expired code', { status: 401 }))
+    const f = usePhoneLogin()
+    f.phone.value = '0744123456'
+    await f.send()
+    for (let i = 0; i < 4; i++) { f.code.value = '000000'; await f.verify() }
+    expect(f.step.value).toBe('code')
+
+    f.code.value = '000000'
+    await f.verify()
+    expect(f.step.value).toBe('phone')
+    expect(f.error.value).toBe('auth.phone.errors.tooMany')
+  })
+
+  it('a 429 on verify asks to wait', async () => {
+    api.otpRequest.mockResolvedValue({ retryAfterSeconds: 60 })
+    api.otpVerify.mockRejectedValue(new ApiError(429, 'Too many', { status: 429, retryAfterSeconds: 60 }))
+    const f = usePhoneLogin()
+    f.phone.value = '0744123456'
+    await f.send()
+    f.code.value = '123456'
+    await f.verify()
+
+    expect(f.error.value).toBe('auth.phone.errors.wait')
+  })
 })

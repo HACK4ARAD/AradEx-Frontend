@@ -53,6 +53,8 @@ export function authErrorMessage(err: unknown, mode: AuthMode): { key: string } 
   if (err instanceof ApiError) {
     if (err.status === 401 && mode === 'login') return { key: 'auth.errors.invalid' }
     if (err.status === 409) return { key: 'auth.errors.emailTaken' }
+    // T21: conturile personale (Vizitator, Localnic) intră cu telefonul, în aplicație
+    if (err.status === 403 && mode === 'login') return { key: 'auth.errors.usePhone' }
     if (err.status === 0) return { key: 'auth.errors.network' }
     if (err.status === 400 && err.problem?.errors?.length) return { key: 'auth.errors.validation' }
     return { text: err.message }

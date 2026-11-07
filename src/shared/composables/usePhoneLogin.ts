@@ -46,6 +46,9 @@ export function usePhoneLogin() {
   const busy = ref(false)
   let e164 = ''
   let signupToken = ''
+  /** coduri greșite pentru codul curent; la 5 serverul îl invalidează, deci cerem altul */
+  let wrong = 0
+  const MAX_WRONG = 5
   let timer: ReturnType<typeof setInterval> | undefined
 
   function startCooldown(seconds: number) {
@@ -88,6 +91,7 @@ export function usePhoneLogin() {
     })
     if (!res) return
     e164 = n
+    wrong = 0
     demoCode.value = res.demoCode ?? null
     code.value = ''
     step.value = 'code'
@@ -99,7 +103,12 @@ export function usePhoneLogin() {
     const c = code.value.replace(/\D/g, '')
     if (c.length !== 6) { error.value = 'auth.phone.errors.code'; return null }
     const res = await run(() => authApi.otpVerify(e164, c), (e) => {
-      error.value = e.status === 401 ? 'auth.phone.errors.code' : 'auth.errors.generic'
+      if (e.status === 401) {
+        wrong += 1
+        if (wrong >= MAX_WRONG) { restart(); error.value = 'auth.phone.errors.tooMany' }
+        else error.value = 'auth.phone.errors.code'
+      } else if (e.status === 429) error.value = 'auth.phone.errors.wait'
+      else error.value = 'auth.errors.generic'
     })
     if (!res) return null
     if (res.token && res.user) return auth.acceptSession({ token: res.token, user: res.user })
