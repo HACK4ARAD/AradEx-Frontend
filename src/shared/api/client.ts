@@ -43,14 +43,15 @@ function buildUrl(path: string, query?: Query): string {
 
 async function request<T>(method: string, path: string, opts: Options = {}): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json', ...opts.headers }
-  if (opts.body !== undefined) headers['Content-Type'] = 'application/json'
+  const isForm = typeof FormData !== 'undefined' && opts.body instanceof FormData
+  if (opts.body !== undefined && !isForm) headers['Content-Type'] = 'application/json'
   const token = tokenStore.get()
   if (token && opts.auth !== false) headers.Authorization = `Bearer ${token}`
 
   let res: Response
   try {
     res = await fetch(buildUrl(path, opts.query), {
-      method, headers, body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+      method, headers, body: opts.body === undefined ? undefined : isForm ? (opts.body as FormData) : JSON.stringify(opts.body),
     })
   } catch {
     throw new ApiError(0, 'Nu am putut contacta serverul. Verifică conexiunea.')

@@ -104,7 +104,11 @@
     "selectPrompt": "Pick a sight from the list.",
     "slugConflict": "Another sight already uses this link name (slug). Choose another one.",
     "deleteConflict": "This sight has events linked to it. Move or delete the events first.",
-    "positionConflict": "That position is taken by another stop. Reload the page and try again."
+    "positionConflict": "That position is taken by another stop. Reload the page and try again.",
+    "importPhotos": "Copy photos to S3 ({n})",
+    "importing": "Copying… {done} copied, {left} left",
+    "importDone": "Done: {done} photos copied to S3.",
+    "importFailed": "{n} photos could not be downloaded and stay on the source site."
   },
   "form": {
     "name": "Name",
@@ -138,6 +142,12 @@
       "tags": "At most 12 tags of 30 characters",
       "duration": "Between 5 and 1800 seconds",
       "fix": "Check the highlighted fields."
-    }
+    },
+    "upload": "Upload photo",
+    "uploading": "Uploading…",
+    "uploaded": "Photo uploaded. Press “Save”.",
+    "uploadHint": "JPEG, PNG, WebP or GIF, max 10 MB. Stored in S3.",
+    "external": "Photo is on another site",
+    "stored": "Photo is in S3"
   }
 }
