@@ -1,5 +1,11 @@
 {
-  "status": { "PUBLISHED": "Published", "DRAFT": "Draft", "HIDDEN": "Hidden", "CANCELLED": "Cancelled", "DONE": "Finished" },
+  "status": {
+    "PUBLISHED": "Published",
+    "DRAFT": "Draft",
+    "HIDDEN": "Hidden",
+    "CANCELLED": "Cancelled",
+    "DONE": "Finished"
+  },
   "dashboard": {
     "title": "Dashboard",
     "sub": "{date} · platform totals",
@@ -26,12 +32,29 @@
     "title": "Partner businesses",
     "sub": "Create accounts when a partnership starts, or verify businesses that signed up on their own. Until verified, their offers stay as drafts.",
     "add": "Add partner business",
-    "filter": { "all": "All", "verify": "To verify ({n})", "active": "Active", "rejected": "Rejected" },
+    "filter": {
+      "all": "All",
+      "verify": "To verify ({n})",
+      "active": "Active",
+      "rejected": "Rejected"
+    },
     "count": "{n} businesses",
-    "cols": { "firm": "Business", "category": "Category", "contact": "Contact", "offers": "Offers", "codes": "Codes used", "registered": "Registered", "status": "Status" },
+    "cols": {
+      "firm": "Business",
+      "category": "Category",
+      "contact": "Contact",
+      "offers": "Offers",
+      "codes": "Codes used",
+      "registered": "Registered",
+      "status": "Status"
+    },
     "offers": "{n} active",
     "drafts": "{n} draft",
-    "state": { "verified": "Verified", "toVerify": "To verify", "rejected": "Rejected" },
+    "state": {
+      "verified": "Verified",
+      "toVerify": "To verify",
+      "rejected": "Rejected"
+    },
     "verify": "Verify business",
     "reject": "Reject",
     "suspend": "Suspend",
@@ -90,11 +113,22 @@
   "content": {
     "title": "Content & moderation",
     "sub": "Everything in the app, whoever organises it. The admin can publish or hide anything.",
-    "tabs": { "events": "Events", "offers": "Offers", "actions": "Actions" },
+    "tabs": {
+      "events": "Events",
+      "offers": "Offers",
+      "actions": "Actions"
+    },
     "search": "Search by title",
     "statusAll": "All statuses",
     "past": "Include finished",
-    "cols": { "item": "Item", "organizer": "Organiser", "when": "When", "participants": "Going", "usedViews": "Used / views", "status": "Status" },
+    "cols": {
+      "item": "Item",
+      "organizer": "Organiser",
+      "when": "When",
+      "participants": "Going",
+      "usedViews": "Used / views",
+      "status": "Status"
+    },
     "unverified": "unverified",
     "until": "until {date}",
     "from": "from {date}",
@@ -104,22 +138,37 @@
     "empty": "Nothing here",
     "emptyHint": "Change the filter or the search.",
     "count": "{n} items",
-    "toast": { "PUBLISHED": "Published. It now appears in the app.", "HIDDEN": "Hidden. It no longer appears in the app.", "DRAFT": "Moved back to draft. It no longer appears in the app." }
+    "toast": {
+      "PUBLISHED": "Published. It now appears in the app.",
+      "HIDDEN": "Hidden. It no longer appears in the app.",
+      "DRAFT": "Moved back to draft. It no longer appears in the app."
+    }
   },
   "users": {
     "title": "Users",
     "sub": "{n} accounts · {visitors} visitors · {locals} locals · {firms} businesses · {city} city hall · {volunteers} volunteers · {admins} admin",
-    "filter": { "all": "All", "VISITOR": "Visitors", "LOCAL": "Locals", "BUSINESS": "Businesses", "VOLUNTEER": "Volunteers", "CITY_HALL": "City Hall", "ADMIN": "Admin" },
+    "filter": {
+      "all": "All",
+      "VISITOR": "Visitors",
+      "LOCAL": "Locals",
+      "BUSINESS": "Businesses",
+      "VOLUNTEER": "Volunteers",
+      "CITY_HALL": "City Hall",
+      "ADMIN": "Admin"
+    },
     "search": "Search by name, e-mail or phone",
-    "cols": { "user": "User", "role": "Role", "points": "Points", "tickets": "Tickets", "registered": "Registered" },
+    "cols": {
+      "user": "User",
+      "role": "Role",
+      "points": "Points",
+      "tickets": "Tickets",
+      "registered": "Registered"
+    },
     "details": "Details",
     "disabled": "disabled",
     "verified": "verified",
     "unverified": "unverified",
     "empty": "No users",
-    "page": "Page {p} of {n}",
-    "prev": "Previous page",
-    "next": "Next page",
     "footnote": "Details: change the role (e.g. give City Hall to an employee), adjust points with a note, disable the account. No passwords or payment data.",
     "sheet": {
       "role": "Role",

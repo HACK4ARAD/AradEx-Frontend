@@ -1,5 +1,11 @@
 {
-  "status": { "PUBLISHED": "Publicat", "DRAFT": "Ciornă", "HIDDEN": "Ascuns", "CANCELLED": "Anulată", "DONE": "Încheiată" },
+  "status": {
+    "PUBLISHED": "Publicat",
+    "DRAFT": "Ciornă",
+    "HIDDEN": "Ascuns",
+    "CANCELLED": "Anulată",
+    "DONE": "Încheiată"
+  },
   "dashboard": {
     "title": "Dashboard",
     "sub": "{date} · totalul platformei",
@@ -26,12 +32,29 @@
     "title": "Firme partenere",
     "sub": "Creezi conturile la începutul colaborării sau verifici firmele care s-au înregistrat singure. Până la verificare, ofertele lor rămân ciornă.",
     "add": "Adaugă firmă parteneră",
-    "filter": { "all": "Toate", "verify": "De verificat ({n})", "active": "Active", "rejected": "Respinse" },
+    "filter": {
+      "all": "Toate",
+      "verify": "De verificat ({n})",
+      "active": "Active",
+      "rejected": "Respinse"
+    },
     "count": "{n} firme",
-    "cols": { "firm": "Firmă", "category": "Categorie", "contact": "Contact", "offers": "Oferte", "codes": "Coduri folosite", "registered": "Înregistrată", "status": "Stare" },
+    "cols": {
+      "firm": "Firmă",
+      "category": "Categorie",
+      "contact": "Contact",
+      "offers": "Oferte",
+      "codes": "Coduri folosite",
+      "registered": "Înregistrată",
+      "status": "Stare"
+    },
     "offers": "{n} active",
     "drafts": "{n} ciornă",
-    "state": { "verified": "Verificată", "toVerify": "De verificat", "rejected": "Respinsă" },
+    "state": {
+      "verified": "Verificată",
+      "toVerify": "De verificat",
+      "rejected": "Respinsă"
+    },
     "verify": "Verifică firma",
     "reject": "Respinge",
     "suspend": "Suspendă",
@@ -90,11 +113,22 @@
   "content": {
     "title": "Conținut & moderare",
     "sub": "Tot ce e în aplicație, indiferent de organizator. Adminul poate publica sau ascunde orice.",
-    "tabs": { "events": "Evenimente", "offers": "Oferte", "actions": "Acțiuni" },
+    "tabs": {
+      "events": "Evenimente",
+      "offers": "Oferte",
+      "actions": "Acțiuni"
+    },
     "search": "Caută după titlu",
     "statusAll": "Toate stările",
     "past": "Și cele încheiate",
-    "cols": { "item": "Element", "organizer": "Organizator", "when": "Când", "participants": "Participă", "usedViews": "Folosite / afișări", "status": "Stare" },
+    "cols": {
+      "item": "Element",
+      "organizer": "Organizator",
+      "when": "Când",
+      "participants": "Participă",
+      "usedViews": "Folosite / afișări",
+      "status": "Stare"
+    },
     "unverified": "neverificată",
     "until": "până la {date}",
     "from": "din {date}",
@@ -104,22 +138,37 @@
     "empty": "Nimic aici",
     "emptyHint": "Schimbă filtrul sau căutarea.",
     "count": "{n} elemente",
-    "toast": { "PUBLISHED": "Publicat. Apare acum în aplicație.", "HIDDEN": "Ascuns. Nu mai apare în aplicație.", "DRAFT": "Retras în ciornă. Nu mai apare în aplicație." }
+    "toast": {
+      "PUBLISHED": "Publicat. Apare acum în aplicație.",
+      "HIDDEN": "Ascuns. Nu mai apare în aplicație.",
+      "DRAFT": "Retras în ciornă. Nu mai apare în aplicație."
+    }
   },
   "users": {
     "title": "Utilizatori",
     "sub": "{n} conturi · {visitors} vizitatori · {locals} localnici · {firms} firme · {city} primărie · {volunteers} voluntari · {admins} admin",
-    "filter": { "all": "Toți", "VISITOR": "Vizitatori", "LOCAL": "Localnici", "BUSINESS": "Firme", "VOLUNTEER": "Voluntari", "CITY_HALL": "Primărie", "ADMIN": "Admin" },
+    "filter": {
+      "all": "Toți",
+      "VISITOR": "Vizitatori",
+      "LOCAL": "Localnici",
+      "BUSINESS": "Firme",
+      "VOLUNTEER": "Voluntari",
+      "CITY_HALL": "Primărie",
+      "ADMIN": "Admin"
+    },
     "search": "Caută după nume, e-mail sau telefon",
-    "cols": { "user": "Utilizator", "role": "Rol", "points": "Puncte", "tickets": "Bilete", "registered": "Înregistrat" },
+    "cols": {
+      "user": "Utilizator",
+      "role": "Rol",
+      "points": "Puncte",
+      "tickets": "Bilete",
+      "registered": "Înregistrat"
+    },
     "details": "Detalii",
     "disabled": "dezactivat",
     "verified": "verificată",
     "unverified": "neverificată",
     "empty": "Niciun utilizator",
-    "page": "Pagina {p} din {n}",
-    "prev": "Pagina anterioară",
-    "next": "Pagina următoare",
     "footnote": "Detalii: schimbă rolul (ex. acordă Primărie unui angajat), ajustează punctele cu notă, dezactivează contul. Fără parole sau date de plată.",
     "sheet": {
       "role": "Rol",

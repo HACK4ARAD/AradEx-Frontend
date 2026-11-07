@@ -6,6 +6,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppSheet, Skeleton } from '@/shared/components'
 import * as P from '@/web/components/community/panel'
+import PanelPager from '@/web/components/community/PanelPager.vue'
 import { intlLocale, useFormat } from '@/shared/composables/useFormat'
 import { ASSIGNABLE_ROLES, canChangeRole, parsePointsAdjust, totalUsers, useAdminStats, useAdminUsers } from '@/shared/composables/useAdmin'
 import { useAuthStore } from '@/shared/stores/auth'
@@ -32,7 +33,8 @@ watch(role, () => { page.value = 0; load() })
 watch(page, load)
 onMounted(() => { load(); loadStats() })
 
-const pages = computed(() => Math.max(1, Math.ceil(users.total.value / SIZE)))
+/** PanelPager numără paginile de la 1; API-ul de la 0. */
+const pageOne = computed({ get: () => page.value + 1, set: (v: number) => { page.value = v - 1 } })
 const nf = (n: number) => new Intl.NumberFormat(intlLocale()).format(n)
 const summary = computed(() => {
   const s = stats.value
@@ -133,13 +135,9 @@ async function save() {
           </tbody>
         </table>
       </div>
-      <div class="flex items-center justify-center gap-2 px-3.5 py-2.5 border-t border-line">
-        <button type="button" :class="P.BTN_SM_SEC" :disabled="page === 0" :aria-label="t('admin.users.prev')" @click="page--"><AppIcon name="chevron_left" :size="16" /></button>
-        <span :class="P.TS">{{ t('admin.users.page', { p: page + 1, n: pages }) }}</span>
-        <button type="button" :class="P.BTN_SM_SEC" :disabled="page + 1 >= pages" :aria-label="t('admin.users.next')" @click="page++"><AppIcon name="chevron_right" :size="16" /></button>
-      </div>
     </template>
   </div>
+  <PanelPager v-model="pageOne" :total="users.total.value" :size="SIZE" />
   <div :class="[P.TS, 'mt-2.5']">{{ t('admin.users.footnote') }}</div>
 
   <AppSheet v-model:open="open" :title="editing?.displayName">
