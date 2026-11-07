@@ -38,7 +38,8 @@
     "badEmail": "Introdu o adresă de e-mail validă.",
     "drawerTitle": "Plată demonstrativă",
     "drawerNote": "Nu se procesează bani. Prin plată accepți condițiile organizatorului.",
-    "confirmedToast": "Rezervarea e confirmată. Am trimis o copie pe e-mail."
+    "confirmedToast": "Rezervarea e confirmată. Am trimis o copie pe e-mail.",
+    "stripe": {"title": "Card (Stripe · mod test)", "loading": "Se încarcă formularul de card…", "loadError": "Formularul de card nu s-a putut încărca. Verifică conexiunea și reîncearcă.", "notReady": "Formularul de card nu e gata încă.", "testNote": "Mod test Stripe: nu se încasează bani. Folosește cardul de test {card}, orice dată din viitor, orice CVC.", "processing": "Plata se procesează încă. Biletul apare în Biletele mele imediat ce Stripe o confirmă.", "refunded": "Locurile s-au epuizat între timp: plata a fost returnată automat.", "unavailable": "Plata cu cardul nu e disponibilă acum. Reîncearcă în câteva minute.", "note": "Plata cu cardul se face prin Stripe, în mod test. Prin plată accepți condițiile organizatorului."}
   },
   "confirm": {
     "paid": "Rezervarea e confirmată",

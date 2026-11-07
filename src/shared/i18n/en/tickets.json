@@ -38,7 +38,8 @@
     "badEmail": "Enter a valid email address.",
     "drawerTitle": "Demo payment",
     "drawerNote": "No money is processed. By paying you accept the organiser's terms.",
-    "confirmedToast": "Your booking is confirmed. We emailed you a copy."
+    "confirmedToast": "Your booking is confirmed. We emailed you a copy.",
+    "stripe": {"title": "Card (Stripe · test mode)", "loading": "Loading the card form…", "loadError": "The card form could not load. Check your connection and try again.", "notReady": "The card form isn't ready yet.", "testNote": "Stripe test mode: no money is charged. Use the test card {card}, any future date, any CVC.", "processing": "The payment is still processing. Your ticket appears in My tickets as soon as Stripe confirms it.", "refunded": "The spots sold out in the meantime: your payment was refunded automatically.", "unavailable": "Card payment isn't available right now. Try again in a few minutes.", "note": "Card payment goes through Stripe, in test mode. By paying you accept the organiser's terms."}
   },
   "confirm": {
     "paid": "Your booking is confirmed",
