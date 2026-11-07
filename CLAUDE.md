@@ -1,6 +1,6 @@
 # AradEx-Frontend — context pentru Claude Code
 
-Frontend-ul AradExperience (Hack4Arad 2026): un singur cod Vue cu două aplicații, fără prefix în URL — **aplicația mobilă** (iOS + Android, are tot; tab bar) și **web-ul** (site-ul de prezentare al aplicației: prezentarea, Comunitate doar de citit, Confidențialitate, login și panourile Primărie / firme / Admin cu sidebar) — peste același client API. Aplicația se alege la pornire (`src/router/app.ts`). Repo în organizația HACK4ARAD, frate cu `AradEx-Plan` (planul comun), `AradEx-Backend`, `AradEx-Infrastructure` și `AradEx-Ops` (agenții Paperclip). **Citește întâi `../AradEx-Plan/CLAUDE.md`** (regulile echipei) ; `../AradEx-Plan/STRUCTURE.md` descrie toate repo-urile. Documentația e în `../AradEx-Plan/docs/`, designul în `../AradEx-Plan/design/`. Skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt într-un singur loc: `../AradEx-Plan/.claude/skills/`.
+Frontend-ul AradExperience (Hack4Arad 2026): un singur repo Vue cu **două build-uri complet separate** (același backend), fără prefix în URL — **aplicația mobilă** (iOS + Android, are tot; tab bar) și **web-ul** (site-ul de prezentare al aplicației: prezentarea, Comunitate doar de citit, Confidențialitate, login și panourile Primărie / firme / Admin cu sidebar) — peste același client API. Web-ul nu conține nimic din aplicația mobilă: alias-ul Vite `@app` arată spre `src/web/` (`npm run build`) sau `src/mobile/` (`npm run build:mobile`), iar `npm run check:web` verifică build-ul web. Repo în organizația HACK4ARAD, frate cu `AradEx-Plan` (planul comun), `AradEx-Backend`, `AradEx-Infrastructure` și `AradEx-Ops` (agenții Paperclip). **Citește întâi `../AradEx-Plan/CLAUDE.md`** (regulile echipei) ; `../AradEx-Plan/STRUCTURE.md` descrie toate repo-urile. Documentația e în `../AradEx-Plan/docs/`, designul în `../AradEx-Plan/design/`. Skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt într-un singur loc: `../AradEx-Plan/.claude/skills/`.
 
 ## Citește înainte de orice task
 1. `../AradEx-Plan/docs/PLAN.md` — task-ul curent (partea „FE”). 2. `../AradEx-Plan/docs/API.md` — contractul; `src/shared/types/<modul>.ts` îl oglindesc. 3. `../AradEx-Plan/docs/FEATURES.md` — regulile pe roluri și diferențele mobil vs web.
@@ -29,9 +29,9 @@ src/
   web/     layouts/WebLayout.vue (bară + sidebar) views/<feature>/XView.vue (câte unul per rută; business-panel/, city/, admin/ = câte unul pe secțiune;
            legal/ = Confidențialitate)   components/site/ (secțiunile prezentării, T20)   presentation.ts (linkuri de descărcare, contact)
            web/views/{events,places,map,plan,offers,chat,account,business}/ nu mai sunt în router (T20): web-ul nu are paginile publice ale aplicației
-  router/                     app.ts: ce aplicație rulează (nativ → mobile; `?app=mobile|web` forțează și se ține în localStorage `ax.app`;
-                              `?preview=mobile` și linkurile vechi `/m/…` → mobil doar pentru tab-ul curent; implicit web) · mobile.ts / web.ts: rutele din API.md §Rute FE
-                              (fără prefix; o rută nouă se scrie fără /m sau /w) · routes.ts: + redirect /m/* și /w/* → /* · index.ts: guard meta.roles
+  router/                     mobile.ts / web.ts: rutele din API.md §Rute FE (fără prefix; o rută nouă se scrie fără /m sau /w), fiecare cu catch-all
+                              → `/`; web.ts are și redirectul vechi /w/* → /* · guard.ts: guard-ul comun (login, meta.roles, titlu)
+  mobile/router.ts · web/router.ts  routerul fiecărui build (importat prin `@app/router`); `shared/app.ts`: `APP` = 'web' | 'mobile' din build
 public/                       manifest, icon-uri, fonturi, `_redirects` (nefolosit pe AWS), img/ (pozele din seed, copiate din ../AradEx-Plan/design/assets)
 .github/workflows/deploy.yml   deploy pe AWS la push pe `main` (teste + build → imagine nginx în ECR → ECS); infrastructura: ../AradEx-Infrastructure
 deploy/                       Dockerfile + nginx.conf ale imaginii de producție (fallback SPA, cache: `index.html`/`sw.js` fără cache, `assets/` imutabile)
@@ -41,12 +41,14 @@ Feature-urile (subfolderele) sunt aceleași ca în BE: `auth`, `home`, `events`,
 ## Comenzi
 ```
 npm install
-npm run dev            # :5173 — web; aplicația mobilă cu /?app=mobile (înapoi: /?app=web)
-npm run build          # vue-tsc + vite build + PWA
+npm run dev            # :5173 — web (prezentarea + panourile)
+npm run dev:mobile     # :5174 — aplicația mobilă (doar local; pe site nu există)
+npm run build          # web → dist/ (asta face deploy)        npm run check:web   # dist/ nu are voie să conțină nimic din aplicația mobilă
+npm run build:mobile   # aplicația → dist-mobile/ (pentru Capacitor)
 npm run test           # vitest
 cp .env.example .env   # VITE_API_URL=http://localhost:8080/api/v1, VITE_DEMO=true
 npm run android:run    # aplicația Android pe emulator/telefon (Capacitor; JDK 21 + Android SDK 34 — ../AradEx-Plan/docs/SETUP.md)
-npm run cap:sync       # doar build + copiere în android/ (apoi `npm run android:open` → Android Studio)
+npm run cap:sync       # build:mobile + copiere în android/ (apoi `npm run android:open` → Android Studio)
 ```
 
 ## Reguli
