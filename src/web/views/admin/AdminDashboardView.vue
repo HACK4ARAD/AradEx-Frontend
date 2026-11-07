@@ -1,10 +1,10 @@
 <script setup lang="ts">
-// T14 · Administrare · dashboard. Fișierul e al story-ului T14: înlocuiește placeholder-ul cu ecranul din design/final.
-import { useRoute } from 'vue-router'
-import PlaceholderScreen from '@/shared/components/ui/PlaceholderScreen.vue'
-const route = useRoute()
+// T14 · W3 Administrare · dashboard (`/admin`): în design/final Adminul are panoul Primăriei (`route('/admin', () => cityDash(true))`),
+// cu aceleași KPI, participare și activitate. Cardul „De verificat / moderat” (firme de verificat, conținut în ciornă) se adaugă
+// în T14, când există `GET /admin/stats` și `/city/businesses`.
+import CityDashboard from '@/web/components/community/CityDashboard.vue'
 </script>
 
 <template>
-  <PlaceholderScreen :title="String(route.meta.title ?? '')" :screen="route.meta.screen" :task="route.meta.task" />
+  <CityDashboard />
 </template>
