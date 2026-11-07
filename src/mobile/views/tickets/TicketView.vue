@@ -6,7 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import CodeCard from '@/shared/components/tickets/CodeCard.vue'
-import { directionsUrl, googleCalendarUrl, useEventFormat } from '@/shared/composables/useEvents'
+import { googleCalendarUrl, useEventFormat } from '@/shared/composables/useEvents'
 import { isPast, ticketLines, useTicket } from '@/shared/composables/useTickets'
 import { useBack } from '@/shared/composables/useBack'
 import { useUiStore } from '@/shared/stores/ui'
@@ -30,7 +30,8 @@ function rate(n: number) {
   ui.toast(t('tickets.ticket.rateSoon'))
 }
 function openDirections() {
-  if (tk.value) window.open(directionsUrl(tk.value.lat, tk.value.lng), '_blank', 'noopener')
+  // T08: harta aplicației, cu traseul spre eveniment
+  if (tk.value) router.push({ path: '/map', query: { to: `event:${tk.value.eventId}` } })
 }
 function addToCalendar() {
   if (tk.value) window.open(googleCalendarUrl({ title: tk.value.eventTitle, startAt: tk.value.startAt, endAt: tk.value.endAt, locationName: tk.value.locationName, address: tk.value.address }), '_blank', 'noopener')

@@ -1,1 +1,23 @@
-{}
+{
+  "search": "Search the map",
+  "period": { "today": "Today", "weekend": "Weekend", "week": "7 days" },
+  "kind": { "all": "All", "event": "Events", "place": "Sights", "offer": "Offers", "action": "Actions" },
+  "kindLabel": { "event": "Event", "place": "Sight", "offer": "Partner business", "action": "Community action" },
+  "guide": "Virtual guide · {n} stops",
+  "offers": "no offers | one offer | {n} offers",
+  "points": "points",
+  "showRoute": "Show route",
+  "open": "Open",
+  "googleMaps": "Google Maps",
+  "foot": "Walking",
+  "car": "Driving",
+  "routeInfo": "{min} min · {km}",
+  "approximate": "Approximate route (straight line)",
+  "fromCenter": "From Arad's centre: allow location to start from where you are.",
+  "zoomIn": "Zoom in",
+  "zoomOut": "Zoom out",
+  "myLocation": "My location",
+  "close": "Close",
+  "notFound": "This place is no longer on the map (it ended or was removed).",
+  "loading": "Loading the map…"
+}

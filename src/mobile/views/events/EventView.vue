@@ -6,7 +6,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/components'
 import EventImage from '@/shared/components/events/EventImage.vue'
-import { directionsUrl, googleCalendarUrl, useEventFormat, useSaveEvent } from '@/shared/composables/useEvents'
+import NearestStop from '@/shared/components/transit/NearestStop.vue'
+import { googleCalendarUrl, useEventFormat, useSaveEvent } from '@/shared/composables/useEvents'
 import { shareLink, useEventDetail } from '@/shared/composables/useEventDetail'
 import { useBack } from '@/shared/composables/useBack'
 import { useUiStore } from '@/shared/stores/ui'
@@ -132,10 +133,12 @@ function openExternal() {
           <div class="text-[15.5px]">{{ e.locationName }}</div>
           <div class="text-[13px] text-muted mt-0.5">{{ [e.address, e.distanceKm != null ? fmt.km(e.distanceKm) : ''].filter(Boolean).join(' · ') }}</div>
         </div>
-        <a :href="directionsUrl(e.lat, e.lng)" target="_blank" rel="noopener" class="min-h-9 px-3 rounded-full inline-flex items-center gap-1.5 text-[13px] font-medium border border-line bg-white no-underline text-ink shrink-0">
+        <router-link :to="{ path: '/map', query: { to: `event:${e.id}` } }" class="min-h-9 px-3 rounded-full inline-flex items-center gap-1.5 text-[13px] font-medium border border-line bg-white no-underline text-ink shrink-0">
           <AppIcon name="directions" :size="18" />{{ t('events.detail.directions') }}
-        </a>
+        </router-link>
       </div>
+      <!-- T22: stația CTP cea mai apropiată de locul evenimentului + următoarele sosiri -->
+      <NearestStop :lat="e.lat" :lng="e.lng" bordered />
       <router-link v-if="e.organizerBusinessId" :to="`/businesses/${e.organizerBusinessId}`" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
         <AppIcon name="storefront" class="text-muted" />
         <div class="flex-1 min-w-0">
