@@ -6,5 +6,6 @@
   "popular": "Populare",
   "planCta": "Ești în vizită? Planifică-ți ziua",
   "planCtaSub": "Spune cât timp ai → program cu obiective, ore și traseu",
-  "todayCount": "{n} azi"
+  "todayCount": "{n} azi",
+  "offersCount": "0 active | 1 activă | {n} active"
 }

@@ -9,6 +9,7 @@ import ApiStatus from '@/shared/components/ui/ApiStatus.vue'
 import { useFormat } from '@/shared/composables/useFormat'
 import { useEventFilters } from '@/shared/composables/useEvents'
 import { eventsApi } from '@/shared/api/events'
+import { offersApi } from '@/shared/api/offers'
 import { useAuthStore } from '@/shared/stores/auth'
 import HomeEventsTab from '@/mobile/components/home/HomeEventsTab.vue'
 import HomeOffersTab from '@/mobile/components/home/HomeOffersTab.vue'
@@ -22,12 +23,13 @@ const f = useFormat()
 const { filters, active: filtersActive } = useEventFilters()
 const mode = ref<Mode>('events')
 const todayCount = ref<number | null>(null)
+const offersCount = ref<number | null>(null)
 
 const isVisitor = computed(() => !auth.user || auth.user.role === 'VISITOR')
 const initials = computed(() => (auth.user?.displayName ?? '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase())
 const modes = computed(() => [
   { key: 'events' as const, emoji: '🎭', label: t('nav.events'), sub: todayCount.value == null ? '' : t('home.todayCount', { n: todayCount.value }) },
-  { key: 'offers' as const, emoji: '🏷️', label: t('nav.offers'), sub: '' },
+  { key: 'offers' as const, emoji: '🏷️', label: t('nav.offers'), sub: offersCount.value == null ? '' : t('home.offersCount', offersCount.value) },
   ...(isVisitor.value ? [] : [{ key: 'community' as const, emoji: '🌳', label: t('nav.community'), sub: f.points(auth.user?.pointsBalance ?? 0) }]),
 ])
 
@@ -37,7 +39,10 @@ function openFilters() {
 }
 
 onMounted(async () => {
-  try { todayCount.value = (await eventsApi.list({ to: f.todayIso(), size: 1 })).totalElements } catch { /* fără număr */ }
+  await Promise.all([
+    eventsApi.list({ to: f.todayIso(), size: 1 }).then((p) => { todayCount.value = p.totalElements }).catch(() => { /* fără număr */ }),
+    offersApi.list().then((l) => { offersCount.value = l.length }).catch(() => { /* fără număr */ }),
+  ])
 })
 </script>
 
