@@ -11,7 +11,8 @@ import type { UserDto } from '@/shared/types/auth'
  */
 
 const E164 = /^\+[1-9]\d{7,14}$/
-const ROMANIAN = /^\+40\d{9}$/
+/** doar mobile românești (07xx), ca în BE: fără fixe, 09xx sau 0800 (T24, anti-abuz SMS) */
+const ROMANIAN = /^\+407\d{8}$/
 const DEMO = /^\+40799000\d{3}$/
 
 /** Aceleași reguli ca în BE (PhoneNumbers): numerele românești în orice formă uzuală → +40…; null dacă nu e valid. */
