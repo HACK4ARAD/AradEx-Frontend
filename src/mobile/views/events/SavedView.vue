@@ -1,10 +1,50 @@
 <script setup lang="ts">
-// T06 · Salvate (din Profil). Fișierul e al story-ului T06: înlocuiește placeholder-ul cu ecranul din design/final.
-import { useRoute } from 'vue-router'
-import PlaceholderScreen from '@/shared/components/ui/PlaceholderScreen.vue'
-const route = useRoute()
+// T06 · Salvate (din Profil) — design/final `/saved`: lista de EventCard sau starea goală.
+import { onMounted, ref, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
+import EventCard from '@/shared/components/events/EventCard.vue'
+import { eventsApi } from '@/shared/api/events'
+import { useSaveEvent } from '@/shared/composables/useEvents'
+import { useGeo } from '@/shared/composables/useGeo'
+import { useBack } from '@/shared/composables/useBack'
+import { useUiStore } from '@/shared/stores/ui'
+import { useAuthStore } from '@/shared/stores/auth'
+import { useRouter } from 'vue-router'
+import type { EventSummary } from '@/shared/types/events'
+
+const { t } = useI18n()
+const back = useBack('/m/profile')
+const ui = useUiStore()
+const auth = useAuthStore()
+const router = useRouter()
+const saver = useSaveEvent()
+const geo = useGeo()
+const items = shallowRef<EventSummary[]>([])
+const loading = ref(true)
+
+async function load() {
+  if (!auth.isLoggedIn) { loading.value = false; return }
+  loading.value = true
+  try { items.value = await eventsApi.saved(geo.near()) } catch (err) { ui.error(err) } finally { loading.value = false }
+}
+async function toggle(e: EventSummary) {
+  await saver.toggle(e, '/m/login')
+  if (!e.saved) items.value = items.value.filter((x) => x.id !== e.id)
+}
+onMounted(load)
 </script>
 
 <template>
-  <PlaceholderScreen :title="String(route.meta.title ?? '')" :screen="route.meta.screen" :task="route.meta.task" />
+  <div class="flex items-center gap-1 -ml-2.5 pt-2 mb-3.5">
+    <button type="button" class="w-11 h-11 rounded-full flex items-center justify-center" :aria-label="t('common.back')" @click="back"><AppIcon name="arrow_back" /></button>
+    <h1 class="flex-1 text-[24px] font-semibold tracking-[-0.03em] m-0">{{ t('events.savedList.title') }}</h1>
+  </div>
+  <Skeleton v-if="loading" :rows="2" :height="300" />
+  <template v-else-if="items.length">
+    <EventCard v-for="e in items" :key="e.id" :event="e" :to="`/m/events/${e.id}`" @toggle-save="toggle(e)" />
+  </template>
+  <EmptyState v-else-if="!auth.isLoggedIn" icon="bookmark" :title="t('events.savedList.title')" :text="t('events.savedList.loginText')" :action="t('nav.login')"
+    @action="router.push({ path: '/m/login', query: { next: '/m/saved' } })" />
+  <EmptyState v-else icon="bookmark" :title="t('events.savedList.emptyTitle')" :text="t('events.savedList.emptyText')" />
 </template>

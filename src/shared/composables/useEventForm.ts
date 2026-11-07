@@ -1,5 +1,4 @@
-import type { EventCategory, EventCreate } from '@/shared/types/business'
-import type { EventDto, TicketType } from '@/shared/types/events'
+import type { EventCategory, EventCreate, EventDto, TicketType } from '@/shared/types/events'
 
 /** Formularul unui eveniment (T09: firmă; T06 îl poate refolosi pentru Primărie). Data și orele sunt în ora Aradului. */
 export interface EventForm {

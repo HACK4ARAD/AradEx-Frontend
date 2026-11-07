@@ -80,6 +80,12 @@ function logout() {
 
     <!-- setări -->
     <div class="bg-white rounded-[20px] px-4 mt-3">
+      <!-- T06: Salvate stă în Profil (design/final S11) -->
+      <router-link to="/m/saved" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
+        <AppIcon name="bookmark" />
+        <span class="flex-1 text-[15px]">{{ t('events.savedList.title') }}</span>
+        <AppIcon name="chevron_right" />
+      </router-link>
       <div class="flex items-center gap-3 py-3.5 border-b border-line">
         <AppIcon name="language" />
         <span class="flex-1 text-[15px]">{{ t('profile.language') }}</span>

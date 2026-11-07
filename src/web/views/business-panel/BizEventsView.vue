@@ -11,7 +11,7 @@ import PanelHeader from '@/shared/components/business/PanelHeader.vue'
 import UnverifiedBanner from '@/shared/components/business/UnverifiedBanner.vue'
 import { fromEvent } from '@/shared/composables/useEventForm'
 import { useBusinessPanel } from '@/shared/composables/useBusiness'
-import type { EventCreate } from '@/shared/types/business'
+import type { EventCreate } from '@/shared/types/events'
 import type { EventDto } from '@/shared/types/events'
 
 const route = useRoute()
