@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { AppIcon, Skeleton } from '@/shared/components'
 import PanelKpi from '@/web/components/community/PanelKpi.vue'
 import * as P from '@/web/components/community/panel'
-import { useFormat } from '@/shared/composables/useFormat'
+import { intlLocale, useFormat } from '@/shared/composables/useFormat'
 import { aradHour, useCityDashboard } from '@/shared/composables/useCommunity'
 import { useAuthStore } from '@/shared/stores/auth'
 
@@ -20,7 +20,7 @@ const greeting = computed(() => {
   const h = aradHour()
   return h < 11 ? t('community.dashboard.morning') : h < 18 ? t('community.dashboard.day') : t('community.dashboard.evening')
 })
-const nf = (n: number) => new Intl.NumberFormat('ro-RO').format(n)
+const nf = (n: number) => new Intl.NumberFormat(intlLocale()).format(n)
 const icon: Record<string, string> = { CONFIRMED: 'qr_code_scanner', NO_SHOW: 'block', REGISTERED: 'how_to_reg', CANCELLED: 'close' }
 const pct = (a: { registeredCount: number; capacity: number }) => Math.min(100, Math.round((a.registeredCount / Math.max(1, a.capacity)) * 100))
 </script>
