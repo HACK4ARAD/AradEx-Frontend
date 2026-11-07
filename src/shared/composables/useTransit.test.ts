@@ -96,6 +96,24 @@ describe('useNearestStop', () => {
     scope.stop()
   })
 
+  it('ignores the late answer for the previous point', async () => {
+    let first: (v: StopArrivalsDto) => void = () => {}
+    let second: (v: StopArrivalsDto) => void = () => {}
+    const old: StopArrivalsDto = { stop, distanceKm: 0.1, live: true, attribution: '', arrivals: [] }
+    nearest.mockReturnValueOnce(new Promise((r) => { first = r })).mockReturnValueOnce(new Promise((r) => { second = r }))
+    const point = ref<{ lat: number; lng: number } | null>({ lat: 46.17, lng: 21.31 })
+    const scope = effectScope()
+    const r = scope.run(() => useNearestStop(point))!
+    point.value = { lat: 46.18, lng: 21.32 }   // se schimbă cât prima cerere e încă în curs
+    await nextTick()
+    first(old)                                 // răspunsul vechi vine târziu: nu se arată
+    await vi.waitFor(() => expect(nearest).toHaveBeenCalledTimes(2))
+    expect(r.data.value).toBeNull()
+    second({ ...old, stop: { ...stop, id: 120, name: 'Podgoria' } })
+    await vi.waitFor(() => expect(r.data.value?.stop.id).toBe(120))
+    scope.stop()
+  })
+
   it('stays empty without a point and keeps quiet on errors', async () => {
     nearest.mockRejectedValue(new Error('down'))
     const point = ref<{ lat: number; lng: number } | null>(null)

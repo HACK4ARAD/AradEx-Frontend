@@ -154,6 +154,7 @@ function useArrivals(fetch: () => Promise<StopArrivalsDto> | null, deps: Ref<unk
       if (mine === seq) loading.value = false
     }
   })
-  watch(deps, () => { data.value = null; void polling.refresh() })
+  // seq++: răspunsul unei cereri pornite pentru punctul vechi nu mai are voie să scrie peste cel nou
+  watch(deps, () => { seq++; data.value = null; void polling.refresh() })
   return { data, loading, error, refresh: polling.refresh, stop: polling.stop }
 }

@@ -16,7 +16,11 @@ const point = computed(() => (Number.isFinite(props.lat) && Number.isFinite(prop
 const { nearby: d } = useNearestStop(point)
 
 const next = computed(() => nextPerLine(d.value?.arrivals ?? []))
-const isTram = computed(() => (next.value[0]?.mode ?? 'TRAM') === 'TRAM')
+/** Iconul după prima sosire; fără sosiri nu știm dacă e tramvai sau autobuz → iconul neutru. */
+const icon = computed(() => {
+  const mode = next.value[0]?.mode
+  return mode === 'TRAM' ? 'tram' : mode === 'BUS' ? 'directions_bus' : 'directions_transit'
+})
 const summary = computed(() => {
   const s = d.value
   if (!s) return ''
@@ -28,7 +32,7 @@ const summary = computed(() => {
 
 <template>
   <div v-if="d" class="flex items-center gap-3 py-3.5" :class="bordered ? 'border-b border-line' : ''" data-test="nearest-stop">
-    <AppIcon :name="isTram ? 'tram' : 'directions_bus'" class="text-muted" />
+    <AppIcon :name="icon" class="text-muted" />
     <div class="flex-1 min-w-0">
       <div class="text-[15.5px]">{{ t('transit.nearest.title', { name: d.stop.name }) }}</div>
       <div class="text-[13px] text-muted mt-0.5">{{ summary }}</div>
