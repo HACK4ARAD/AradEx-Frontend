@@ -36,7 +36,9 @@ onMounted(init)
   <div class="fixed inset-0 mx-auto w-full max-w-[480px] z-0">
     <MapView ref="mapRef" :markers="markers" :selected-id="selected" :route="directions?.line ?? null"
       :route-approximate="directions?.approximate" :me="geo.isFallback.value ? null : geo.position.value"
-      :insets="{ top: 170, bottom: routing ? 480 : 330 }" @select="select" />
+      :insets="{ top: 170, bottom: routing ? 480 : 330 }" :lines="transit.lines.value" @select="select" />
+    <!-- T22: atribuirea obligatorie a datelor de transport, cât stratul e pornit (cardul de transport o are și el) -->
+    <div v-if="transit.on.value && !sel && !selTransit" class="absolute left-4 bottom-[104px] z-[500] px-2 py-0.5 rounded-full bg-white/90 text-[11px] text-muted shadow-sm pointer-events-none">{{ t('transit.attribution') }}</div>
 
     <div class="absolute left-0 right-0 top-0 z-[500] px-4 pt-[max(12px,env(safe-area-inset-top))] flex flex-col gap-2.5 pointer-events-none">
       <div class="flex gap-2.5 pointer-events-auto">

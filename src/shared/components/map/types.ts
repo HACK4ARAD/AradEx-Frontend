@@ -10,10 +10,19 @@ export interface MapMarker {
   label?: string
 }
 
+/** O linie desenată sub pini (traseele transportului public, T22): puncte [lat, lng] și culoarea `#rrggbb`. */
+export interface MapLine {
+  id: string
+  path: [number, number][]
+  color: string
+}
+
 /** Proprietățile comune ale hărții (Google Maps sau rezerva Leaflet). */
 export interface MapProps {
   markers: MapMarker[]
   selectedId?: string | null
+  /** linii subțiri sub pini (stratul „Transport”) */
+  lines?: MapLine[]
   /** traseul de desenat, puncte [lat, lng] */
   route?: [number, number][] | null
   /** traseul e o estimare (linie dreaptă): se desenează punctat */

@@ -129,7 +129,9 @@ onMounted(init)
     <section class="relative isolate order-first lg:order-none h-[55vh] min-h-[320px] lg:h-[calc(100dvh-150px)] rounded-[16px] overflow-hidden border border-line bg-soft">
       <MapView ref="mapRef" :markers="markers" :selected-id="selected" :route="directions?.line ?? null"
         :route-approximate="directions?.approximate" :me="geo.isFallback.value ? null : geo.position.value"
-        :zoom="14" :insets="{ top: 60, bottom: sel ? 150 : 60 }" @select="onPin" />
+        :zoom="14" :insets="{ top: 60, bottom: sel ? 150 : 60 }" :lines="transit.lines.value" @select="onPin" />
+      <!-- T22: atribuirea obligatorie a datelor de transport, cât stratul e pornit -->
+      <div v-if="transit.on.value" class="absolute left-3 top-3 z-[500] px-2.5 py-1 rounded-full bg-white/90 text-[11.5px] text-muted shadow-sm pointer-events-none">{{ t('transit.attribution') }}</div>
 
       <div class="absolute right-3 top-3 z-[500] flex flex-col gap-2">
         <button type="button" class="w-10 h-10 rounded-[12px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomIn')" @click="mapRef?.zoomBy(1)"><AppIcon name="add" /></button>
