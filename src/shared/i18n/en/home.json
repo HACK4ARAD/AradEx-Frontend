@@ -6,5 +6,6 @@
   "popular": "Popular",
   "planCta": "Visiting? Plan your day",
   "planCtaSub": "Tell us how much time you have → a plan with places, times and a route",
-  "todayCount": "{n} today"
+  "todayCount": "{n} today",
+  "offersCount": "0 active | 1 active | {n} active"
 }
