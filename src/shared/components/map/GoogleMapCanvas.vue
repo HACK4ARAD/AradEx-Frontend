@@ -143,6 +143,7 @@ onMounted(async () => {
     drawMe()
     drawRoute()
     drawFit()
+    if (pendingFly) { map.value.setCenter(pendingFly.p); map.value.setZoom(pendingFly.zoom); pendingFly = null }
   } catch {
     emit('failed')
   }
@@ -166,7 +167,12 @@ watch(() => props.me, drawMe)
 watch(() => props.fit, drawFit)
 
 function zoomBy(delta: number) { const z = map.value?.getZoom(); if (map.value && z != null) map.value.setZoom(z + delta) }
-function flyTo(p: GeoPoint, zoom = 16) { map.value?.panTo(p); map.value?.setZoom(zoom) }
+/** Înainte să fie gata harta (scriptul Google se încarcă): ținem punctul și îl aplicăm la creare. */
+let pendingFly: { p: GeoPoint; zoom: number } | null = null
+function flyTo(p: GeoPoint, zoom = 16) {
+  if (!map.value) { pendingFly = { p, zoom }; return }
+  map.value.panTo(p); map.value.setZoom(zoom)
+}
 function invalidate() { /* Google Maps își urmărește singur dimensiunea containerului */ }
 
 defineExpose({ zoomBy, flyTo, invalidate })

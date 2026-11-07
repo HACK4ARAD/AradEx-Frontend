@@ -6,8 +6,6 @@
   "useLocation": "Use my location",
   "where": "Where to?",
   "clear": "Clear destination",
-  "suggestions": "Suggestions",
-  "noMatch": "Nothing found. Pick a destination from the suggestions.",
   "stopType": "CTP stop · lines {lines}",
   "nearby": "Stops near you",
   "nearbyNone": "No CTP stop within 1.5 km.",
@@ -134,5 +132,6 @@
       "type": "Sight"
     }
   },
-  "liveShort": "{n} live now"
+  "liveShort": "{n} live now",
+  "outside": "You are outside Arad: routes start from the city centre."
 }

@@ -1,8 +1,23 @@
 {
   "search": "Search the map",
-  "period": { "today": "Today", "weekend": "Weekend", "week": "7 days" },
-  "kind": { "all": "All", "event": "Events", "place": "Sights", "offer": "Offers", "action": "Actions" },
-  "kindLabel": { "event": "Event", "place": "Sight", "offer": "Partner business", "action": "Community action" },
+  "period": {
+    "today": "Today",
+    "weekend": "Weekend",
+    "week": "7 days"
+  },
+  "kind": {
+    "all": "All",
+    "event": "Events",
+    "place": "Sights",
+    "offer": "Offers",
+    "action": "Actions"
+  },
+  "kindLabel": {
+    "event": "Event",
+    "place": "Sight",
+    "offer": "Partner business",
+    "action": "Community action"
+  },
   "guide": "Virtual guide · {n} stops",
   "offers": "no offers | one offer | {n} offers",
   "points": "points",
@@ -32,7 +47,12 @@
     "routing": "Working out the route…",
     "transitHint": "In Transport mode the map shows only CTP stops, lines and vehicles and the bike stations. Tap a stop for arrivals, or choose “Walk” to see events and places again."
   },
-  "travel": { "label": "How you get around", "foot": "On foot", "transit": "Transit", "car": "Car" },
+  "travel": {
+    "label": "How you get around",
+    "foot": "On foot",
+    "transit": "Transit",
+    "car": "Car"
+  },
   "layers": {
     "tram": "Trams",
     "bus": "Buses",
@@ -41,5 +61,7 @@
     "transitHint": "CTP lines, live vehicles and bike-sharing stations.",
     "carHint": "Paid parking, coloured by zone; routes are by car.",
     "bikesMissing": "{n} of {total} bike stations have a public location."
-  }
+  },
+  "locationDenied": "Location is off for the app. Allow it in your phone (or browser) settings so the map can find you.",
+  "locationUnavailable": "We could not find you. Turn on your phone's location and try again."
 }

@@ -6,8 +6,6 @@
   "useLocation": "Folosește locația",
   "where": "Unde vrei să ajungi?",
   "clear": "Șterge destinația",
-  "suggestions": "Sugestii",
-  "noMatch": "Nimic găsit. Alege o destinație din sugestii.",
   "stopType": "Stație CTP · liniile {lines}",
   "nearby": "Stații lângă tine",
   "nearbyNone": "Nicio stație CTP la mai puțin de 1,5 km.",
@@ -134,5 +132,6 @@
       "type": "Obiectiv turistic"
     }
   },
-  "liveShort": "{n} live acum"
+  "liveShort": "{n} live acum",
+  "outside": "Ești în afara Aradului: traseele pornesc din centrul orașului."
 }

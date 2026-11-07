@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { Capacitor } from '@capacitor/core'
 import type { GeoPoint } from '@/shared/types/common'
 
 /** Centrul Aradului (Piața Avram Iancu) — poziția implicită când nu avem GPS. */
@@ -8,6 +9,74 @@ export const ARAD_CENTER: GeoPoint = { lat: 46.1866, lng: 21.3123 }
 export const GOOD_ACCURACY_M = 25
 /** Cât timp mai ascultăm GPS-ul după prima citire, ca să prindem una mai precisă. */
 export const REFINE_MS = 15_000
+/** Ultima poziție bună e refolosită de ecranele deschise după ea (harta pornește direct pe tine), cât e mai nouă de atât. */
+export const LAST_FIX_MS = 5 * 60_000
+
+type Fix = { point: GeoPoint; accuracy: number | null; at: number }
+let lastFix: Fix | null = null
+/** doar pentru teste */
+export function resetLastFix() { lastFix = null }
+
+/** O citire, în forma comună browserului și pluginului nativ. */
+type Reading = { coords: { latitude: number; longitude: number; accuracy: number } }
+type Source = {
+  /** permisiunea, cerută înainte de cronometru (cât omul se uită la fereastra sistemului nu trebuie să expire cererea);
+   *  `prompt` = browserul încă întreabă: așteptăm mai mult */
+  prepare: () => Promise<'granted' | 'denied' | 'prompt'>
+  watch: (ok: (p: Reading) => void, err: (code: 'denied' | 'unavailable') => void, opts: PositionOptions) => Promise<() => void>
+}
+/** cât așteptăm o poziție cât browserul încă îți cere permisiunea */
+export const PROMPT_WAIT_MS = 60_000
+
+/** În aplicație (Android / iOS): GPS-ul nativ prin `@capacitor/geolocation` — cere permisiunea sistemului; în WebView-ul
+ *  Android `navigator.geolocation` e nesigur (nu cere permisiunea, rămâne fără răspuns). */
+const nativeSource: Source = {
+  async prepare() {
+    const { Geolocation } = await import('@capacitor/geolocation')
+    let perm = await Geolocation.checkPermissions().catch(() => null)
+    if (perm && perm.location !== 'granted' && perm.coarseLocation !== 'granted') {
+      perm = await Geolocation.requestPermissions({ permissions: ['location', 'coarseLocation'] }).catch(() => null)
+    }
+    return perm && perm.location !== 'granted' && perm.coarseLocation !== 'granted' ? 'denied' : 'granted'
+  },
+  async watch(ok, err, opts) {
+    const { Geolocation } = await import('@capacitor/geolocation')
+    let id: string | null = null
+    let stopped = false
+    try {
+      id = await Geolocation.watchPosition(opts, (p, e) => {
+        if (p) ok(p)
+        else if (e) err(/denied|permission/i.test(String(e.message ?? e)) ? 'denied' : 'unavailable')
+      })
+    } catch (e) {
+      err(/denied|permission/i.test(String((e as Error)?.message ?? e)) ? 'denied' : 'unavailable')
+    }
+    return () => { if (!stopped && id) { stopped = true; void Geolocation.clearWatch({ id }) } }
+  },
+}
+
+/** Pe web (și în teste): geolocația browserului. */
+const browserSource: Source = {
+  async prepare() {
+    try {
+      const st = await navigator.permissions?.query({ name: 'geolocation' as PermissionName })
+      return st?.state === 'denied' ? 'denied' : st?.state === 'prompt' ? 'prompt' : 'granted'
+    } catch { return 'granted' } // fără Permissions API (Safari vechi): cererea însăși întreabă
+  },
+  async watch(ok, err, opts) {
+    const geo = typeof navigator === 'undefined' ? undefined : navigator.geolocation
+    if (!geo) { err('unavailable'); return () => {} }
+    const onErr = (e: GeolocationPositionError) => err(e.code === 1 ? 'denied' : 'unavailable')
+    if (typeof geo.watchPosition === 'function') {
+      const id = geo.watchPosition(ok, onErr, opts)
+      return () => geo.clearWatch?.(id)
+    }
+    geo.getCurrentPosition(ok, onErr, opts)
+    return () => {}
+  },
+}
+
+const isNative = () => { try { return Capacitor.isNativePlatform() } catch { return false } }
 
 /**
  * Poziția utilizatorului: `locate()` cere GPS-ul (doar la o acțiune a omului, nu la încărcare); fără permisiune,
@@ -16,68 +85,84 @@ export const REFINE_MS = 15_000
  * rezolvă la prima citire, dar ascultă GPS-ul încă `REFINE_MS` și mută poziția la fiecare citire mai precisă, până la
  * `GOOD_ACCURACY_M`. Nu folosește poziții vechi din cache (`maximumAge: 0`).
  * Folosit de hartă (T08), „lângă tine” (T06/T10), transport (T19).
+ * În aplicație citirile vin din GPS-ul nativ (`@capacitor/geolocation`, cu permisiunea sistemului), pe web din browser.
  */
 export function useGeo() {
-  const position = ref<GeoPoint>({ ...ARAD_CENTER })
-  const isFallback = ref(true)
+  // pornește din ultima poziție bună (alt ecran a găsit-o de curând), altfel din centrul Aradului
+  const fresh = lastFix && Date.now() - lastFix.at < LAST_FIX_MS ? lastFix : null
+  const position = ref<GeoPoint>(fresh ? { ...fresh.point } : { ...ARAD_CENTER })
+  const isFallback = ref(!fresh)
   const loading = ref(false)
-  const error = ref<string | null>(null)
+  const error = ref<'denied' | 'unavailable' | null>(null)
   /** precizia ultimei poziții, în metri (null = centrul Aradului) */
-  const accuracy = ref<number | null>(null)
+  const accuracy = ref<number | null>(fresh?.accuracy ?? null)
 
-  let watchId: number | null = null
+  let unwatch: (() => void) | null = null
   let stopTimer: ReturnType<typeof setTimeout> | null = null
+  let run = 0
+  /** cererea în curs: o oprire (sau o cerere nouă) o rezolvă cu poziția știută, ca nimeni să nu aștepte la nesfârșit */
+  let finish: (() => void) | null = null
 
   function stop() {
-    if (watchId != null && typeof navigator !== 'undefined') navigator.geolocation?.clearWatch?.(watchId)
-    watchId = null
+    run++
+    const f = finish
+    finish = null
+    f?.()
+    unwatch?.()
+    unwatch = null
     if (stopTimer) clearTimeout(stopTimer)
     stopTimer = null
   }
 
-  function accept(p: GeolocationPosition) {
+  function accept(p: Reading) {
     position.value = { lat: p.coords.latitude, lng: p.coords.longitude }
     accuracy.value = Number.isFinite(p.coords.accuracy) ? p.coords.accuracy : null
     isFallback.value = false
     error.value = null
+    lastFix = { point: { ...position.value }, accuracy: accuracy.value, at: Date.now() }
   }
 
   function locate(timeoutMs = 10_000): Promise<GeoPoint> {
-    const geo = typeof navigator === 'undefined' ? undefined : navigator.geolocation
-    if (!geo) {
-      error.value = 'unavailable'
-      return Promise.resolve(position.value)
-    }
     stop()
+    const mine = run
     loading.value = true
     return new Promise((resolve) => {
       let resolved = false
+      let firstTaken = false
       const done = () => {
         if (resolved) return
         resolved = true
+        if (finish === done) finish = null
         loading.value = false
         resolve(position.value)
       }
-      const onFix = (p: GeolocationPosition) => {
+      finish = done
+      const onFix = (p: Reading) => {
+        if (mine !== run) return
         // prima citire se ia oricum; după aceea doar una mai precisă (sau la fel de precisă, dar mai nouă)
-        const better = !resolved || accuracy.value == null || p.coords.accuracy <= accuracy.value
+        const better = !firstTaken || accuracy.value == null || p.coords.accuracy <= accuracy.value
+        firstTaken = true
         if (better) accept(p)
         done()
         if (accuracy.value != null && accuracy.value <= GOOD_ACCURACY_M) stop()
       }
-      const onError = (e: GeolocationPositionError) => {
-        if (resolved) return // avem deja o poziție: o eroare târzie nu o strică
-        error.value = e.code === 1 ? 'denied' : 'unavailable'
+      const onError = (code: 'denied' | 'unavailable') => {
+        if (mine !== run || resolved) return // avem deja o poziție: o eroare târzie nu o strică
+        error.value = code
         stop()
-        done()
       }
-      const opts: PositionOptions = { enableHighAccuracy: true, timeout: timeoutMs, maximumAge: 0 }
-      if (typeof geo.watchPosition === 'function') {
-        watchId = geo.watchPosition(onFix, onError, opts)
-        stopTimer = setTimeout(() => { stop(); if (!resolved) { error.value = 'unavailable'; done() } }, Math.max(REFINE_MS, timeoutMs))
-      } else {
-        geo.getCurrentPosition(onFix, onError, opts)
-      }
+      const src = isNative() ? nativeSource : browserSource
+      void (async () => {
+        // întâi permisiunea (fereastra sistemului / a browserului), abia apoi pornește cronometrul
+        const perm = await src.prepare().catch(() => 'granted' as const)
+        if (mine !== run) return
+        if (perm === 'denied') { onError('denied'); return }
+        const wait = perm === 'prompt' ? PROMPT_WAIT_MS : Math.max(REFINE_MS, timeoutMs)
+        const opts: PositionOptions = { enableHighAccuracy: true, timeout: perm === 'prompt' ? PROMPT_WAIT_MS : timeoutMs, maximumAge: 0 }
+        stopTimer = setTimeout(() => { if (mine !== run) return; if (!resolved) error.value = 'unavailable'; stop() }, wait)
+        const u = await src.watch(onFix, onError, opts)
+        if (mine === run) unwatch = u; else u()
+      })().catch(() => onError('unavailable'))
     })
   }
 

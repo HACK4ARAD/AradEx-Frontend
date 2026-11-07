@@ -2,7 +2,7 @@
 // T08 · harta comună (mobil S7, web, itinerar T13, transport T22). Google Maps când există cheia de browser
 // (VITE_GOOGLE_MAPS_KEY); altfel, sau dacă Google nu se încarcă, rezerva Leaflet, ca harta să nu rămână goală.
 // Ecranele importă doar MapView; doar map/LeafletMapCanvas importă Leaflet și doar map/GoogleMapCanvas folosește Google.
-import { defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent, ref, watch } from 'vue'
 import type { GeoPoint } from '@/shared/types/common'
 import { GOOGLE_MAPS_KEY, googleUnavailable } from '@/shared/composables/useGoogleMaps'
 import type { MapApi, MapProps } from './types'
@@ -19,9 +19,13 @@ const LeafletMapCanvas = defineAsyncComponent(() => import('./LeafletMapCanvas.v
 const useGoogle = ref(!!GOOGLE_MAPS_KEY && !googleUnavailable())
 const canvas = ref<MapApi | null>(null)
 
+// harta se încarcă asincron: un „zboară la” cerut înainte (locația găsită la deschidere) se aplică imediat ce e gata
+let pendingFly: [GeoPoint, number | undefined] | null = null
+watch(canvas, (c) => { if (c && pendingFly) { c.flyTo(...pendingFly); pendingFly = null } })
+
 defineExpose({
   zoomBy: (d: number) => canvas.value?.zoomBy(d),
-  flyTo: (p: GeoPoint, zoom?: number) => canvas.value?.flyTo(p, zoom),
+  flyTo: (p: GeoPoint, zoom?: number) => { if (canvas.value) canvas.value.flyTo(p, zoom); else pendingFly = [p, zoom] },
   invalidate: () => canvas.value?.invalidate(),
 })
 </script>

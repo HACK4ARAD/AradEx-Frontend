@@ -12,15 +12,17 @@ import LineBadge from '@/shared/components/transit/LineBadge.vue'
 import StopDepartures from '@/mobile/components/transport/StopDepartures.vue'
 import TripOptionCard from '@/mobile/components/transport/TripOptionCard.vue'
 import { useTransitVehicles } from '@/shared/composables/useTransit'
-import { loadPlacesForSearch, useTransitNetwork, useTransportGeo, useTripPlan } from '@/shared/composables/useTransport'
-import { lineDirections, nearbyStops, patternGeo, rideMinutes, stopLabel, type TripOption } from '@/shared/composables/useTripPlanner'
+import { useTransitNetwork, useTransportGeo, useTripPlan } from '@/shared/composables/useTransport'
+import { useSuggest } from '@/shared/composables/useSuggest'
+import SuggestDropdown from '@/shared/components/search/SuggestDropdown.vue'
+import { useUiStore } from '@/shared/stores/ui'
+import { lineDirections, nearbyStops, patternGeo, rideMinutes, type TripOption } from '@/shared/composables/useTripPlanner'
 import { distanceKm } from '@/shared/composables/useDirections'
 import { useFormat } from '@/shared/composables/useFormat'
 import { POIS, parseTo } from '@/shared/data/transport/destinations'
 import { BIKE_STATIONS } from '@/shared/data/bikes/bikes'
 import { loadParking, type ParkingData } from '@/shared/data/parking/parking'
 import { useAuthStore } from '@/shared/stores/auth'
-import type { PlaceSummary } from '@/shared/types/places'
 import type { TransitMode } from '@/shared/types/transit'
 
 const route = useRoute()
@@ -28,6 +30,7 @@ const router = useRouter()
 const { t } = useI18n()
 const f = useFormat()
 const auth = useAuthStore()
+const ui = useUiStore()
 const initials = computed(() => (auth.user?.displayName ?? '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase())
 
 const net = useTransitNetwork()
@@ -36,33 +39,17 @@ const tp = useTripPlan()
 const to = computed(() => parseTo(route.query.to))
 const sel = ref(0)
 
-/* ---------- căutarea destinației ---------- */
+/* ---------- căutarea destinației: lista derulantă (populare cu câmpul gol, apoi după primele litere, cu liniile din apropiere) ---------- */
 const q = ref('')
-const places = shallowRef<PlaceSummary[]>([])
-const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-type Suggestion = { key: string; icon: string; name: string; sub: string }
-const suggestions = computed<Suggestion[]>(() => {
-  const n = fold(q.value.trim())
-  if (n.length < 2) return []
-  const out: Suggestion[] = []
-  for (const p of POIS) { const name = t(`transport.poi.${p.id}.name`); if (fold(name).includes(n)) out.push({ key: `poi:${p.id}`, icon: p.icon, name, sub: t(`transport.poi.${p.id}.type`) }) }
-  for (const p of places.value) if (fold(p.name).includes(n)) out.push({ key: `place:${p.id}`, icon: 'account_balance', name: p.name, sub: t(`places.type.${p.type}`) })
-  const seen = new Set<string>()
-  for (const s of net.stops.value) {
-    const name = stopLabel(s.name)
-    if (!fold(name).includes(n) || seen.has(fold(name))) continue
-    seen.add(fold(name))
-    out.push({ key: `stop:${s.id}`, icon: 'signpost', name, sub: t('transport.stopType', { lines: s.lines.join(', ') }) })
-  }
-  return out.slice(0, 7)
-})
+const focused = ref(false)
+const sug = useSuggest(q, 'transport')
 function goTo(key: string) {
   q.value = ''
   sel.value = 0
   router.push({ path: '/transport', query: { to: key } })
 }
 function searchEnter() {
-  if (suggestions.value[0]) goTo(suggestions.value[0].key)
+  if (sug.items.value[0]) goTo(sug.items.value[0].key)
 }
 function clearDest() {
   sel.value = 0
@@ -93,6 +80,7 @@ watch(to, (v) => { sel.value = 0; if (v) void plan(); else tp.clear() })
 
 async function useLocation() {
   await geo.locate()
+  if (!geo.here.value) ui.toast(t(geo.error.value === 'denied' ? 'map.locationDenied' : geo.isFallback.value ? 'map.locationUnavailable' : 'transport.outside'), 'info')
   if (to.value) await tp.compute(to.value, geo.origin.value, netData(), false)
 }
 
@@ -123,7 +111,7 @@ const meters = (km: number) => (km < 1 ? `${Math.round(km * 1000)} m` : f.km(km)
 onMounted(async () => {
   await net.load()
   void plan()
-  loadPlacesForSearch().then((p) => { places.value = p }).catch(() => { /* fără obiective în sugestii */ })
+  void sug.load()
   loadParking().then((d) => { parking.value = d }).catch(() => { /* fără tarif pe card */ })
 })
 </script>
@@ -135,7 +123,8 @@ onMounted(async () => {
     <router-link v-else to="/profile" class="w-11 h-11 shrink-0 rounded-full bg-white border border-line text-ink flex items-center justify-center no-underline" :aria-label="t('nav.profile')"><AppIcon name="person" /></router-link>
   </div>
 
-  <!-- De la / Unde (design: card cu punctul albastru și pătratul negru) -->
+  <!-- De la / Unde (design: card cu punctul albastru și pătratul negru); lista cu sugestii se deschide peste conținut -->
+  <div class="relative">
   <div class="bg-white border border-line rounded-[20px] px-4 py-1 shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.05)]">
     <button type="button" class="w-full flex items-center gap-3 py-3 border-b border-line text-left" :disabled="geo.loading.value" :aria-label="geo.here.value ? undefined : t('transport.useLocation')" @click="useLocation">
       <span class="w-4 h-4 rounded-full bg-[#1D5FD1] shadow-[0_0_0_4px_rgba(29,95,209,.2)] shrink-0" />
@@ -150,18 +139,13 @@ onMounted(async () => {
     </div>
     <label v-else class="flex items-center gap-3 py-3">
       <span class="w-3.5 h-3.5 rounded-[3px] bg-ink shrink-0" />
-      <input v-model="q" type="text" inputmode="search" autocomplete="off" enterkeyhint="go" class="flex-1 min-w-0 bg-transparent outline-none text-[17px] font-semibold text-ink placeholder:font-semibold" :placeholder="t('transport.where')" :aria-label="t('transport.where')" @keydown.enter.prevent="searchEnter">
+      <input v-model="q" type="text" inputmode="search" autocomplete="off" enterkeyhint="go" class="flex-1 min-w-0 bg-transparent outline-none text-[17px] font-semibold text-ink placeholder:font-semibold" :placeholder="t('transport.where')" :aria-label="t('transport.where')" @focus="focused = true" @blur="focused = false" @keydown.enter.prevent="searchEnter">
     </label>
   </div>
 
   <!-- sugestiile căutării -->
-  <div v-if="!to && suggestions.length" class="mt-2 bg-white border border-line rounded-[16px] px-4 shadow-[0_8px_24px_rgba(0,0,0,.08)]" :aria-label="t('transport.suggestions')">
-    <button v-for="s in suggestions" :key="s.key" type="button" class="w-full flex items-center gap-3 py-3 border-b border-line last:border-b-0 text-left" @click="goTo(s.key)">
-      <AppIcon :name="s.icon" class="text-muted" />
-      <span class="flex-1 min-w-0"><b class="block truncate text-[15px]">{{ s.name }}</b><span class="block truncate text-[12.5px] text-muted">{{ s.sub }}</span></span>
-    </button>
+  <SuggestDropdown v-if="!to && focused" :items="sug.items.value" :query="q" class="absolute left-0 right-0 top-full mt-2 z-30" @pick="(x) => goTo(x.key)" />
   </div>
-  <p v-else-if="!to && q.trim().length >= 2" class="text-[13px] text-muted mt-2 mb-0">{{ t('transport.noMatch') }}</p>
 
   <!-- ================= plan de drum ================= -->
   <template v-if="to">
