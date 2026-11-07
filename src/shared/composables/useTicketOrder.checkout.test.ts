@@ -86,4 +86,14 @@ describe('useCheckout', () => {
     expect(co().prepareError.value).toBe('tickets.checkout.stripeLoadError')
     expect(co().mode.value).toBeNull()
   })
+
+  it('a card form that never loads (wrong key, blocked network) shows the error with retry', async () => {
+    api.preparePayment.mockResolvedValue({ mode: 'STRIPE', amount: 105, clientSecret: 's', publishableKey: 'pk_test_bad', paymentIntentId: 'pi_1' })
+    element.on.mockImplementation((ev: string, cb: () => void) => { if (ev === 'loaderror') cb() })
+    const co = harness()
+    await flush(); await nextTick()
+    expect(co().prepareError.value).toBe('tickets.checkout.stripeLoadError')
+    expect(co().cardReady.value).toBe(false)
+    element.on.mockImplementation((ev: string, cb: () => void) => { if (ev === 'ready') cb() })
+  })
 })

@@ -4,6 +4,7 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { usePaymentMode } from '@/shared/composables/usePaymentMode'
 import { AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/components'
 import EventImage from '@/shared/components/events/EventImage.vue'
 import NearestStop from '@/shared/components/transit/NearestStop.vue'
@@ -16,6 +17,7 @@ import { useUiStore } from '@/shared/stores/ui'
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
+const { cardOn } = usePaymentMode()
 const ui = useUiStore()
 const back = useBack('/')
 const fmt = useEventFormat()
@@ -29,7 +31,7 @@ const dur = computed(() => (e.value ? fmt.durationMin(e.value) : null))
 const info = computed(() => {
   const v = e.value
   if (!v) return null
-  if (v.ticketType === 'IN_APP') return { icon: 'confirmation_number', title: t('events.detail.inAppTitle'), text: t('events.detail.inAppText') }
+  if (v.ticketType === 'IN_APP') return { icon: 'confirmation_number', title: t('events.detail.inAppTitle'), text: cardOn.value ? t('events.detail.inAppTextCard') : t('events.detail.inAppText') }
   if (v.ticketType === 'FREE') return v.capacity
     ? { icon: 'event_available', title: t('events.detail.freeRegTitle'), text: t('events.detail.freeRegText', { n: v.spotsLeft ?? 0 }) }
     : { icon: 'event_available', title: t('events.detail.freeTitle'), text: t('events.detail.freeText') }

@@ -9,6 +9,7 @@
   "total": "Total",
   "continueToPay": "Continue to payment",
   "webPayNote": "Demo payment. The ticket appears under “My account › Tickets” with a QR code.",
+  "webPayNoteCard": "Card payment through Stripe, in test mode (no money is charged). The ticket appears under “My account › Tickets” with a QR code.",
   "freeEntry": "Free entry",
   "externalNote": "Tickets bought there don't appear in the app.",
   "count": "0 tickets | 1 ticket | {n} tickets",

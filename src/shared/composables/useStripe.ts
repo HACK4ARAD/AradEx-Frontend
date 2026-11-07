@@ -3,7 +3,7 @@
  * (ca Google Maps). Doar tipurile de care avem nevoie: Payment Element (card) și `confirmPayment` fără redirect.
  * Cheia publică (`pk_test_…`) vine de la server în răspunsul `POST /events/{id}/tickets/payment`; FE nu ține chei.
  */
-export interface StripeElement { mount(el: HTMLElement): void; destroy(): void; on(ev: 'ready' | 'change', cb: (e: { complete?: boolean }) => void): void }
+export interface StripeElement { mount(el: HTMLElement): void; destroy(): void; on(ev: 'ready' | 'change' | 'loaderror', cb: (e: { complete?: boolean }) => void): void }
 export interface StripeElements { create(type: 'payment', opts?: Record<string, unknown>): StripeElement; submit(): Promise<{ error?: { message?: string } }> }
 export interface StripeConfirmResult { error?: { message?: string; type?: string }; paymentIntent?: { id: string; status: string } }
 export interface StripeInstance {
