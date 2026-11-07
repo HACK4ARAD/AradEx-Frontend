@@ -60,6 +60,9 @@ function useDemo(phone: string) {
     <template v-else-if="f.step.value === 'code'">
       <h1 class="m-0 font-semibold tracking-[-0.025em] leading-tight text-[30px]">{{ t('auth.phone.codeTitle') }}</h1>
       <p class="text-muted mt-2.5 mb-0 leading-relaxed text-[15px]">{{ t('auth.phone.codeSub', { phone: shownPhone }) }}</p>
+      <div v-if="f.info.value" class="flex gap-2.5 items-center px-3.5 py-3 rounded-[14px] bg-soft text-ink text-[14px] mt-4" role="status">
+        <AppIcon name="sms" :size="18" /><span>{{ t(f.info.value) }}</span>
+      </div>
       <div v-if="f.demoCode.value" class="flex gap-2.5 items-center px-3.5 py-3 rounded-[14px] bg-[#FFF4D6] text-[#5C4300] text-[14px] mt-4" role="status">
         <AppIcon name="sms" :size="18" /><span>{{ t('auth.phone.demoCode', { code: f.demoCode.value }) }}</span>
       </div>

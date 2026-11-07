@@ -11,7 +11,8 @@ import type { UserDto } from '@/shared/types/auth'
  */
 
 const E164 = /^\+[1-9]\d{7,14}$/
-const ROMANIAN = /^\+40\d{9}$/
+/** doar mobile românești (07xx), ca în BE: fără fixe, 09xx sau 0800 (T24, anti-abuz SMS) */
+const ROMANIAN = /^\+407\d{8}$/
 const DEMO = /^\+40799000\d{3}$/
 
 /** Aceleași reguli ca în BE (PhoneNumbers): numerele românești în orice formă uzuală → +40…; null dacă nu e valid. */
@@ -43,6 +44,8 @@ export function usePhoneLogin() {
   const demoCode = ref<string | null>(null)
   const cooldown = ref(0)
   const error = ref('')
+  /** mesaj informativ (cheie i18n), de ex. „ți-am trimis deja un cod” */
+  const info = ref('')
   const busy = ref(false)
   let e164 = ''
   let signupToken = ''
@@ -81,7 +84,9 @@ export function usePhoneLogin() {
   async function send() {
     const n = normalizePhone(phone.value)
     if (!n) { error.value = 'auth.phone.errors.phone'; return }
-    if (cooldown.value > 0 && n === e164) { error.value = 'auth.phone.errors.wait'; return }
+    info.value = ''
+    // același număr, cod cerut de curând: îl folosește pe acela (nu „așteaptă”), ca după „Alt număr” sau o revenire
+    if (cooldown.value > 0 && n === e164) { error.value = ''; step.value = 'code'; info.value = 'auth.phone.alreadySent'; return }
     const res = await run(() => authApi.otpRequest(n), (e) => {
       if (e.status === 429) { startCooldown(e.problem?.retryAfterSeconds ?? 60); error.value = 'auth.phone.errors.wait' }
       else if (e.status === 503) error.value = 'auth.phone.errors.smsUnavailable'
@@ -95,6 +100,8 @@ export function usePhoneLogin() {
     demoCode.value = res.demoCode ?? null
     code.value = ''
     step.value = 'code'
+    // T21 fix: un cod trimis acum câteva secunde (de ex. înainte de logout) e încă bun; serverul nu mai trimite altul
+    if (res.alreadySent) info.value = 'auth.phone.alreadySent'
     startCooldown(res.retryAfterSeconds)
   }
 
@@ -137,5 +144,5 @@ export function usePhoneLogin() {
     signupToken = ''
   }
 
-  return { step, phone, code, displayName, role, demoCode, cooldown, error, busy, send, verify, register, restart }
+  return { step, phone, code, displayName, role, demoCode, cooldown, error, info, busy, send, verify, register, restart }
 }

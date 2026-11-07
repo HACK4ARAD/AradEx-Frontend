@@ -7,7 +7,8 @@ import { useI18n } from 'vue-i18n'
 import { AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/components'
 import EventImage from '@/shared/components/events/EventImage.vue'
 import NearestStop from '@/shared/components/transit/NearestStop.vue'
-import { googleCalendarUrl, useEventFormat, useSaveEvent } from '@/shared/composables/useEvents'
+import { useEventFormat, useSaveEvent } from '@/shared/composables/useEvents'
+import AddToCalendar from '@/shared/components/events/AddToCalendar.vue'
 import { useEventPage } from '@/shared/composables/useEventPage'
 import { useBack } from '@/shared/composables/useBack'
 import { useUiStore } from '@/shared/stores/ui'
@@ -79,9 +80,7 @@ function openExternal() {
       <div class="flex items-center gap-3 py-3.5 border-b border-line">
         <AppIcon name="schedule" class="text-muted" />
         <div class="flex-1 min-w-0"><div class="text-[15.5px]">{{ fmt.when(e, !!dur) }}<template v-if="dur"> · {{ t('events.detail.minutes', { n: dur }) }}</template></div></div>
-        <a :href="googleCalendarUrl(e)" target="_blank" rel="noopener" class="min-h-9 px-3 rounded-full inline-flex items-center gap-1.5 text-[13px] font-medium border border-line bg-white no-underline text-ink shrink-0">
-          <AppIcon name="event_available" :size="18" />{{ t('events.detail.calendar') }}
-        </a>
+        <AddToCalendar :event="e" :label="t('events.detail.calendar')" class="min-h-9 px-3 rounded-full inline-flex items-center gap-1.5 text-[13px] font-medium border border-line bg-white no-underline text-ink shrink-0" />
       </div>
       <div class="flex items-center gap-3 py-3.5 border-b border-line">
         <AppIcon name="location_on" class="text-muted" />
@@ -142,9 +141,7 @@ function openExternal() {
       <template v-else-if="e.ticketType === 'FREE'">
         <router-link v-if="e.capacity && myTicket" :to="`/tickets/${myTicket.code}`" class="flex-1 min-h-[52px] rounded-[16px] bg-soft text-ink text-[16px] font-semibold flex items-center justify-center no-underline">{{ t('events.detail.registered') }}</router-link>
         <button v-else-if="e.capacity" type="button" class="flex-1 min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold disabled:opacity-60" :disabled="joining || e.spotsLeft === 0" @click="joinFree">{{ e.spotsLeft === 0 ? t('events.detail.soldOut') : t('events.detail.register') }}</button>
-        <a v-else :href="googleCalendarUrl(e)" target="_blank" rel="noopener" class="flex-1 min-h-[52px] rounded-[16px] bg-white border border-line text-ink text-[16px] font-semibold flex items-center justify-center gap-2 no-underline">
-          <AppIcon name="event_available" :size="18" />{{ t('events.detail.addToCalendar') }}
-        </a>
+        <AddToCalendar v-else :event="e" class="flex-1 min-h-[52px] rounded-[16px] bg-white border border-line text-ink text-[16px] font-semibold flex items-center justify-center gap-2 no-underline" />
       </template>
       <button v-else type="button" class="flex-1 min-h-[52px] rounded-[16px] bg-ink text-white text-[16px] font-semibold flex items-center justify-center gap-2" @click="extSheet = true">
         <AppIcon name="open_in_new" :size="18" />{{ t('events.detail.external') }}

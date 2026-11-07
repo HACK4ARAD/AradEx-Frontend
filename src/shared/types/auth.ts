@@ -28,7 +28,7 @@ export interface RegisterRequest {
 }
 
 /** POST /auth/otp/request → 202 */
-export interface OtpRequestResponse { retryAfterSeconds: number; demoCode?: string }
+export interface OtpRequestResponse { retryAfterSeconds: number; demoCode?: string; alreadySent?: boolean }
 
 /** POST /auth/otp/verify: cont existent → token + user; număr nou → signupToken (pentru /auth/otp/register) */
 export interface OtpVerifyResponse { token?: string; user?: UserDto; signupToken?: string }

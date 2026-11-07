@@ -23,7 +23,7 @@ const { t } = useI18n()
 const route = useRoute()
 const f = useFormat()
 
-const { geo, period, kind, target, selected, mode, directions, items, loading, visible, layerMarkers, lines, sel, selTransit, selParking, selBike, travel, transit, parking, showBikes, routing, showRoute, select, init } = useMapScreen(route.query.to)
+const { geo, period, kind, target, selected, mode, directions, items, loading, visible, layerMarkers, lines, sel, selTransit, selParking, selBike, travel, transit, parking, showBikes, routing, showRoute, select, init, locateMe } = useMapScreen(route.query.to)
 const q = ref('')
 const listed = computed(() => byDistance(searchItems(visible.value, q.value, target.value), geo.position.value))
 const markers = computed(() => [...toMarkers(listed.value.map((r) => r.item)), ...layerMarkers.value])
@@ -51,9 +51,8 @@ function onPin(id: string | null) {
   })
 }
 
-async function myLocation() {
-  const p = await geo.locate()
-  mapRef.value?.flyTo(p, 16)
+function myLocation() {
+  void locateMe((p) => mapRef.value?.flyTo(p, 16))
 }
 
 function resetFilters() { q.value = ''; kind.value = 'all'; period.value = 'week' }
@@ -75,6 +74,7 @@ onMounted(init)
         <MapTravelBar v-model="travel" />
         <MapLayerPanel :modes="transit.modes.value" :zones="parking.zones.value" v-model:bikes="showBikes" :travel="travel" class="px-1"
           @toggle-mode="transit.toggleMode" />
+        <template v-if="travel !== 'transit'">
         <div class="flex flex-wrap gap-1.5 pt-2.5 border-t border-line" role="tablist">
           <button v-for="p in MAP_PERIODS" :key="p" type="button" role="tab" :aria-selected="period === p"
             class="h-9 px-3.5 rounded-full text-[13.5px] border" :class="period === p ? 'bg-ink text-white border-ink font-semibold' : 'bg-white text-ink border-line'"
@@ -88,9 +88,16 @@ onMounted(init)
         <div v-if="!loading" class="text-muted text-[12.5px]">
           {{ t('map.web.results', listed.length) }} · {{ geo.isFallback.value ? t('map.web.sortedCenter') : t('map.web.sortedYou') }}
         </div>
+        </template>
       </div>
 
-      <div ref="listEl" class="relative flex-1 min-h-0 lg:overflow-y-auto" :aria-label="t('map.web.list')">
+      <!-- modul „Transport”: harta arată doar transportul; lista evenimentelor / locurilor nu are sens aici -->
+      <div v-if="travel === 'transit' && !listed.length" class="p-5 flex items-start gap-3 text-[14px] text-muted">
+        <AppIcon name="directions_bus" :size="22" class="text-[#1D5FD1] shrink-0" />
+        <p class="m-0">{{ t('map.web.transitHint') }}</p>
+      </div>
+
+      <div v-else ref="listEl" class="relative flex-1 min-h-0 lg:overflow-y-auto" :aria-label="t('map.web.list')">
         <div v-if="loading && !items.length" class="p-3.5"><Skeleton :rows="5" :height="64" /></div>
         <div v-else-if="!listed.length" class="p-3.5">
           <EmptyState icon="travel_explore" :title="t('map.web.empty')" :text="t('map.web.emptyText')" :action="t('map.web.reset')" @action="resetFilters" />
