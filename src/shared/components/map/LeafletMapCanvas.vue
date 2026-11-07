@@ -36,7 +36,10 @@ function drawLines() {
   lineLayer?.clearLayers()
   lineLayer ??= L.layerGroup().addTo(map.value)
   for (const l of props.lines ?? []) {
-    L.polyline(l.path, { color: l.color, weight: l.weight ?? LINE_WEIGHT, opacity: l.opacity ?? LINE_OPACITY, interactive: false }).addTo(lineLayer)
+    L.polyline(l.path, {
+      color: l.color, weight: l.weight ?? LINE_WEIGHT, opacity: l.opacity ?? LINE_OPACITY, interactive: false,
+      ...(l.dash ? { dashArray: '1 8', lineCap: 'round' as const } : {}),
+    }).addTo(lineLayer)
   }
   routeLayer?.bringToFront()
 }
@@ -67,6 +70,14 @@ function drawRoute() {
   }
 }
 
+/** Încadrează punctele din `fit` (doar când nu e un traseu, care se încadrează singur). */
+function drawFit() {
+  if (!map.value || (props.route && props.route.length > 1) || !props.fit || props.fit.length < 2) return
+  map.value.invalidateSize()
+  const pad = fitInsets(props.insets, map.value.getSize().y)
+  map.value.fitBounds(L.latLngBounds(props.fit), { paddingTopLeft: [40, pad.top], paddingBottomRight: [40, pad.bottom], animate: false })
+}
+
 function drawMe() {
   if (!map.value) return
   meLayer?.remove()
@@ -94,6 +105,7 @@ onMounted(() => {
   drawMarkers()
   drawMe()
   drawRoute()
+  drawFit()
 })
 
 onBeforeUnmount(() => {
@@ -105,6 +117,7 @@ watch(() => [props.markers, props.selectedId], drawMarkers)
 watch(() => props.lines, drawLines)
 watch(() => [props.route, props.routeApproximate], drawRoute)
 watch(() => props.me, drawMe)
+watch(() => props.fit, drawFit)
 
 /** Controalele (+ / − / locația mea) le pune ecranul, în stilul lui. */
 function zoomBy(delta: number) { map.value?.setZoom(map.value.getZoom() + delta) }

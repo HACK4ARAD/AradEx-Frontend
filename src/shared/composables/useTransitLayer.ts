@@ -52,8 +52,8 @@ export function filterTransitModes(modes: readonly TransitMode[], routes: Transi
 }
 
 let routesCache: Promise<TransitRouteDto[]> | null = null
-/** Liniile sunt statice: o singură cerere pe sesiune. */
-function loadTransitRoutes(): Promise<TransitRouteDto[]> {
+/** Liniile sunt statice: o singură cerere pe sesiune (și pentru tab-ul Transport, T19). */
+export function loadTransitRoutes(): Promise<TransitRouteDto[]> {
   routesCache ??= transitApi.routes().catch((err) => { routesCache = null; throw err })
   return routesCache
 }

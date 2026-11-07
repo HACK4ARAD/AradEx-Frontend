@@ -51,7 +51,11 @@ export function byDistance(items: MapItem[], from: GeoPoint): { item: MapItem; k
   return items.map((item) => ({ item, km: distanceKm(from, item) })).sort((a, b) => a.km - b.km)
 }
 
-export function useMapScreen(to: unknown) {
+/**
+ * `opts` (din tab-ul Transport, T19): `travel` = modul cu care se deschide harta (`?travel=transit|car`), `focus` = un pin de strat
+ * selectat de la început (`?focus=bike:dock-11`), cu `focusPoint` pentru centrul inițial.
+ */
+export function useMapScreen(to: unknown, opts: { travel?: unknown; focus?: unknown } = {}) {
   const { t } = useI18n()
   const ui = useUiStore()
   const geo = useGeo()
@@ -82,6 +86,11 @@ export function useMapScreen(to: unknown) {
     parking.on.value = tr === 'car'
     mode.value = tr === 'car' ? 'car' : 'foot'
   })
+  if (MAP_TRAVEL.some((m) => m.id === opts.travel)) travel.value = opts.travel as Travel
+  /** pinul de strat cerut din Transport: deocamdată stațiile de biciclete (date statice, deci punctul se știe imediat) */
+  const focusBike = typeof opts.focus === 'string' && !target.value ? findBike(opts.focus, BIKE_STATIONS) : null
+  if (focusBike) { travel.value = 'transit'; selected.value = opts.focus as string }
+  const focusPoint = focusBike ? { lat: focusBike.lat, lng: focusBike.lng } : null
 
   const markers = computed<MapMarker[]>(() => [...toMarkers(visible.value), ...layerMarkers.value])
   /** pinii straturilor (parcări, biciclete, transport), peste pinii aplicației */
@@ -147,7 +156,7 @@ export function useMapScreen(to: unknown) {
     else { ui.toast(t('map.notFound'), 'info'); target.value = null; selected.value = null }
   }
 
-  return { geo, period, kind, target, selected, mode, directions, items, loading, visible, markers, layerMarkers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init, locateMe }
+  return { geo, period, kind, target, selected, mode, directions, items, loading, visible, markers, layerMarkers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init, locateMe, focusPoint }
 }
 
 export function toMarkers(items: MapItem[]): MapMarker[] {

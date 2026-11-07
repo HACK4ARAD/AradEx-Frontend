@@ -11,7 +11,8 @@
     "distance": "{distance} pe jos",
     "lines": "Liniile {lines}",
     "noLive": "Fără date live acum",
-    "noArrivals": "Nicio sosire în următoarea perioadă"
+    "noArrivals": "Nicio sosire în următoarea perioadă",
+    "howTo": "Cum ajung"
   },
   "card": {
     "stop": "Stație CTP",
