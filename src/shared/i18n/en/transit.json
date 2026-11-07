@@ -1,0 +1,16 @@
+{
+  "tram": "Tram {n}",
+  "bus": "Bus {n}",
+  "line": "Line {n}",
+  "now": "now",
+  "inMinutes": "in {n} min",
+  "at": "at {time}",
+  "attribution": "Data: CTP Arad / Telelink",
+  "nearest": {
+    "title": "Nearest stop · {name}",
+    "distance": "{distance} on foot",
+    "lines": "Lines {lines}",
+    "noLive": "No live data right now",
+    "noArrivals": "No arrivals coming up"
+  }
+}

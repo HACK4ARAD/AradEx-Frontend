@@ -1,0 +1,16 @@
+{
+  "tram": "Tramvaiul {n}",
+  "bus": "Autobuzul {n}",
+  "line": "Linia {n}",
+  "now": "acum",
+  "inMinutes": "în {n} min",
+  "at": "la {time}",
+  "attribution": "Date: CTP Arad / Telelink",
+  "nearest": {
+    "title": "Stația cea mai apropiată · {name}",
+    "distance": "{distance} pe jos",
+    "lines": "Liniile {lines}",
+    "noLive": "Fără date live acum",
+    "noArrivals": "Nicio sosire în următoarea perioadă"
+  }
+}
