@@ -106,6 +106,11 @@ const lineRows = computed(() => net.routes.value.filter((r) => r.mode === mode.v
 const bikesNear = computed(() => BIKE_STATIONS.filter((s) => s.kind === 'dock')
   .map((s) => ({ s, km: distanceKm(geo.origin.value, s) })).sort((a, b) => a.km - b.km).filter((r) => r.km <= 1.5).slice(0, 2))
 const docks = BIKE_STATIONS.filter((s) => s.kind === 'dock').length
+const mapLinks = computed(() => [
+  { key: 'live', icon: 'directions_bus', title: t('transport.more.live'), sub: t('transport.more.liveSub'), to: { path: '/map', query: { travel: 'transit' } } },
+  { key: 'bikes', icon: 'pedal_bike', title: t('transport.more.bikes'), sub: t('transport.more.bikesSub', { n: docks }), to: { path: '/map', query: { travel: 'transit', ...(bikesNear.value[0] ? { focus: `bike:${bikesNear.value[0].s.id}` } : {}) } } },
+  { key: 'parking', icon: 'P', title: t('transport.more.parking'), sub: t('transport.more.parkingSub'), to: { path: '/map', query: { travel: 'car' } } },
+])
 const meters = (km: number) => (km < 1 ? `${Math.round(km * 1000)} m` : f.km(km))
 
 onMounted(async () => {
@@ -195,22 +200,6 @@ onMounted(async () => {
         <AppIcon :name="p.icon" :size="18" />{{ t(`transport.poi.${p.id}.name`) }}</button>
     </div>
 
-    <!-- ca pe hartă (S7 / W9): liniile live, bicicletele și parcările -->
-    <div class="grid grid-cols-3 gap-2 mt-4">
-      <router-link :to="{ path: '/map', query: { travel: 'transit' } }" class="no-underline text-ink bg-white border border-line rounded-[16px] p-3 flex flex-col gap-1">
-        <span class="w-8 h-8 rounded-[10px] bg-[#E8EFFB] text-[#1D5FD1] flex items-center justify-center"><AppIcon name="directions_bus" :size="19" /></span>
-        <b class="text-[14px]">{{ t('transport.more.live') }}</b><span class="text-[11.5px] text-muted leading-tight">{{ t('transport.more.liveSub') }}</span>
-      </router-link>
-      <router-link :to="{ path: '/map', query: { travel: 'transit', ...(bikesNear[0] ? { focus: `bike:${bikesNear[0].s.id}` } : {}) } }" class="no-underline text-ink bg-white border border-line rounded-[16px] p-3 flex flex-col gap-1">
-        <span class="w-8 h-8 rounded-[10px] bg-[#E3F4EC] text-[#0F8A5F] flex items-center justify-center"><AppIcon name="pedal_bike" :size="19" /></span>
-        <b class="text-[14px]">{{ t('transport.more.bikes') }}</b><span class="text-[11.5px] text-muted leading-tight">{{ t('transport.more.bikesSub', { n: docks }) }}</span>
-      </router-link>
-      <router-link :to="{ path: '/map', query: { travel: 'car' } }" class="no-underline text-ink bg-white border border-line rounded-[16px] p-3 flex flex-col gap-1">
-        <span class="w-8 h-8 rounded-[10px] border-[3px] border-[#E03B2F] bg-white font-bold flex items-center justify-center">P</span>
-        <b class="text-[14px]">{{ t('transport.more.parking') }}</b><span class="text-[11.5px] text-muted leading-tight">{{ t('transport.more.parkingSub') }}</span>
-      </router-link>
-    </div>
-
     <h2 class="text-[20px] leading-[1.2] font-semibold tracking-[-0.02em] mt-[22px] mb-2.5">{{ t('transport.nearby') }}</h2>
     <EmptyState v-if="net.error.value" icon="cloud_off" :title="t('transport.loadError')" :action="t('transport.retry')" @action="net.load()" />
     <Skeleton v-else-if="net.loading.value" :rows="2" :height="150" />
@@ -230,6 +219,18 @@ onMounted(async () => {
         </router-link>
       </div>
     </template>
+
+    <!-- pe hartă (S7 / W9): liniile live, bicicletele și parcările — rânduri ca în design (`.card` + `.row-item`) -->
+    <h2 class="text-[20px] leading-[1.2] font-semibold tracking-[-0.02em] mt-5 mb-2.5">{{ t('transport.more.title') }}</h2>
+    <div class="bg-white border border-line rounded-[20px] px-4 shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.05)]">
+      <router-link v-for="m in mapLinks" :key="m.key" :to="m.to" class="no-underline text-ink flex items-center gap-3.5 py-3.5 border-b border-line last:border-b-0">
+        <span class="w-11 h-11 rounded-[12px] bg-soft flex items-center justify-center shrink-0 text-ink">
+          <b v-if="m.icon === 'P'" class="text-[17px]">P</b><AppIcon v-else :name="m.icon" />
+        </span>
+        <span class="flex-1 min-w-0"><b class="block text-[15.5px]">{{ m.title }}</b><span class="block text-[13px] text-muted truncate">{{ m.sub }}</span></span>
+        <AppIcon name="chevron_right" />
+      </router-link>
+    </div>
 
     <div class="flex items-center justify-between gap-3 mt-5 mb-2.5">
       <h2 class="text-[20px] leading-[1.2] font-semibold tracking-[-0.02em] m-0">{{ t('transport.lines') }}</h2>

@@ -57,12 +57,12 @@
   "retry": "Try again",
   "more": {
     "title": "On the map",
-    "live": "Live lines",
-    "liveSub": "vehicles in real time",
+    "live": "Live lines and vehicles",
+    "liveSub": "Trams and buses, right now",
     "bikes": "Bikes",
     "bikesSub": "{n} bike-sharing stations",
-    "parking": "Parking",
-    "parkingSub": "zones and prices"
+    "parking": "Paid parking",
+    "parkingSub": "Zones, prices and hours"
   },
   "bikesNear": "Bikes near you",
   "bikeDock": "Bike-sharing station · {km}",
