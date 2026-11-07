@@ -61,7 +61,7 @@ function pick(email: string) {
     <main class="flex items-center justify-center px-4 py-10 sm:p-10 bg-bg">
       <div class="w-full max-w-[460px] flex flex-col gap-3.5">
         <router-link to="/" class="min-[1100px]:hidden flex items-center gap-2 font-bold text-[15px] no-underline text-ink mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-accent" /> {{ t('app.name') }}
+          <img src="@/shared/assets/logo-ax.png" alt="AradExperience" class="h-[18px] w-auto shrink-0" /> {{ t('app.name') }}
         </router-link>
 
         <div class="self-start inline-flex p-1 rounded-[14px] bg-soft max-w-full" role="tablist">
