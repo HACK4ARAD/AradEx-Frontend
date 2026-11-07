@@ -5,7 +5,7 @@ import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import type { GeoPoint } from '@/shared/types/common'
 import { ARAD_CENTER } from '@/shared/composables/useGeo'
 import { GOOGLE_MAP_ID, loadGoogleMaps, markGoogleUnavailable, onGoogleUnavailable } from '@/shared/composables/useGoogleMaps'
-import { fitInsets, meElement, pinElement, type MapProps } from './types'
+import { LINE_OPACITY, LINE_WEIGHT, fitInsets, meElement, pinElement, type MapProps } from './types'
 
 const props = withDefaults(defineProps<MapProps>(),
   { selectedId: null, route: null, routeApproximate: false, me: null, center: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
@@ -19,12 +19,12 @@ let routeLine: google.maps.Polyline | null = null
 let transitLines: google.maps.Polyline[] = []
 let meMarker: google.maps.marker.AdvancedMarkerElement | null = null
 
-/** Liniile transportului, subțiri, sub traseul ales (zIndex mai mic). */
+/** Liniile straturilor (transport, parcări), sub traseul ales (zIndex mai mic). */
 function drawLines() {
   if (!map.value) return
   for (const l of transitLines) l.setMap(null)
   transitLines = (props.lines ?? []).map((l) => new google.maps.Polyline({
-    map: map.value, path: l.path.map(([lat, lng]) => ({ lat, lng })), strokeColor: l.color, strokeWeight: 3, strokeOpacity: 0.55, clickable: false, zIndex: 1,
+    map: map.value, path: l.path.map(([lat, lng]) => ({ lat, lng })), strokeColor: l.color, strokeWeight: l.weight ?? LINE_WEIGHT, strokeOpacity: l.opacity ?? LINE_OPACITY, clickable: false, zIndex: 1,
   }))
 }
 

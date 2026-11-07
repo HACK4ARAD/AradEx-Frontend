@@ -43,6 +43,8 @@ defineExpose({
 .ax-pin--action { background: #3B6D11; }
 .ax-pin--stop { background: #fff; border-color: #1D5FD1; width: 18px; height: 18px; }
 .ax-pin--vehicle { background: #1D5FD1; }
+/* stratul „Parcări”: „P” pe alb, marginea în culoarea zonei (`--pin`, din MapMarker.color) */
+.ax-pin--parking { width: 22px; height: 22px; border-radius: 7px; background: #fff; color: #111; border-color: var(--pin, #111); font-size: 11.5px; }
 .ax-pin--sel { transform: scale(1.3); }
 .ax-me {
   width: 18px; height: 18px; border-radius: 50%; background: #1D5FD1; border: 3px solid #fff;
