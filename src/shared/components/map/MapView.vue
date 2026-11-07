@@ -4,7 +4,7 @@
 // Ecranele importă doar MapView; doar map/LeafletMapCanvas importă Leaflet și doar map/GoogleMapCanvas folosește Google.
 import { defineAsyncComponent, ref } from 'vue'
 import type { GeoPoint } from '@/shared/types/common'
-import { GOOGLE_MAPS_KEY } from '@/shared/composables/useGoogleMaps'
+import { GOOGLE_MAPS_KEY, googleUnavailable } from '@/shared/composables/useGoogleMaps'
 import type { MapApi, MapProps } from './types'
 
 export type { MapMarker } from './types'
@@ -16,7 +16,7 @@ const emit = defineEmits<{ select: [id: string | null] }>()
 const GoogleMapCanvas = defineAsyncComponent(() => import('./GoogleMapCanvas.vue'))
 const LeafletMapCanvas = defineAsyncComponent(() => import('./LeafletMapCanvas.vue'))
 
-const useGoogle = ref(!!GOOGLE_MAPS_KEY)
+const useGoogle = ref(!!GOOGLE_MAPS_KEY && !googleUnavailable())
 const canvas = ref<MapApi | null>(null)
 
 defineExpose({

@@ -9,8 +9,39 @@ export const GOOGLE_MAP_ID = (import.meta.env.VITE_GOOGLE_MAPS_MAP_ID as string 
 
 let loading: Promise<void> | null = null
 
+/**
+ * Google cheamă `window.gm_authFailure` când refuză cheia (de ex. restricția pe site-uri nu acceptă originea aplicației
+ * iOS, `capacitor://localhost`): harta ar rămâne gri. Atunci Google e „indisponibil” pentru toată sesiunea și fiecare
+ * hartă trece pe rezerva Leaflet.
+ */
+let unavailable = false
+const listeners = new Set<() => void>()
+
+export function googleUnavailable(): boolean {
+  return unavailable
+}
+
+/** `cb` e chemat când Google devine indisponibil (sau imediat, dacă deja e); întoarce dezabonarea. */
+export function onGoogleUnavailable(cb: () => void): () => void {
+  if (unavailable) { cb(); return () => {} }
+  listeners.add(cb)
+  return () => listeners.delete(cb)
+}
+
+export function markGoogleUnavailable() {
+  if (unavailable) return
+  unavailable = true
+  for (const cb of [...listeners]) cb()
+  listeners.clear()
+}
+
+if (typeof window !== 'undefined') {
+  (window as unknown as { gm_authFailure?: () => void }).gm_authFailure = markGoogleUnavailable
+}
+
 export function loadGoogleMaps(key = GOOGLE_MAPS_KEY): Promise<void> {
   if (typeof window === 'undefined') return Promise.reject(new Error('no window'))
+  if (unavailable) return Promise.reject(new Error('Google Maps key refused'))
   if ((window as { google?: { maps?: { importLibrary?: unknown } } }).google?.maps?.importLibrary) return Promise.resolve()
   loading ??= new Promise<void>((resolve, reject) => {
     const cb = '__axGoogleMapsReady'
