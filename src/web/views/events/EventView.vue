@@ -6,6 +6,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { usePaymentMode } from '@/shared/composables/usePaymentMode'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import EventImage from '@/shared/components/events/EventImage.vue'
 import TicketQtyRows from '@/shared/components/tickets/TicketQtyRows.vue'
@@ -20,6 +21,7 @@ import { useTicketPick } from '@/shared/composables/useTicketOrder'
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
+const { cardOn } = usePaymentMode()
 const fmt = useEventFormat()
 const id = computed(() => Number(route.params.id))
 const { event: e, loading, notFound, reload, biz, myTicket, ended, joining, joinFree, toggleSave, share } = useEventPage(id)
@@ -124,7 +126,7 @@ const btnLg = 'w-full min-h-12 px-5 rounded-[14px] inline-flex items-center just
                 <AppIcon name="lock" :size="20" />{{ t('tickets.continueToPay') }}
               </button>
             </template>
-            <p class="text-muted text-[12px] text-center mt-2 mb-0">{{ t('tickets.webPayNote') }}</p>
+            <p class="text-muted text-[12px] text-center mt-2 mb-0">{{ cardOn ? t('tickets.webPayNoteCard') : t('tickets.webPayNote') }}</p>
           </template>
 
           <template v-else-if="e.ticketType === 'FREE'">

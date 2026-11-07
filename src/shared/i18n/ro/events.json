@@ -93,6 +93,7 @@
     "notFound": "Evenimentul nu există sau nu mai e publicat.",
     "inAppTitle": "Bilete în aplicație · Doar în AradExperience",
     "inAppText": "Plătești în aplicație (plată demonstrativă). Biletul cu cod QR apare în Biletele mele și merge offline.",
+    "inAppTextCard": "Plătești în aplicație cu cardul (Stripe, mod test: nu se încasează bani). Biletul cu cod QR apare în Biletele mele și merge offline.",
     "freeRegTitle": "Gratuit · cu înscriere",
     "freeRegText": "Te înscrii în aplicație și primești un cod QR. {n} locuri libere.",
     "freeTitle": "Gratuit · fără bilet",

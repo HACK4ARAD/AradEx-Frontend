@@ -7,7 +7,7 @@ export const STRIPE_JS = 'https://js.stripe.com/v3/'
 
 export interface StripeError { type?: string; code?: string; message?: string }
 export interface StripePaymentIntent { id: string; status: string }
-export interface StripeElement { mount(el: HTMLElement): void; destroy(): void; on(event: 'ready' | 'change', cb: (e: { complete?: boolean }) => void): void }
+export interface StripeElement { mount(el: HTMLElement): void; destroy(): void; on(event: 'ready' | 'change' | 'loaderror', cb: (e: { complete?: boolean; error?: StripeError }) => void): void }
 export interface StripeElements { create(type: 'payment', options?: Record<string, unknown>): StripeElement; submit(): Promise<{ error?: StripeError }> }
 export interface StripeInstance {
   elements(options: Record<string, unknown>): StripeElements

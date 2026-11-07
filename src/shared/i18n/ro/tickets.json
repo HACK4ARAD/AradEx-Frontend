@@ -9,6 +9,7 @@
   "total": "Total",
   "continueToPay": "Continuă spre plată",
   "webPayNote": "Plată demonstrativă. Biletul apare în „Contul meu › Bilete” cu cod QR.",
+  "webPayNoteCard": "Plată cu cardul prin Stripe, în mod test (nu se încasează bani). Biletul apare în „Contul meu › Bilete” cu cod QR.",
   "freeEntry": "Intrare liberă",
   "externalNote": "Biletele cumpărate acolo nu apar în aplicație.",
   "count": "0 bilete | 1 bilet | {n} bilete",

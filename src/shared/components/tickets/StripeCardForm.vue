@@ -26,6 +26,8 @@ onMounted(async () => {
     elements = stripe.elements({ clientSecret: props.clientSecret, appearance: STRIPE_APPEARANCE, locale: locale.value === 'en' ? 'en' : 'ro' })
     payment = elements.create('payment', { layout: 'tabs' })
     payment.on('ready', () => { state.value = 'ready'; emit('ready') })
+    // cheie publică greșită, rețea blocată etc.: Stripe nu mai trimite `ready`, deci arătăm eroarea în loc de „se încarcă”
+    payment.on('loaderror', () => { state.value = 'error'; emit('failed', t('tickets.checkout.stripe.loadError')) })
     if (el.value) payment.mount(el.value)
   } catch {
     state.value = 'error'
@@ -50,7 +52,7 @@ defineExpose({ confirm })
 
 <template>
   <div>
-    <div ref="el" class="min-h-[120px]" data-test="stripe-element" />
+    <div v-show="state !== 'error'" ref="el" class="min-h-[120px]" data-test="stripe-element" />
     <div v-if="state === 'loading'" class="text-muted text-[13px] flex items-center gap-2 py-2"><AppIcon name="progress_activity" :size="18" class="animate-spin" />{{ t('tickets.checkout.stripe.loading') }}</div>
     <div v-else-if="state === 'error'" class="text-bad text-[13px] py-2">{{ t('tickets.checkout.stripe.loadError') }}</div>
     <p class="mt-3 mb-0 rounded-[12px] bg-soft px-3 py-2.5 text-[12.5px] text-muted leading-[1.5]" data-test="stripe-test-note">

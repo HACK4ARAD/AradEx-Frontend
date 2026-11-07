@@ -93,6 +93,7 @@
     "notFound": "This event doesn't exist or is no longer published.",
     "inAppTitle": "In-app tickets · Only in AradExperience",
     "inAppText": "You pay in the app (demo payment). The ticket with a QR code appears in My tickets and works offline.",
+    "inAppTextCard": "You pay in the app by card (Stripe, test mode: no money is charged). The ticket with a QR code appears in My tickets and works offline.",
     "freeRegTitle": "Free · with registration",
     "freeRegText": "Register in the app and get a QR code. {n} spots left.",
     "freeTitle": "Free · no ticket",
