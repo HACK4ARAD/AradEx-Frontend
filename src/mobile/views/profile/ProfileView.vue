@@ -91,6 +91,12 @@ onMounted(async () => {
         <span v-if="savedCount != null" class="text-muted text-[15px]">{{ savedCount }}</span>
         <AppIcon name="chevron_right" />
       </router-link>
+      <!-- T13: itinerariile făcute cu planificatorul -->
+      <router-link to="/itineraries" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
+        <AppIcon name="auto_awesome" />
+        <span class="flex-1 text-[15px]">{{ t('nav.itineraries') }}</span>
+        <AppIcon name="chevron_right" />
+      </router-link>
       <div class="flex items-center gap-3 py-3.5 border-b border-line">
         <AppIcon name="language" />
         <span class="flex-1 text-[15px]">{{ t('profile.language') }}</span>

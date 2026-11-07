@@ -29,6 +29,8 @@ export const webRoutes: RouteRecordRaw[] = [
       { path: 'community', name: 'w-community', component: () => import('@/web/views/community/CommunityView.vue'), meta: { title: 'Comunitate', screen: 'W12', task: 'T11' } },
       { path: 'community/actions/:id', name: 'w-action', component: () => import('@/web/views/community/ActionView.vue'), meta: { title: 'Acțiune comunitară', screen: 'W12', task: 'T23' } },
       { path: 'community/leaderboard', name: 'w-leaderboard', component: () => import('@/web/views/community/LeaderboardView.vue'), meta: { title: 'Clasament', screen: 'W12', task: 'T23' } },
+      // T13: pagina linkului „Trimite” din aplicație (publică, după codul de partajare)
+      { path: 'itinerary/:code', name: 'w-itinerary', component: () => import('@/web/views/plan/ItineraryView.vue'), meta: { title: 'Itinerariu', screen: 'W10', task: 'T13' } },
       { path: 'businesses/:id', name: 'w-business-page', component: () => import('@/web/views/business/BusinessView.vue'), meta: { title: 'Firmă', screen: 'W15', task: 'T23' } },
       // T23 · web-ul pentru conturile personale conectate (ca în aplicație): evenimente + bilete, hartă, oferte, contul meu
       { path: 'events', name: 'w-events', component: () => import('@/web/views/events/EventsView.vue'), meta: { title: 'Evenimente', screen: 'W5', task: 'T23', roles: PERSONAL } },
