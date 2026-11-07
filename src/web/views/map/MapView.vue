@@ -7,6 +7,7 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
+import TransitPinCard from '@/shared/components/transit/TransitPinCard.vue'
 import MapView from '@/shared/components/map/MapView.vue'
 import { MAP_KINDS, MAP_PERIODS, byDistance, searchItems, toMarkers, useMapScreen } from '@/shared/composables/useMapScreen'
 import { googleMapsUrl } from '@/shared/composables/useDirections'
@@ -17,10 +18,10 @@ const { t } = useI18n()
 const route = useRoute()
 const f = useFormat()
 
-const { geo, period, kind, target, selected, mode, directions, items, loading, visible, sel, routing, showRoute, select, init } = useMapScreen(route.query.to)
+const { geo, period, kind, target, selected, mode, directions, items, loading, visible, sel, selTransit, transit, routing, showRoute, select, init } = useMapScreen(route.query.to)
 const q = ref('')
 const listed = computed(() => byDistance(searchItems(visible.value, q.value, target.value), geo.position.value))
-const markers = computed(() => toMarkers(listed.value.map((r) => r.item)))
+const markers = computed(() => [...toMarkers(listed.value.map((r) => r.item)), ...transit.markers.value])
 const selKm = computed(() => listed.value.find((r) => r.item.key === selected.value)?.km ?? null)
 
 const mapRef = ref<InstanceType<typeof MapView> | null>(null)
@@ -74,6 +75,10 @@ onMounted(init)
           <button v-for="k in MAP_KINDS" :key="k" type="button" :aria-pressed="kind === k"
             class="h-8 px-3 rounded-full text-[12.5px] border" :class="kind === k ? 'bg-ink text-white border-ink font-semibold' : 'bg-white text-ink border-line'"
             @click="kind = k">{{ t(`map.kind.${k}`) }}</button>
+          <button type="button" :aria-pressed="transit.on.value"
+            class="h-8 px-3 rounded-full text-[12.5px] border inline-flex items-center gap-1"
+            :class="transit.on.value ? 'bg-[#1D5FD1] text-white border-[#1D5FD1] font-semibold' : 'bg-white text-ink border-line'"
+            @click="transit.on.value = !transit.on.value"><AppIcon name="tram" :size="15" />{{ t('transit.layer') }}</button>
         </div>
         <div v-if="!loading" class="text-muted text-[12.5px]">
           {{ t('map.web.results', listed.length) }} · {{ geo.isFallback.value ? t('map.web.sortedCenter') : t('map.web.sortedYou') }}
@@ -135,7 +140,8 @@ onMounted(init)
       <div v-if="loading && !items.length" class="absolute left-1/2 -translate-x-1/2 top-3 z-[500] px-3.5 py-2 rounded-full bg-white/95 text-[13px] text-muted shadow">{{ t('map.loading') }}</div>
 
       <!-- pinul selectat: pe ≥lg doar informațiile traseului (lista are restul); pe telefon și acțiunile, ca să nu derulezi până la listă -->
-      <div v-if="sel" class="absolute left-3 right-16 bottom-3 z-[500] max-w-[460px] bg-white rounded-[16px] p-3.5 shadow-[0_10px_30px_rgba(17,17,17,.18)] flex-col gap-2"
+      <TransitPinCard v-if="selTransit" :pick="selTransit" :stops="transit.stops.value" class="absolute left-3 right-16 bottom-3 z-[500] max-w-[420px]" @close="select(null)" />
+      <div v-else-if="sel" class="absolute left-3 right-16 bottom-3 z-[500] max-w-[460px] bg-white rounded-[16px] p-3.5 shadow-[0_10px_30px_rgba(17,17,17,.18)] flex-col gap-2"
         :class="routing ? 'flex' : 'flex lg:hidden'">
         <div class="flex items-start gap-2">
           <div class="flex-1 min-w-0">

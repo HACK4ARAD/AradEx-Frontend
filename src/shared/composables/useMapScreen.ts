@@ -4,6 +4,7 @@ import type { MapMarker } from '@/shared/components/map/types'
 import { filterItems, parseTarget, useMapData, type MapItem, type MapKind, type MapPeriod } from '@/shared/composables/useMapData'
 import { distanceKm, fetchDirections, type Directions, type TravelMode } from '@/shared/composables/useDirections'
 import { useGeo } from '@/shared/composables/useGeo'
+import { useTransitLayer } from '@/shared/composables/useTransitLayer'
 import { useUiStore } from '@/shared/stores/ui'
 import type { GeoPoint } from '@/shared/types/common'
 
@@ -46,8 +47,12 @@ export function useMapScreen(to: unknown) {
   const { items, loading, load, ensure } = useMapData(period)
 
   const visible = computed(() => filterItems(items.value, kind.value, target.value))
-  const markers = computed<MapMarker[]>(() => toMarkers(visible.value))
+  // T23: stratul „Transport” (stații + vehicule live), pornit din chip-ul lui
+  const transit = useTransitLayer()
+  const markers = computed<MapMarker[]>(() => [...toMarkers(visible.value), ...transit.markers.value])
   const sel = computed(() => items.value.find((i) => i.key === selected.value) ?? null)
+  /** pinul selectat e o stație sau un vehicul: cardul de transport în locul celui de pin */
+  const selTransit = computed(() => transit.find(selected.value))
   const routing = computed(() => !!sel.value && target.value === sel.value.key)
 
   let routeSeq = 0
@@ -73,7 +78,7 @@ export function useMapScreen(to: unknown) {
 
   watch(mode, () => { if (routing.value) void showRoute() })
   // pinul selectat a dispărut (altă perioadă): închidem cardul și traseul, să nu rămână o linie fără destinație
-  watch(sel, (s) => { if (!s && selected.value) select(null) })
+  watch([sel, selTransit], ([s, tr]) => { if (!s && !tr && selected.value) select(null) })
 
   /** Încarcă pinii; ținta din `?to=` poate fi în afara perioadei afișate: ensure o aduce și deschide direct traseul. */
   async function init() {
@@ -83,7 +88,7 @@ export function useMapScreen(to: unknown) {
     else { ui.toast(t('map.notFound'), 'info'); target.value = null; selected.value = null }
   }
 
-  return { geo, period, kind, target, selected, mode, directions, items, loading, visible, markers, sel, routing, showRoute, select, init }
+  return { geo, period, kind, target, selected, mode, directions, items, loading, visible, markers, sel, selTransit, transit, routing, showRoute, select, init }
 }
 
 export function toMarkers(items: MapItem[]): MapMarker[] {

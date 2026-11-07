@@ -10,6 +10,7 @@ import { AppIcon, EmptyState, Skeleton } from '@/shared/components'
 import EventImage from '@/shared/components/events/EventImage.vue'
 import TicketQtyRows from '@/shared/components/tickets/TicketQtyRows.vue'
 import MapView from '@/shared/components/map/MapView.vue'
+import NearestStop from '@/shared/components/transit/NearestStop.vue'
 import type { MapMarker } from '@/shared/components/map/types'
 import { googleCalendarUrl, useEventFormat } from '@/shared/composables/useEvents'
 import { useEventPage } from '@/shared/composables/useEventPage'
@@ -164,6 +165,8 @@ const btnLg = 'w-full min-h-12 px-5 rounded-[14px] inline-flex items-center just
             <span class="flex-1 min-w-0 text-muted text-[12.5px]">{{ e.address ?? e.locationName }}</span>
             <router-link :to="mapTo" class="h-8 px-[11px] rounded-[9px] border border-line bg-white text-ink text-[13px] font-semibold inline-flex items-center no-underline shrink-0">{{ t('events.detail.openMap') }}</router-link>
           </div>
+          <!-- T22: stația CTP cea mai apropiată + următoarele sosiri (nu apare peste 1,5 km) -->
+          <div class="px-3 border-t border-line empty:hidden"><NearestStop :lat="e.lat" :lng="e.lng" /></div>
         </div>
       </aside>
     </div>
