@@ -14,9 +14,7 @@
     "upcomingTitle": "Evenimentele următoare",
     "seeAll": "Toate",
     "validateTitle": "Validează un cod",
-    "validateHint": "Codurile de ofertă (AX-O…) se validează aici după ce vin ofertele (T10).",
-    "validate": "Validează un cod",
-    "soon": "În curând"
+    "validate": "Validează un cod"
   },
   "stats": {
     "views": "Vizualizări",
@@ -159,8 +157,6 @@
     "organizer": "Organizat de {name}"
   },
   "comingSoon": {
-    "offers": "Ofertele firmei vin în T10 (oferte și coduri de revendicare).",
-    "codes": "Validarea codurilor vine în T10.",
     "reviews": "Recenziile vin în T17."
   },
   "delete": "Șterge",

@@ -1,10 +1,18 @@
 <script setup lang="ts">
-// T10 · Oferte (aceeași listă ca HomeOffersTab). Fișierul e al story-ului T10: înlocuiește placeholder-ul cu ecranul din design/final.
-import { useRoute } from 'vue-router'
-import PlaceholderScreen from '@/shared/components/ui/PlaceholderScreen.vue'
-const route = useRoute()
+// T10 · S1b · /m/offers: aceeași listă ca tab-ul Oferte din Acasă (HomeOffersTab), cu titlu și „înapoi”.
+import { useI18n } from 'vue-i18n'
+import { AppIcon } from '@/shared/components'
+import HomeOffersTab from '@/mobile/components/home/HomeOffersTab.vue'
+import { useBack } from '@/shared/composables/useBack'
+
+const { t } = useI18n()
+const back = useBack('/m')
 </script>
 
 <template>
-  <PlaceholderScreen :title="String(route.meta.title ?? '')" :screen="route.meta.screen" :task="route.meta.task" />
+  <div class="pt-1">
+    <button class="w-11 h-11 rounded-full bg-white border border-line flex items-center justify-center mb-2" :aria-label="t('common.back')" @click="back"><AppIcon name="arrow_back" /></button>
+    <h1 class="text-[30px] font-semibold tracking-[-0.025em] m-0">{{ t('offers.title') }}</h1>
+    <HomeOffersTab />
+  </div>
 </template>

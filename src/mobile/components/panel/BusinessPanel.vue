@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// T09 · E5 — Panoul firmei pe telefon (în cochilia /m/panel). Design: mobile.html „Panou firmă (teren)”: firma, 3 statistici,
-// „Validează un cod” (vine în T10), tab-urile simplificate Evenimente / Anunțuri cu creare în sheet; restul e în panoul web.
+// T09/T10 · E5 — Panoul firmei pe telefon (în cochilia /m/panel). Design: mobile.html „Panou firmă (teren)”: firma, 3 statistici,
+// „Validează un cod” (T10: text sau QR, într-un sheet), tab-urile simplificate Oferte / Evenimente / Anunțuri cu creare în sheet.
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppButton, AppChip, AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/components'
@@ -13,19 +13,56 @@ import { fromEvent, type EventForm as EventFormModel } from '@/shared/composable
 import { useBusinessPanel } from '@/shared/composables/useBusiness'
 import type { AnnouncementCreate, EventCreate } from '@/shared/types/business'
 import type { EventDto } from '@/shared/types/events'
+import BizOfferItem from '@/shared/components/offers/BizOfferItem.vue'
+import CodeValidator from '@/shared/components/offers/CodeValidator.vue'
+import OfferForm from '@/shared/components/offers/OfferForm.vue'
+import { fromOffer, type OfferForm as OfferFormModel } from '@/shared/composables/useOfferForm'
+import { useBusinessOffers, useCodeValidator } from '@/shared/composables/useOffers'
+import type { OfferCreate, OfferDto } from '@/shared/types/offers'
 
 const { t } = useI18n()
 const p = useBusinessPanel()
 
-type Tab = 'events' | 'announcements'
-const tab = ref<Tab>('events')
+type Tab = 'offers' | 'events' | 'announcements'
+const tab = ref<Tab>('offers')
 const eventSheet = ref(false)
 const annSheet = ref(false)
 const editing = ref<EventDto | null>(null)
 const editInitial = ref<EventFormModel | undefined>(undefined)
 const formKey = ref(0)
 
-onMounted(p.load)
+const offers = useBusinessOffers()
+const validator = useCodeValidator()
+const codeSheet = ref(false)
+const offerSheet = ref(false)
+const editingOffer = ref<OfferDto | null>(null)
+const offerInitial = ref<OfferFormModel | undefined>(undefined)
+
+onMounted(() => { p.load(); offers.load() })
+
+function openOffer(o: OfferDto | null) {
+  editingOffer.value = o
+  offerInitial.value = o ? fromOffer(o) : undefined
+  formKey.value++
+  offerSheet.value = true
+}
+async function saveOffer(req: OfferCreate) {
+  const msg = editingOffer.value ? { published: t('offers.biz.saved'), draft: t('offers.biz.saved') } : { published: t('offers.biz.created'), draft: t('offers.biz.createdDraft') }
+  if (await offers.save(editingOffer.value?.id ?? null, req, msg)) offerSheet.value = false
+}
+function toggleOffer(o: OfferDto) {
+  offers.setPaused(o, o.status === 'PUBLISHED', { published: t('offers.biz.published'), draft: t('offers.biz.paused') })
+}
+async function removeOffer(o: OfferDto) {
+  if (window.confirm(t('offers.biz.confirmDelete', { title: o.title }))) await offers.remove(o.id, t('offers.biz.deleted'))
+}
+function openNew() {
+  if (tab.value === 'offers') openOffer(null)
+  else if (tab.value === 'events') openNewEvent()
+  else annSheet.value = true
+}
+/** După un cod validat, statisticile („Coduri folosite”) și lista ofertelor se reîmprospătează. */
+function onValidated() { p.load(); offers.load() }
 
 function openNewEvent() {
   editing.value = null
@@ -78,20 +115,28 @@ async function removeAnnouncement(id: number, title: string) {
 
       <BusinessStats :stats="p.me.value.stats" compact class="mt-3" />
 
-      <AppButton block icon="qr_code_scanner" class="mt-3" disabled>{{ t('business.panel.validate') }}</AppButton>
-      <p class="text-[12.5px] text-muted mt-1.5 mb-0 text-center">{{ t('business.panel.validateHint') }}</p>
+      <AppButton block icon="qr_code_scanner" class="mt-3" @click="codeSheet = true">{{ t('business.panel.validate') }}</AppButton>
 
-      <div class="flex gap-2 mt-5">
-        <AppChip :active="tab === 'events'" @click="tab = 'events'">{{ t('business.tabs.events') }} · {{ p.events.value.length }}</AppChip>
-        <AppChip :active="tab === 'announcements'" @click="tab = 'announcements'">{{ t('business.tabs.announcements') }} · {{ p.announcements.value.length }}</AppChip>
-        <button type="button" class="ml-auto w-[38px] h-[38px] rounded-full bg-ink text-white flex items-center justify-center shrink-0"
-          :aria-label="tab === 'events' ? t('business.events.new') : t('business.announcements.new')"
-          @click="tab === 'events' ? openNewEvent() : (annSheet = true)">
+      <div class="flex items-center gap-2 mt-5">
+        <div class="flex gap-2 overflow-x-auto flex-1 min-w-0 -my-1 py-1 [scrollbar-width:none]">
+        <AppChip class="shrink-0 whitespace-nowrap" :active="tab === 'offers'" @click="tab = 'offers'">{{ t('business.tabs.offers') }} · {{ offers.items.value.length }}</AppChip>
+        <AppChip class="shrink-0 whitespace-nowrap" :active="tab === 'events'" @click="tab = 'events'">{{ t('business.tabs.events') }} · {{ p.events.value.length }}</AppChip>
+        <AppChip class="shrink-0 whitespace-nowrap" :active="tab === 'announcements'" @click="tab = 'announcements'">{{ t('business.tabs.announcements') }} · {{ p.announcements.value.length }}</AppChip>
+        </div>
+        <button type="button" class="w-[38px] h-[38px] rounded-full bg-ink text-white flex items-center justify-center shrink-0"
+          :aria-label="tab === 'offers' ? t('offers.biz.new') : tab === 'events' ? t('business.events.new') : t('business.announcements.new')"
+          @click="openNew">
           <AppIcon name="add" />
         </button>
       </div>
 
-      <div v-if="tab === 'events'" class="flex flex-col gap-2.5 mt-3">
+      <div v-if="tab === 'offers'" class="flex flex-col gap-2.5 mt-3">
+        <EmptyState v-if="!offers.loading.value && !offers.items.value.length" icon="sell" :title="t('offers.biz.empty')" :text="t('offers.biz.emptyText')" :action="t('offers.biz.new')" @action="openOffer(null)" />
+        <BizOfferItem v-for="o in offers.items.value" :key="o.id" :offer="o" actions :can-publish="p.me.value.business.verified"
+          @toggle="toggleOffer(o)" @edit="openOffer(o)" @remove="removeOffer(o)" />
+      </div>
+
+      <div v-else-if="tab === 'events'" class="flex flex-col gap-2.5 mt-3">
         <EmptyState v-if="!p.events.value.length" icon="event" :title="t('business.events.empty')" :text="t('business.events.emptyText')" :action="t('business.events.new')" @action="openNewEvent" />
         <BusinessEventItem v-for="e in p.upcoming.value" :key="e.id" :event="e" actions @edit="openEdit(e)" @remove="removeEvent(e)" />
         <template v-if="p.past.value.length">
@@ -114,6 +159,14 @@ async function removeAnnouncement(id: number, title: string) {
     <AppSheet v-model:open="eventSheet" :title="editing ? t('business.events.edit') : t('business.events.new')">
       <EventForm :key="formKey" :initial="editInitial" :saving="p.saving.value" compact
         :submit-label="editing ? t('business.form.save') : t('business.form.publish')" @submit="saveEvent" @cancel="eventSheet = false" />
+    </AppSheet>
+    <AppSheet v-model:open="codeSheet" :title="t('offers.codes.title')">
+      <p class="text-[13.5px] text-muted m-0 mb-3">{{ t('offers.codes.subtitle') }}</p>
+      <CodeValidator :validator="validator" compact @validated="onValidated" />
+    </AppSheet>
+    <AppSheet v-model:open="offerSheet" :title="editingOffer ? t('offers.biz.edit') : t('offers.biz.new')">
+      <OfferForm :key="formKey" :initial="offerInitial" :saving="offers.saving.value" compact
+        :submit-label="editingOffer ? t('offers.form.save') : t('offers.form.publish')" @submit="saveOffer" @cancel="offerSheet = false" />
     </AppSheet>
     <AppSheet v-model:open="annSheet" :title="t('business.announcements.new')">
       <AnnouncementForm :saving="p.saving.value" compact @submit="saveAnnouncement" @cancel="annSheet = false" />

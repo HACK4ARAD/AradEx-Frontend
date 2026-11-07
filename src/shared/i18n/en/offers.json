@@ -1,1 +1,125 @@
-{}
+{
+  "banner": {
+    "kicker": "Doar în AradExperience",
+    "title": "Până la -20% la cafenelele din centru",
+    "cta": "Vezi cafenelele"
+  },
+  "cats": {
+    "ALL": "Toate",
+    "CAFE": "Cafenele",
+    "RESTAURANT": "Restaurante",
+    "LOCAL": "Făcut în Arad",
+    "EVENT": "Evenimente",
+    "POINTS": "Cu puncte",
+    "OTHER": "Altele"
+  },
+  "title": "Oferte",
+  "subtitle": "Reduceri și produse locale la firmele partenere din Arad.",
+  "empty": "Nicio ofertă aici",
+  "emptyText": "Alege altă categorie sau revino mai târziu.",
+  "until": "până {date}",
+  "permanent": "permanentă",
+  "localBadge": "Făcut în Arad",
+  "badge": {
+    "offer": "Ofertă · {label}",
+    "event": "Eveniment",
+    "points": "Cu puncte · {n} p"
+  },
+  "detail": {
+    "valid": "Valabilă până {date}",
+    "validPermanent": "Valabilă permanent",
+    "details": "Detalii",
+    "businessPage": "Pagina firmei",
+    "directions": "Indicații",
+    "orPoints": "Poți plăti și cu {n} de puncte din acțiunile comunitare.",
+    "notFound": "Oferta nu mai e disponibilă",
+    "notFoundText": "A expirat sau a fost retrasă de firmă."
+  },
+  "redeem": {
+    "cta": "Revendică oferta",
+    "show": "Arată codul",
+    "login": "Conectează-te ca să revendici oferta.",
+    "done": "Oferta e a ta. Codul e și în Contul meu.",
+    "yourCode": "Codul tău",
+    "hint": "Arată codul la casă sau la intrare. Firma îl validează o singură dată.",
+    "used": "Folosit {date}",
+    "pointsLater": "Plata cu puncte vine odată cu punctele (T11). Deocamdată oferta se revendică gratuit.",
+    "errUnavailable": "Oferta nu mai e valabilă azi."
+  },
+  "status": {
+    "ISSUED": "Activ",
+    "USED": "Folosit",
+    "CANCELLED": "Anulat"
+  },
+  "mine": {
+    "title": "Ofertele mele",
+    "empty": "Nicio ofertă revendicată",
+    "emptyText": "Revendică o ofertă și codul apare aici.",
+    "browse": "Vezi ofertele"
+  },
+  "biz": {
+    "title": "Oferte",
+    "subtitle": "Apar în aplicație la „Oferte” și pe pagina firmei.",
+    "new": "Ofertă nouă",
+    "edit": "Editează oferta",
+    "empty": "Nicio ofertă încă",
+    "emptyText": "Creează prima ofertă: apare în tab-ul Oferte din aplicație.",
+    "views": "{n} afișări",
+    "used": "{n} folosite",
+    "pause": "Pauză",
+    "publish": "Publică",
+    "notFound": "Oferta nu mai există.",
+    "created": "Ofertă publicată. Apare acum în aplicație.",
+    "createdDraft": "Salvată ca ciornă.",
+    "saved": "Ofertă salvată.",
+    "paused": "Oferta e pe pauză.",
+    "published": "Oferta e publică.",
+    "deleted": "Ofertă ștearsă.",
+    "confirmDelete": "Ștergi oferta „{title}”? Dacă are coduri emise, doar o ascundem."
+  },
+  "form": {
+    "title": "Titlu",
+    "titlePh": "Ex.: 20% reducere la orice cafea",
+    "description": "Descriere",
+    "descriptionPh": "Ce primește clientul și condițiile.",
+    "discountLabel": "Eticheta",
+    "discountLabelPh": "-20%, 2+1, Gratuit",
+    "category": "Categorie",
+    "categoryAuto": "Din tipul firmei",
+    "localProduct": "Producător local · „Făcut în Arad”",
+    "validFrom": "Valabilă de la",
+    "validUntil": "Până la (gol = permanentă)",
+    "pointsPrice": "Preț în puncte (opțional)",
+    "pointsHint": "Localnicii pot plăti cu punctele din acțiunile comunitare (din T11).",
+    "imageUrl": "Poză (opțional, ex. /img/oferta-cafea.jpg)",
+    "paused": "Salvează ca ciornă (pauză)",
+    "save": "Salvează",
+    "publish": "Publică",
+    "cancel": "Renunță",
+    "required": "Câmp obligatoriu",
+    "untilBeforeFrom": "Data de final e înaintea celei de început",
+    "badNumber": "Număr invalid"
+  },
+  "codes": {
+    "title": "Validează coduri",
+    "subtitle": "Codul de pe telefonul clientului (QR sau text). Devine „folosit” o singură dată.",
+    "placeholder": "AX-O1-…",
+    "validate": "Validează",
+    "scan": "Scanează QR",
+    "stopScan": "Închide camera",
+    "ok": "Cod valid: {offer}",
+    "okSub": "Marcat ca folosit. Poți servi clientul.",
+    "recent": "Coduri recente",
+    "recentEmpty": "Niciun cod încă",
+    "recentEmptyText": "Codurile revendicate și folosite apar aici.",
+    "colCode": "Cod",
+    "colOffer": "Ofertă",
+    "colWhen": "Când",
+    "colStatus": "Stare",
+    "err404": "Cod necunoscut. Verifică literele (fără O și I).",
+    "required": "Scrie codul.",
+    "errUsed": "Codul a fost deja folosit.",
+    "errOther": "Codul e pentru oferta altei firme.",
+    "errCancelled": "Codul a fost anulat."
+  }
+}
