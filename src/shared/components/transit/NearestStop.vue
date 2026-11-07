@@ -2,13 +2,14 @@
 // T22 · rândul „Stația cea mai apropiată · tramvaiul 1 în 4 min” de pe detaliul evenimentului (S3) și al obiectivului (E3).
 // Se reîncarcă la 30 s doar cât ecranul e vizibil; nu apare dacă stația e mai departe de 1,5 km sau dacă cererea pică
 // (e un rând ajutător, fără toast). Fără date live arată liniile din stație („Fără date live acum”).
+// Cu `to` (doar în aplicație, T19) rândul duce la planul de drum din tab-ul Transport („Cum ajung”).
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import { useFormat } from '@/shared/composables/useFormat'
 import { arrivalWhen, lineName, nextPerLine, useNearestStop } from '@/shared/composables/useTransit'
 
-const props = defineProps<{ lat: number; lng: number; bordered?: boolean }>()
+const props = defineProps<{ lat: number; lng: number; bordered?: boolean; to?: string }>()
 const { t } = useI18n()
 const { km } = useFormat()
 
@@ -31,7 +32,7 @@ const summary = computed(() => {
 </script>
 
 <template>
-  <div v-if="d" class="flex items-center gap-3 py-3.5" :class="bordered ? 'border-b border-line' : ''" data-test="nearest-stop">
+  <component :is="to ? 'router-link' : 'div'" v-if="d" :to="to ? { path: '/transport', query: { to } } : undefined" class="flex items-center gap-3 py-3.5 no-underline text-ink" :class="bordered ? 'border-b border-line' : ''" data-test="nearest-stop">
     <AppIcon :name="icon" class="text-muted" />
     <div class="flex-1 min-w-0">
       <div class="text-[15.5px]">{{ t('transit.nearest.title', { name: d.stop.name }) }}</div>
@@ -41,5 +42,6 @@ const summary = computed(() => {
       </div>
     </div>
     <span v-if="d.live && next.length" class="w-2 h-2 rounded-full bg-green shrink-0" :title="t('transit.attribution')" aria-hidden="true" />
-  </div>
+    <span v-if="to" class="shrink-0 flex items-center gap-0.5 text-[13px] font-semibold">{{ t('transit.nearest.howTo') }}<AppIcon name="chevron_right" :size="18" /></span>
+  </component>
 </template>

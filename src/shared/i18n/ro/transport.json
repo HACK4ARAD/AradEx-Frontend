@@ -1,1 +1,138 @@
-{}
+{
+  "title": "Transport în comun",
+  "from": "De la",
+  "myLocation": "Locația ta",
+  "center": "Centrul Aradului",
+  "useLocation": "Folosește locația",
+  "where": "Unde vrei să ajungi?",
+  "clear": "Șterge destinația",
+  "suggestions": "Sugestii",
+  "noMatch": "Nimic găsit. Alege o destinație din sugestii.",
+  "stopType": "Stație CTP · liniile {lines}",
+  "nearby": "Stații lângă tine",
+  "nearbyNone": "Nicio stație CTP la mai puțin de 1,5 km.",
+  "lines": "Linii",
+  "modes": {
+    "TRAM": "Tramvaie",
+    "BUS": "Autobuze"
+  },
+  "towards": "Spre {name}",
+  "now": "acum",
+  "min": "{n} min",
+  "then": "apoi {time}",
+  "at": "la {time}",
+  "scheduled": "după program",
+  "noDepartures": "Nicio plecare în următoarea perioadă",
+  "noLive": "Fără date live acum: liniile din stație sunt {lines}",
+  "lineRow": "{n} stații · ~{min} min cap la cap",
+  "liveCount": "niciun vehicul acum | un vehicul în circulație acum | {n} vehicule în circulație acum",
+  "routes": "Trasee până acolo",
+  "routesSub": "{type} · alege o variantă, apoi vezi traseul pe hartă",
+  "change": "Schimbă",
+  "planning": "Se caută traseele…",
+  "stops": "{n} stație | {n} stații",
+  "boardAt": "Urcă la",
+  "alightAt": "cobori la",
+  "inMin": "în {n} min",
+  "noLiveDep": "fără date live",
+  "towardsShort": "spre {name}",
+  "fastest": "Cel mai rapid",
+  "simplest": "Cel mai simplu",
+  "arrive": "ajungi {time}",
+  "walkTitle": "Pe jos · {km}",
+  "walkSub": "Traseu pe străzi, cu indicații la viraje · ajungi la {time}",
+  "noFaster": "Nicio linie nu te duce mai repede: cea mai bună variantă, cu {line}, ar dura {min} min.",
+  "noTransit": "Nicio linie CTP nu leagă locul ăsta de destinație; alege altă variantă.",
+  "other": "Alte variante",
+  "bikeTitle": "Cu bicicleta · {km}",
+  "bikeSub": "Iei bicicleta de la {from} și o lași la {to}",
+  "carTitle": "Cu mașina · {km}",
+  "carPark": "Parcare: {name} · zona {zone}",
+  "carPaid": "cu plată acum, {tariff}",
+  "carFree": "gratuită acum",
+  "carNoPark": "Nicio parcare cu plată în apropiere; cauți loc pe stradă",
+  "footnote": "Traseele și stațiile sunt cele ale rețelei CTP Arad; plecările sunt live (CTP Arad / Telelink), duratele de mers sunt estimate.",
+  "showOnMap": "Arată traseul pe hartă",
+  "start": "Pornește",
+  "notFound": "Destinația nu mai există.",
+  "loadError": "Rețeaua CTP nu s-a putut încărca.",
+  "retry": "Reîncearcă",
+  "more": {
+    "title": "Pe hartă",
+    "live": "Linii live",
+    "liveSub": "vehiculele în timp real",
+    "bikes": "Biciclete",
+    "bikesSub": "{n} stații bike sharing",
+    "parking": "Parcări",
+    "parkingSub": "zone și tarife"
+  },
+  "bikesNear": "Biciclete lângă tine",
+  "bikeDock": "Stație bike sharing · {km}",
+  "line": {
+    "title": "Linia {n}",
+    "towards": "spre {name}",
+    "info": "{n} stații · ~{min} min cap la cap",
+    "departure": "plecare",
+    "plus": "+{n} min",
+    "nearYou": "lângă tine",
+    "arriving": "vine",
+    "tapStop": "Atinge o stație ca să vezi drumul până acolo. Timpii sunt estimați din lungimea traseului.",
+    "notFound": "Linia nu mai există."
+  },
+  "trip": {
+    "summary": "{min} min · {stops}",
+    "badge": "{min} min · ajungi {time}",
+    "walkToStop": "Mergi {min} min pe jos până la stația",
+    "ride": "{stops} · {min} min, spre {to} · cobori la",
+    "walkToDest": "Mergi {min} min pe jos până la destinație",
+    "walkAll": "Mergi {min} min pe jos ({km})",
+    "walkToDock": "Mergi {min} min pe jos până la stația de biciclete",
+    "rideBike": "Pedalezi {min} min până la stația",
+    "drive": "Conduci {min} min ({km})",
+    "parkAt": "Parchezi la",
+    "start": "Pornește călătoria",
+    "back": "Înapoi",
+    "stop": "Oprește călătoria",
+    "left": "Mai ai {stops} · {min} min",
+    "next": "Următoarea: {name}",
+    "nextBtn": "Următoarea",
+    "getOff": "Coboară la următoarea stație",
+    "thenWalk": "{stop} · apoi {min} min pe jos",
+    "done": "Gata",
+    "ended": "Călătorie încheiată. Drum bun!",
+    "googleMaps": "Google Maps",
+    "liveVehicles": "Vehiculele liniei, live",
+    "approximate": "Mersul pe jos e aproximativ (fără rețea de trasee)."
+  },
+  "poi": {
+    "teatru": {
+      "name": "Teatrul Clasic „Ioan Slavici”",
+      "type": "Teatru"
+    },
+    "cetate": {
+      "name": "Cetatea Aradului",
+      "type": "Obiectiv turistic"
+    },
+    "faleza": {
+      "name": "Faleza Mureșului",
+      "type": "Parc"
+    },
+    "gara": {
+      "name": "Gara Arad",
+      "type": "Gară CFR"
+    },
+    "atrium": {
+      "name": "Atrium Mall",
+      "type": "Centru comercial"
+    },
+    "ceala": {
+      "name": "Pădurea Ceala",
+      "type": "Natură"
+    },
+    "turn": {
+      "name": "Turnul de Apă",
+      "type": "Obiectiv turistic"
+    }
+  },
+  "liveShort": "{n} live acum"
+}

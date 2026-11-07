@@ -94,7 +94,7 @@ function openExternal() {
         </router-link>
       </div>
       <!-- T22: stația CTP cea mai apropiată de locul evenimentului + următoarele sosiri -->
-      <NearestStop :lat="e.lat" :lng="e.lng" bordered />
+      <NearestStop :lat="e.lat" :lng="e.lng" bordered :to="`event:${e.id}`" />
       <router-link v-if="e.organizerBusinessId" :to="`/businesses/${e.organizerBusinessId}`" class="flex items-center gap-3 py-3.5 border-b border-line no-underline text-ink">
         <AppIcon name="storefront" class="text-muted" />
         <div class="flex-1 min-w-0">

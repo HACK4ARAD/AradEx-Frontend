@@ -81,7 +81,7 @@ const btn = 'flex items-center justify-center gap-2 min-h-[52px] rounded-2xl tex
 
       <PlaceInfo :place="place" class="mt-4" />
       <!-- T22: stația CTP cea mai apropiată de obiectiv + următoarele sosiri -->
-      <NearestStop :lat="place.lat" :lng="place.lng" />
+      <NearestStop :lat="place.lat" :lng="place.lng" :to="`place:${place.id}`" />
       <p class="text-muted text-[15px] leading-relaxed mt-4">{{ place.description }}</p>
       <p class="text-muted text-[12px] mt-4">{{ t('places.detail.readAloud') }}</p>
     </div>

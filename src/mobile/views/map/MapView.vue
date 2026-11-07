@@ -2,6 +2,7 @@
 // T08 · S7 — harta (design/final mobile „Hartă”): pe tot ecranul, căutare, Azi / Weekend / 7 zile, tipuri, pinii aplicației;
 // pin → card jos cu „Arată traseul” (OSRM, pe jos / mașină) și „Deschide”. `?to=event:5` (din „Indicații”) deschide direct traseul.
 // Modul de deplasare (Pe jos / Transport / Mașină) alege straturile: liniile CTP + stațiile de biciclete, respectiv parcările cu plată.
+// Din tab-ul Transport (T19): `?travel=transit|car` deschide harta în modul ăla, `?focus=bike:<id>` cu stația de biciclete selectată.
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -24,7 +25,7 @@ const auth = useAuthStore()
 const f = useFormat()
 
 // starea (perioadă, tip, pin, traseu cu routeSeq, ținta din `?to=`) e comună cu harta de pe web: shared/composables/useMapScreen
-const { geo, period, kind, selected, mode, directions, items, loading, markers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init } = useMapScreen(route.query.to)
+const { geo, period, kind, selected, mode, directions, items, loading, markers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init, focusPoint } = useMapScreen(route.query.to, { travel: route.query.travel, focus: route.query.focus })
 const anyCard = computed(() => !!sel.value || selLayer.value)
 const mapRef = ref<InstanceType<typeof MapView> | null>(null)
 const initials = computed(() => (auth.user?.displayName ?? '').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase())
@@ -42,7 +43,7 @@ onMounted(init)
   <div class="fixed inset-0 mx-auto w-full max-w-[480px] z-0">
     <MapView ref="mapRef" :markers="markers" :selected-id="selected" :route="directions?.line ?? null"
       :route-approximate="directions?.approximate" :me="geo.isFallback.value ? null : geo.position.value"
-      :insets="{ top: 170, bottom: routing ? 480 : 330 }" :lines="lines" @select="select" />
+      :insets="{ top: 170, bottom: routing ? 480 : 330 }" :lines="lines" :center="focusPoint" :zoom="focusPoint ? 16 : 15" @select="select" />
     <!-- Transport / Mașină: comutatoarele și legenda modului, cu sursele obligatorii ale datelor (cardurile le au și ele) -->
     <MapLayerPanel v-if="travel !== 'foot' && !anyCard" :modes="transit.modes.value" :zones="parking.zones.value" v-model:bikes="showBikes" :travel="travel" attributions
       @toggle-mode="transit.toggleMode"
