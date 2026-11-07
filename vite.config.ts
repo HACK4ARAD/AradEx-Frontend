@@ -19,7 +19,7 @@ export default defineConfig({
         short_name: 'AradExp',
         description: 'Evenimente, obiective cu ghid, oferte locale și comunitate în Arad',
         lang: 'ro',
-        start_url: '/m',
+        start_url: '/',
         display: 'standalone',
         background_color: '#FAFAF7',
         theme_color: '#111111',

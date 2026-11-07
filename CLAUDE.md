@@ -1,6 +1,6 @@
 # AradEx-Frontend — context pentru Claude Code
 
-Frontend-ul AradExperience (Hack4Arad 2026): o singură aplicație Vue cu două interfețe — **mobil** (`/m/*`, PWA, tab bar) și **web** (`/w/*`, bară sus + sidebar) — peste același client API. Repo în organizația HACK4ARAD, frate cu `AradEx-Plan` (planul comun), `AradEx-Backend`, `AradEx-Infrastructure` și `AradEx-Ops` (agenții Paperclip). **Citește întâi `../AradEx-Plan/CLAUDE.md`** (regulile echipei) ; `../AradEx-Plan/STRUCTURE.md` descrie toate repo-urile. Documentația e în `../AradEx-Plan/docs/`, designul în `../AradEx-Plan/design/`. Skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt într-un singur loc: `../AradEx-Plan/.claude/skills/`.
+Frontend-ul AradExperience (Hack4Arad 2026): un singur cod Vue cu două aplicații, fără prefix în URL — **aplicația mobilă** (iOS + Android, are tot; tab bar) și **web-ul** (site-ul de prezentare al aplicației: prezentarea, Comunitate doar de citit, Confidențialitate, login și panourile Primărie / firme / Admin cu sidebar) — peste același client API. Aplicația se alege la pornire (`src/router/app.ts`). Repo în organizația HACK4ARAD, frate cu `AradEx-Plan` (planul comun), `AradEx-Backend`, `AradEx-Infrastructure` și `AradEx-Ops` (agenții Paperclip). **Citește întâi `../AradEx-Plan/CLAUDE.md`** (regulile echipei) ; `../AradEx-Plan/STRUCTURE.md` descrie toate repo-urile. Documentația e în `../AradEx-Plan/docs/`, designul în `../AradEx-Plan/design/`. Skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt într-un singur loc: `../AradEx-Plan/.claude/skills/`.
 
 ## Citește înainte de orice task
 1. `../AradEx-Plan/docs/PLAN.md` — task-ul curent (partea „FE”). 2. `../AradEx-Plan/docs/API.md` — contractul; `src/shared/types/<modul>.ts` îl oglindesc. 3. `../AradEx-Plan/docs/FEATURES.md` — regulile pe roluri și diferențele mobil vs web.
@@ -25,10 +25,13 @@ src/
                               community/ActionCard, places/PlaceCard + AudioGuideBar, map/MapView
     i18n/                     ro/<modul>.json + en/<modul>.json (fișierul = cheia de top: ro/events.json → t('events.…')), încărcate automat
     styles/base.css           tokens + bază Tailwind
-  mobile/  layouts/MobileLayout.vue (tab bar)   views/<feature>/XView.vue (câte unul per rută)   components/home/ (tab-urile din Acasă), components/panel/ (/m/panel)
+  mobile/  layouts/MobileLayout.vue (tab bar)   views/<feature>/XView.vue (câte unul per rută)   components/home/ (tab-urile din Acasă), components/panel/ (/panel)
   web/     layouts/WebLayout.vue (bară + sidebar) views/<feature>/XView.vue (câte unul per rută; business-panel/, city/, admin/ = câte unul pe secțiune;
-           account/ = Contul meu cu tab-uri)   components/home/ (secțiunile landing-ului)
-  router/index.ts             toate rutele din API.md §Rute FE; meta.roles; `/` → /m sau /w după lățime; `?ui=m|w` forțează, se ține în localStorage
+           legal/ = Confidențialitate)   components/home/ (secțiunile prezentării)   presentation.ts (linkuri de descărcare, contact)
+           web/views/{events,places,map,plan,offers,chat,account,business}/ nu mai sunt în router (T20): web-ul nu are paginile publice ale aplicației
+  router/                     app.ts: ce aplicație rulează (nativ → mobile; `?app=mobile|web` forțează și se ține în localStorage `ax.app`;
+                              `?preview=mobile` doar pentru tab-ul curent, din panouri; implicit web) · mobile.ts / web.ts: rutele din API.md §Rute FE
+                              (fără prefix; o rută nouă se scrie fără /m sau /w) · routes.ts: + redirect /m/* și /w/* → /* · index.ts: guard meta.roles
 public/                       manifest, icon-uri, fonturi, `_redirects` (nefolosit pe AWS), img/ (pozele din seed, copiate din ../AradEx-Plan/design/assets)
 .github/workflows/deploy.yml   deploy pe AWS la push pe `main` (teste + build → imagine nginx în ECR → ECS); infrastructura: ../AradEx-Infrastructure
 deploy/                       Dockerfile + nginx.conf ale imaginii de producție (fallback SPA, cache: `index.html`/`sw.js` fără cache, `assets/` imutabile)
@@ -38,7 +41,7 @@ Feature-urile (subfolderele) sunt aceleași ca în BE: `auth`, `home`, `events`,
 ## Comenzi
 ```
 npm install
-npm run dev            # :5173 — /m mobil, /w web
+npm run dev            # :5173 — web; aplicația mobilă cu /?app=mobile (înapoi: /?app=web)
 npm run build          # vue-tsc + vite build + PWA
 npm run test           # vitest
 cp .env.example .env   # VITE_API_URL=http://localhost:8080/api/v1, VITE_DEMO=true
@@ -77,7 +80,7 @@ Din T02 fiecare rută are fișierul ei de view (`meta.task` din router spune al 
 | T11 Comunitate | `mobile/views/community/*`, `web/views/community/*`, `mobile/components/home/HomeCommunityTab.vue`, `mobile/components/panel/CityPanel.vue`, `web/views/city/City{Dashboard,Actions,Validate,Leaderboard}View.vue`, `web/views/account/AccountPointsView.vue`, `shared/components/community/`, `types/community.ts`, `api/community.ts`, `i18n/*/community.json` |
 | T12 Chat · T13 Planificator | `mobile/views/chat/*`, `web/views/chat/*` · `mobile/views/plan/*`, `web/views/plan/*`, `web/views/account/AccountItinerariesView.vue`; `types/chat.ts`, `types/plan.ts`, `api/ai.ts`, `i18n/*/chat.json`, `i18n/*/plan.json` |
 | T14 Admin | `web/views/admin/*`, `web/views/city/CityPartnersView.vue`, `types/admin.ts`, `api/admin.ts`, `i18n/*/admin.json` |
-| T18 Voluntari | `mobile/views/volunteer/*`, `web/views/city/City{Volunteers,Messages}View.vue`, `types/volunteer.ts`, `api/volunteer.ts`, `i18n/*/volunteer.json` (rutele `/m/vol/*` au deja `roles: ['VOLUNTEER']`, fără cont → `/m/vol/login`) |
+| T18 Voluntari | `mobile/views/volunteer/*`, `web/views/city/City{Volunteers,Messages}View.vue`, `types/volunteer.ts`, `api/volunteer.ts`, `i18n/*/volunteer.json` (rutele `/vol/*` au deja `roles: ['VOLUNTEER']`, fără cont → `/vol/login`) |
 | T19 Transport | `mobile/views/transport/*`, `i18n/*/transport.json` (datele liniilor în `shared/data/transport/` sau `public/`) |
 
 ## Commit-uri
