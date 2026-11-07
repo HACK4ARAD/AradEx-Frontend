@@ -1,6 +1,9 @@
 // Oglinda DTO-urilor din docs/API.md. Când BE schimbă un DTO, se schimbă și aici, în același PR.
 
-export type Role = 'VISITOR' | 'LOCAL' | 'BUSINESS' | 'CITY_HALL' | 'ADMIN'
+/** VOLUNTEER: cont creat de Primărie (T18); nu se poate înregistra singur, ca CITY_HALL și ADMIN. */
+export type Role = 'VISITOR' | 'LOCAL' | 'BUSINESS' | 'CITY_HALL' | 'ADMIN' | 'VOLUNTEER'
+export type SelfRegisterRole = 'VISITOR' | 'LOCAL' | 'BUSINESS'
+export type BusinessCategory = 'CAFE' | 'RESTAURANT' | 'PRODUCER' | 'WINERY' | 'SHOP' | 'OTHER'
 export type Transport = 'WALK' | 'CAR' | 'PUBLIC'
 export type TicketType = 'FREE' | 'IN_APP' | 'EXTERNAL'
 
@@ -40,9 +43,11 @@ export interface RegisterRequest {
   email: string
   password: string
   displayName: string
-  role: 'VISITOR' | 'LOCAL' | 'BUSINESS'
-  business?: { name: string; category: string; address: string; lat?: number; lng?: number }
+  role: SelfRegisterRole
+  business?: { name: string; category: BusinessCategory; address: string; lat?: number; lng?: number }
 }
+
+export interface UpdateMeRequest { displayName?: string; locale?: 'ro' | 'en' }
 
 export interface PlaceSummary {
   id: number; name: string; type: string; imageUrl?: string; lat: number; lng: number
