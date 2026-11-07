@@ -4,11 +4,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppButton } from '@/shared/components'
 import { useAuthStore } from '@/shared/stores/auth'
+import { useUiStore } from '@/shared/stores/ui'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
-const { t } = useI18n()
+const ui = useUiStore()
+const { t, locale } = useI18n()
 
 const topNav = computed(() => [
   { to: '/w/events', label: t('nav.events') },
@@ -64,6 +66,11 @@ const panelLink = computed(() => {
 })
 
 function logout() { auth.logout(); router.push('/w') }
+
+/** Selector RO/EN (T03): local imediat; pentru utilizatorul logat se salvează și în cont (auth.changeLocale). */
+function toggleLocale() {
+  auth.changeLocale(locale.value === 'ro' ? 'en' : 'ro').catch((e) => ui.error(e))
+}
 </script>
 
 <template>
@@ -111,11 +118,15 @@ function logout() { auth.logout(); router.push('/w') }
           :class="route.path.startsWith(n.to) ? 'text-ink font-semibold' : 'text-muted hover:text-ink'">{{ n.label }}</router-link>
       </nav>
       <div class="ml-auto flex items-center gap-2.5">
+        <button type="button" class="h-8 px-2.5 rounded-full border border-line text-[12px] font-semibold uppercase" :aria-label="t('profile.language')" @click="toggleLocale">
+          {{ locale === 'ro' ? 'RO' : 'EN' }}
+        </button>
         <router-link v-if="panelLink" :to="panelLink.to" class="text-[14px] font-semibold no-underline text-ink">{{ panelLink.label }}</router-link>
-        <AppButton v-if="!auth.isLoggedIn" variant="ghost" size="sm" @click="router.push('/w/login')">{{ t('nav.login') }}</AppButton>
+        <AppButton v-if="!auth.isLoggedIn" variant="ghost" size="sm" @click="router.push({ path: '/w/login', query: { next: route.fullPath } })">{{ t('nav.login') }}</AppButton>
         <template v-else>
           <span class="w-8 h-8 rounded-full bg-ink text-white text-[12px] font-bold flex items-center justify-center">{{ auth.user?.displayName.charAt(0) }}</span>
           <span class="text-[14px] font-semibold hidden md:inline">{{ auth.user?.displayName }}</span>
+          <span class="text-[12px] text-muted hidden lg:inline">· {{ t(`auth.role.${auth.user?.role}`) }}</span>
           <AppButton variant="ghost" size="sm" icon="logout" @click="logout">{{ t('nav.logout') }}</AppButton>
         </template>
         <AppButton size="sm" icon="auto_awesome" @click="router.push('/w/plan')">{{ t('nav.plan') }}</AppButton>

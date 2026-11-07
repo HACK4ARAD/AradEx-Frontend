@@ -47,7 +47,7 @@ cp .env.example .env   # VITE_API_URL=http://localhost:8080/api/v1, VITE_DEMO=tr
 - Texte: `t('events.title')`, cheile în `ro.json` grupate pe ecran, diacritice corecte (ă â î ș ț). `en.json` poate rămâne cu aceleași texte până la T15.
 - Formatare: `useFormat().date(startAt)` → „Sâm., 7 nov. · 11:00”; `.money(40)` → „40 lei”; `.km(0.4)` → „0,4 km”.
 - Hartă: `MapView` e singura componentă care importă Leaflet. QR: `QrCode` primește `value` (codul text `AX-…`); `QrScanner` emite `scanned(code)` și se oprește după prima citire. TTS: `useTts()` cu `speechSynthesis`, pornește doar la tap.
-- Autentificare: token în `localStorage` (`ax.token`), `authStore.user` din `/me` la pornire; 401 → logout + redirect la login cu `?next=`. Rutele au `meta.roles`.
+- Autentificare (T03): token în `localStorage` (`ax.token`), `authStore.user` din `/me` la pornire; 401 pe o cerere cu token → logout (+ login cu `?next=` dacă ruta cere cont). După login fiecare rol ajunge acasă la el (`homeFor` / `landingFor` din `shared/composables/useAuthForm`); limba se schimbă cu `auth.changeLocale`. Rutele au `meta.roles`.
 - Mobil: conținut cu `pb-24` ca tab bar-ul să nu acopere butonul de jos; butonul principal fix jos. Web: panourile au sidebar întunecat 256px pe grupuri (Adminul vede panoul Primăriei + „Administrare”) + conținut max 1280px; paginile web rămân utilizabile pe telefon (fără scroll orizontal).
 
 ## Teste
