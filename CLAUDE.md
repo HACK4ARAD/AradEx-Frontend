@@ -29,7 +29,9 @@ src/
   web/     layouts/WebLayout.vue (bară + sidebar) views/<feature>/XView.vue (câte unul per rută; business-panel/, city/, admin/ = câte unul pe secțiune;
            account/ = Contul meu cu tab-uri)   components/home/ (secțiunile landing-ului)
   router/index.ts             toate rutele din API.md §Rute FE; meta.roles; `/` → /m sau /w după lățime; `?ui=m|w` forțează, se ține în localStorage
-public/                       manifest, icon-uri, fonturi, `_redirects` (Netlify), img/ (pozele din seed, copiate din ../AradEx-Plan/design/assets)
+public/                       manifest, icon-uri, fonturi, `_redirects` (nefolosit pe AWS), img/ (pozele din seed, copiate din ../AradEx-Plan/design/assets)
+.github/workflows/deploy.yml   deploy pe AWS la push pe `main` (teste + build → imagine nginx în ECR → ECS); infrastructura: ../AradEx-Infrastructure
+deploy/                       Dockerfile + nginx.conf ale imaginii de producție (fallback SPA, cache: `index.html`/`sw.js` fără cache, `assets/` imutabile)
 ```
 Feature-urile (subfolderele) sunt aceleași ca în BE: `auth`, `home`, `events`, `tickets`, `places`, `map`, `offers`, `community`, `chat`, `plan` (itinerar), `profile`, `business`, `city`, `admin`. Testele stau lângă cod: `useFormat.test.ts`, `EventCard.test.ts`.
 
