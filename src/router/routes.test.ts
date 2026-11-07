@@ -60,10 +60,23 @@ describe('web routes', () => {
     expect(r.resolve('/admin/users').meta.roles).toEqual(['ADMIN'])
   })
 
-  it('drop the public app pages', async () => {
-    for (const p of ['/events/1', '/places/1', '/map', '/plan', '/offers', '/chat', '/account/tickets', '/businesses/3']) {
+  it('drop the app pages the web does not have', async () => {
+    for (const p of ['/places/1', '/plan', '/chat', '/transport']) {
       expect((await landsOn('web', p)).path, p).toBe('/')
     }
+  })
+
+  it('T23: have the app pages for personal accounts, behind a sign-in', () => {
+    const r = routerFor('web')
+    for (const [p, name] of [['/events', 'w-events'], ['/events/1', 'w-event'], ['/events/1/tickets', 'w-event-tickets'], ['/checkout', 'w-checkout'],
+      ['/tickets/AX-T1', 'w-ticket'], ['/map', 'w-map'], ['/offers', 'w-offers'], ['/offers/2', 'w-offer'], ['/account/tickets', 'w-account-tickets']]) {
+      const to = r.resolve(p)
+      expect(to.name, p).toBe(name)
+      expect(to.meta.roles, p).toEqual(['VISITOR', 'LOCAL'])
+    }
+    expect(r.resolve('/community/actions/1').name).toBe('w-action')
+    expect(r.resolve('/community/actions/1').meta.roles).toBeUndefined()
+    expect(r.resolve('/businesses/3').name).toBe('w-business-page')
   })
 
   it('redirect old /w links', async () => {

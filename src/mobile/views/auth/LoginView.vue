@@ -5,7 +5,7 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import LoginForm from '@/shared/components/auth/LoginForm.vue'
-import PhoneLogin from '@/mobile/components/auth/PhoneLogin.vue'
+import PhoneLogin from '@/shared/components/auth/PhoneLogin.vue'
 import { useBack } from '@/shared/composables/useBack'
 
 const { t } = useI18n()

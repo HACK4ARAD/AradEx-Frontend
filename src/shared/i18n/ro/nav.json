@@ -53,7 +53,24 @@
     "w-admin": "Administrare",
     "w-admin-content": "Conținut & moderare",
     "w-admin-users": "Utilizatori",
-    "w-admin-settings": "Setări"
+    "w-admin-settings": "Setări",
+    "w-action": "Acțiune comunitară",
+    "w-leaderboard": "Clasament",
+    "w-business-page": "Firmă",
+    "w-events": "Evenimente",
+    "w-event": "Eveniment",
+    "w-event-tickets": "Alege biletele",
+    "w-checkout": "Plată",
+    "w-confirm": "Rezervarea e confirmată",
+    "w-ticket": "Bilet",
+    "w-map": "Hartă",
+    "w-offers": "Oferte",
+    "w-offer": "Ofertă",
+    "w-account-tickets": "Biletele mele",
+    "w-account-saved": "Salvate",
+    "w-account-points": "Puncte & înscrieri",
+    "w-account-offers": "Ofertele mele",
+    "w-account-settings": "Setări"
   },
   "sidebar": {
     "groups": {
@@ -89,5 +106,13 @@
       "settings": "Setări"
     },
     "language": "Limba: română (apasă pentru engleză)"
+  },
+  "personal": {
+    "home": "Acasă",
+    "events": "Evenimente",
+    "map": "Hartă",
+    "offers": "Oferte",
+    "community": "Comunitate",
+    "account": "Contul meu"
   }
 }

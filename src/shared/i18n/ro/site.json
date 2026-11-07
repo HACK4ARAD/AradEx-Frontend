@@ -4,7 +4,8 @@
     "community": "Comunitate",
     "panels": "Pentru firme & Primărie",
     "download": "Descarcă aplicația",
-    "enterPanel": "Intră în panou"
+    "enterPanel": "Intră în panou",
+    "login": "Conectare"
   },
   "hero": {
     "kicker": "Aplicația orașului Arad",
@@ -20,12 +21,30 @@
   },
   "features": {
     "title": "Ce poți face cu aplicația",
-    "events": { "title": "Evenimente și bilete", "text": "Ce se întâmplă azi, în weekend sau săptămâna asta. Cumperi biletul în aplicație și intri cu codul QR." },
-    "guide": { "title": "Ghid virtual", "text": "Cetatea, Palatul Cultural, Teatrul Clasic și alte obiective, explicate punct cu punct, în text și audio." },
-    "offers": { "title": "Oferte locale", "text": "Cafenele, producători și crame din Arad. Revendici oferta și primești un cod pe care îl arăți la casă." },
-    "community": { "title": "Comunitate și puncte", "text": "Te înscrii la acțiunile Primăriei, primești puncte la confirmare și le folosești la firmele partenere." },
-    "transport": { "title": "Transport în comun", "text": "Liniile de tramvai și traseul complet până unde vrei să ajungi, cu stațiile pe hartă." },
-    "ai": { "title": "Asistent AI și plan de vizită", "text": "Întrebi ce poți face cu copiii în weekend sau ceri un program pentru o zi în Arad, cu ore și traseu." }
+    "events": {
+      "title": "Evenimente și bilete",
+      "text": "Ce se întâmplă azi, în weekend sau săptămâna asta. Cumperi biletul în aplicație și intri cu codul QR."
+    },
+    "guide": {
+      "title": "Ghid virtual",
+      "text": "Cetatea, Palatul Cultural, Teatrul Clasic și alte obiective, explicate punct cu punct, în text și audio."
+    },
+    "offers": {
+      "title": "Oferte locale",
+      "text": "Cafenele, producători și crame din Arad. Revendici oferta și primești un cod pe care îl arăți la casă."
+    },
+    "community": {
+      "title": "Comunitate și puncte",
+      "text": "Te înscrii la acțiunile Primăriei, primești puncte la confirmare și le folosești la firmele partenere."
+    },
+    "transport": {
+      "title": "Transport în comun",
+      "text": "Liniile de tramvai și traseul complet până unde vrei să ajungi, cu stațiile pe hartă."
+    },
+    "ai": {
+      "title": "Asistent AI și plan de vizită",
+      "text": "Întrebi ce poți face cu copiii în weekend sau ceri un program pentru o zi în Arad, cu ore și traseu."
+    }
   },
   "now": {
     "title": "Acum în Arad",
@@ -46,15 +65,34 @@
     },
     "soonTitle": "Lista acțiunilor și clasamentul apar aici în curând",
     "soonText": "Până atunci le găsești în aplicație, în tab-ul Comunitate din Acasă.",
-    "photos": { "plant": "Plantare de copaci", "clean": "Curățenie", "blood": "Donare de sânge" }
+    "photos": {
+      "plant": "Plantare de copaci",
+      "clean": "Curățenie",
+      "blood": "Donare de sânge"
+    }
   },
   "roles": {
     "title": "Pentru cine",
-    "visitor": { "title": "Vizitator", "text": "Ce faci azi, ghid la obiective, program pentru o zi." },
-    "local": { "title": "Localnic", "text": "Evenimente, oferte și puncte pentru ce faci în oraș." },
-    "business": { "title": "Firmă locală", "text": "Oferte, evenimente și anunțuri, validare de coduri." },
-    "city": { "title": "Primărie", "text": "Agenda orașului, acțiuni comunitare, obiective și ghiduri." },
-    "volunteer": { "title": "Voluntar", "text": "Scanează participanții la acțiuni, direct din aplicație." }
+    "visitor": {
+      "title": "Vizitator",
+      "text": "Ce faci azi, ghid la obiective, program pentru o zi."
+    },
+    "local": {
+      "title": "Localnic",
+      "text": "Evenimente, oferte și puncte pentru ce faci în oraș."
+    },
+    "business": {
+      "title": "Firmă locală",
+      "text": "Oferte, evenimente și anunțuri, validare de coduri."
+    },
+    "city": {
+      "title": "Primărie",
+      "text": "Agenda orașului, acțiuni comunitare, obiective și ghiduri."
+    },
+    "volunteer": {
+      "title": "Voluntar",
+      "text": "Scanează participanții la acțiuni, direct din aplicație."
+    }
   },
   "panels": {
     "title": "Ești Primărie sau firmă?",
