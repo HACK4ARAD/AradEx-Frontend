@@ -143,11 +143,18 @@
       "duration": "Between 5 and 1800 seconds",
       "fix": "Check the highlighted fields."
     },
-    "upload": "Upload photo",
     "uploading": "Uploading…",
     "uploaded": "Photo uploaded. Press “Save”.",
-    "uploadHint": "JPEG, PNG, WebP or GIF, max 10 MB. Stored in S3.",
-    "external": "Photo is on another site",
-    "stored": "Photo is in S3"
+    "stored": "Stored in S3",
+    "photoChosen": "Photo selected",
+    "photoAdd": "Add a photo",
+    "pickFile": "Choose file",
+    "photoHint": "JPEG, PNG, WebP or GIF, max 10 MB. You can also drop it here.",
+    "onSite": "On another site: {host}",
+    "inApp": "From the app",
+    "editLink": "Link",
+    "hideLink": "Hide link",
+    "remove": "Remove photo",
+    "photo": "Photo"
   }
 }

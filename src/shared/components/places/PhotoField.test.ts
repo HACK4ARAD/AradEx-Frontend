@@ -15,7 +15,8 @@ describe('PhotoField', () => {
       url: 'https://api.test/api/v1/media/uploads/ab.jpg', key: 'uploads/ab.jpg', contentType: 'image/jpeg', size: 3,
     })
     const w = mount(PhotoField, { props: { label: 'Poză (URL)', modelValue: 'https://www.visitarad.ro/x.jpg' }, ...opts })
-    expect(w.text()).toContain('Poza e pe alt site')
+    expect(w.text()).toContain('Pe alt site: www.visitarad.ro')
+    expect(w.find('[data-test="photo-url"]').exists()).toBe(false)
 
     const input = w.find('[data-test="photo-input"]')
     const file = new File([new Uint8Array([0xff, 0xd8, 0xff])], 'poza.jpg', { type: 'image/jpeg' })
@@ -24,6 +25,14 @@ describe('PhotoField', () => {
     await flushPromises()
 
     expect(upload).toHaveBeenCalledWith(file)
+    expect(w.emitted('update:modelValue')?.at(-1)).toEqual(['https://api.test/api/v1/media/uploads/ab.jpg'])
+  })
+
+  it('shows the link only on request', async () => {
+    const w = mount(PhotoField, { props: { label: 'Poză', modelValue: '' }, ...opts })
+    expect(w.text()).toContain('Adaugă o poză')
+    await w.find('[data-test="photo-link-toggle"]').trigger('click')
+    await w.find('[data-test="photo-url"]').setValue('https://api.test/api/v1/media/uploads/ab.jpg')
     expect(w.emitted('update:modelValue')?.at(-1)).toEqual(['https://api.test/api/v1/media/uploads/ab.jpg'])
   })
 
