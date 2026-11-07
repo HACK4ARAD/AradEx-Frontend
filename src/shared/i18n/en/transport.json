@@ -1,1 +1,138 @@
-{}
+{
+  "title": "Public transport",
+  "from": "From",
+  "myLocation": "Your location",
+  "center": "Arad city centre",
+  "useLocation": "Use my location",
+  "where": "Where to?",
+  "clear": "Clear destination",
+  "suggestions": "Suggestions",
+  "noMatch": "Nothing found. Pick a destination from the suggestions.",
+  "stopType": "CTP stop · lines {lines}",
+  "nearby": "Stops near you",
+  "nearbyNone": "No CTP stop within 1.5 km.",
+  "lines": "Lines",
+  "modes": {
+    "TRAM": "Trams",
+    "BUS": "Buses"
+  },
+  "towards": "To {name}",
+  "now": "now",
+  "min": "{n} min",
+  "then": "then {time}",
+  "at": "at {time}",
+  "scheduled": "scheduled",
+  "noDepartures": "No departures coming up",
+  "noLive": "No live data right now: lines here are {lines}",
+  "lineRow": "{n} stops · ~{min} min end to end",
+  "liveCount": "no vehicle now | one vehicle running now | {n} vehicles running now",
+  "routes": "Ways to get there",
+  "routesSub": "{type} · pick one, then see the route on the map",
+  "change": "Change",
+  "planning": "Finding routes…",
+  "stops": "{n} stop | {n} stops",
+  "boardAt": "Board at",
+  "alightAt": "get off at",
+  "inMin": "in {n} min",
+  "noLiveDep": "no live data",
+  "towardsShort": "to {name}",
+  "fastest": "Fastest",
+  "simplest": "Simplest",
+  "arrive": "arrive {time}",
+  "walkTitle": "Walk · {km}",
+  "walkSub": "Street route with turn-by-turn directions · arrive at {time}",
+  "noFaster": "No line gets you there faster: the best option, with {line}, would take {min} min.",
+  "noTransit": "No CTP line links this place to your destination; pick another option.",
+  "other": "Other options",
+  "bikeTitle": "By bike · {km}",
+  "bikeSub": "Take a bike at {from} and drop it at {to}",
+  "carTitle": "By car · {km}",
+  "carPark": "Parking: {name} · zone {zone}",
+  "carPaid": "paid now, {tariff}",
+  "carFree": "free right now",
+  "carNoPark": "No paid parking nearby; look for a spot on the street",
+  "footnote": "Routes and stops are those of the CTP Arad network; departures are live (CTP Arad / Telelink), travel times are estimates.",
+  "showOnMap": "Show route on map",
+  "start": "Start",
+  "notFound": "This destination no longer exists.",
+  "loadError": "The CTP network could not be loaded.",
+  "retry": "Try again",
+  "more": {
+    "title": "On the map",
+    "live": "Live lines",
+    "liveSub": "vehicles in real time",
+    "bikes": "Bikes",
+    "bikesSub": "{n} bike-sharing stations",
+    "parking": "Parking",
+    "parkingSub": "zones and prices"
+  },
+  "bikesNear": "Bikes near you",
+  "bikeDock": "Bike-sharing station · {km}",
+  "line": {
+    "title": "Line {n}",
+    "towards": "to {name}",
+    "info": "{n} stops · ~{min} min end to end",
+    "departure": "start",
+    "plus": "+{n} min",
+    "nearYou": "near you",
+    "arriving": "coming",
+    "tapStop": "Tap a stop to see how to get there. Times are estimated from the route length.",
+    "notFound": "This line no longer exists."
+  },
+  "trip": {
+    "summary": "{min} min · {stops}",
+    "badge": "{min} min · arrive {time}",
+    "walkToStop": "Walk {min} min to the stop",
+    "ride": "{stops} · {min} min, to {to} · get off at",
+    "walkToDest": "Walk {min} min to your destination",
+    "walkAll": "Walk {min} min ({km})",
+    "walkToDock": "Walk {min} min to the bike station",
+    "rideBike": "Ride {min} min to the station",
+    "drive": "Drive {min} min ({km})",
+    "parkAt": "Park at",
+    "start": "Start the trip",
+    "back": "Back",
+    "stop": "End the trip",
+    "left": "{stops} left · {min} min",
+    "next": "Next: {name}",
+    "nextBtn": "Next",
+    "getOff": "Get off at the next stop",
+    "thenWalk": "{stop} · then {min} min on foot",
+    "done": "Done",
+    "ended": "Trip ended. Have a good one!",
+    "googleMaps": "Google Maps",
+    "liveVehicles": "The line's vehicles, live",
+    "approximate": "The walking part is approximate (no routing network)."
+  },
+  "poi": {
+    "teatru": {
+      "name": "Ioan Slavici Classic Theatre",
+      "type": "Theatre"
+    },
+    "cetate": {
+      "name": "Arad Fortress",
+      "type": "Sight"
+    },
+    "faleza": {
+      "name": "Mureș riverside",
+      "type": "Park"
+    },
+    "gara": {
+      "name": "Arad railway station",
+      "type": "Railway station"
+    },
+    "atrium": {
+      "name": "Atrium Mall",
+      "type": "Shopping centre"
+    },
+    "ceala": {
+      "name": "Ceala Forest",
+      "type": "Nature"
+    },
+    "turn": {
+      "name": "Water Tower",
+      "type": "Sight"
+    }
+  },
+  "liveShort": "{n} live now"
+}

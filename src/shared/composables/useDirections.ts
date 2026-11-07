@@ -1,10 +1,10 @@
 import type { GeoPoint } from '@/shared/types/common'
 
 /**
- * T08 · traseul între două puncte: OSRM public (routing.openstreetmap.de), pe jos sau cu mașina, fără cheie.
- * Dacă OSRM nu răspunde, linie dreaptă + estimare la 5 km/h (pe jos) / 30 km/h (mașină), marcată `approximate`, fără eroare.
+ * T08 · traseul între două puncte: OSRM public (routing.openstreetmap.de), pe jos, cu mașina sau cu bicicleta (T19), fără cheie.
+ * Dacă OSRM nu răspunde, linie dreaptă + estimare la 5 km/h (pe jos) / 30 km/h (mașină) / 15 km/h (bicicletă), marcată `approximate`, fără eroare.
  */
-export type TravelMode = 'foot' | 'car'
+export type TravelMode = 'foot' | 'car' | 'bike'
 
 export interface Directions {
   /** puncte [lat, lng] pentru Leaflet */
@@ -14,7 +14,7 @@ export interface Directions {
   approximate: boolean
 }
 
-const SPEED_KMH: Record<TravelMode, number> = { foot: 5, car: 30 }
+const SPEED_KMH: Record<TravelMode, number> = { foot: 5, car: 30, bike: 15 }
 const TIMEOUT_MS = 6000
 
 /** Distanța în linie dreaptă (haversine), în km. */
@@ -62,5 +62,6 @@ export async function fetchDirections(from: GeoPoint, to: GeoPoint, mode: Travel
 
 /** Indicații în Google Maps (fără cheie): pe telefon deschide aplicația. */
 export function googleMapsUrl(to: GeoPoint, mode: TravelMode): string {
-  return `https://www.google.com/maps/dir/?api=1&destination=${to.lat},${to.lng}&travelmode=${mode === 'foot' ? 'walking' : 'driving'}`
+  const travel = { foot: 'walking', car: 'driving', bike: 'bicycling' }[mode]
+  return `https://www.google.com/maps/dir/?api=1&destination=${to.lat},${to.lng}&travelmode=${travel}`
 }

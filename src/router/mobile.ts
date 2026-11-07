@@ -41,8 +41,8 @@ export const mobileRoutes: RouteRecordRaw[] = [
       { path: 'panel', name: 'm-panel', component: () => import('@/mobile/views/panel/PanelView.vue'), meta: { title: 'Panou', screen: 'E5/E7', task: 'T09/T11', roles: ['BUSINESS', 'CITY_HALL'] } },
       // T19 · Transport în comun (tab în navbar): destinație → trasee → hartă cu tot drumul
       { path: 'transport', name: 'm-transport', component: () => import('@/mobile/views/transport/TransportView.vue'), meta: { title: 'Transport în comun', task: 'T19' } },
-      { path: 'transport/lines/:id/:dir', name: 'm-transport-line', component: () => import('@/mobile/views/transport/LineView.vue'), meta: { title: 'Linie de tramvai', task: 'T19' } },
-      { path: 'transport/trip/:to', name: 'm-transport-trip', component: () => import('@/mobile/views/transport/TripView.vue'), meta: { title: 'Traseul tău', task: 'T19', hideTabs: true } },
+      { path: 'transport/lines/:id/:dir', name: 'm-transport-line', component: () => import('@/mobile/views/transport/LineView.vue'), meta: { title: 'Linie CTP', task: 'T19' } },
+      { path: 'transport/trip/:to', name: 'm-transport-trip', component: () => import('@/mobile/views/transport/TripView.vue'), meta: { title: 'Traseul tău', task: 'T19' } },
       // T18 · Voluntar (cont creat de Primărie, intră cu cod de 6 cifre); fără cont → /vol/login
       { path: 'vol/login', name: 'm-vol-login', component: () => import('@/mobile/views/volunteer/VolLoginView.vue'), meta: { title: 'Intră ca voluntar', task: 'T18', hideTabs: true } },
       { path: 'vol/actions', name: 'm-vol-actions', component: () => import('@/mobile/views/volunteer/VolActionsView.vue'), meta: { title: 'Acțiunile mele', task: 'T18', roles: ['VOLUNTEER'] } },
