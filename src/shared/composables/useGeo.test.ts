@@ -141,4 +141,18 @@ describe('useGeo', () => {
     expect(q).toBeTruthy()
     Object.defineProperty(navigator, 'permissions', { value: undefined, configurable: true })
   })
+
+  it('shows the last known position at once, then moves to the fresh GPS fix', async () => {
+    const w = mockWatch()
+    const quick = vi.fn((ok: PositionCallback, _e?: PositionErrorCallback | null, o?: PositionOptions) => { if (o?.maximumAge) ok(fix(46.18, 21.31, 900)) })
+    ;(navigator.geolocation as unknown as { getCurrentPosition: typeof quick }).getCurrentPosition = quick
+    const g = useGeo()
+    const p = g.locate()
+    await started()
+    await expect(p).resolves.toEqual({ lat: 46.18, lng: 21.31 }) // fără să aștepte GPS-ul
+    expect(quick.mock.calls[0][2]).toMatchObject({ enableHighAccuracy: false })
+    w.emit(fix(46.17, 21.32, 12))
+    expect(g.position.value).toEqual({ lat: 46.17, lng: 21.32 })
+    expect(g.accuracy.value).toBe(12)
+  })
 })

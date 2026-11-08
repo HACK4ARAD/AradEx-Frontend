@@ -5,5 +5,8 @@ import App from './App.vue'
 import { router } from '@app/router'
 import { i18n } from './shared/i18n'
 import './shared/styles/base.css'
+import { warmUpLocation } from './shared/composables/useGeo'
 
 createApp(App).use(createPinia()).use(router).use(i18n).mount('#app')
+// locația, dacă e deja permisă, se caută în fundal: harta se deschide direct pe tine
+void warmUpLocation()
