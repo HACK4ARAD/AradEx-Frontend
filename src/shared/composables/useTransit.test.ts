@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { effectScope, nextTick, ref } from 'vue'
-import { arrivalWhen, lineName, nextPerLine, transitMarkers, useNearestStop, useVisiblePolling, vehicleTitle, NEAREST_MAX_KM } from './useTransit'
+import { ageArrivals, arrivalWhen, cachedStatic, lineName, nextPerLine, transitMarkers, useNearestStop, useVisiblePolling, vehicleTitle, NEAREST_MAX_KM, STATIC_MAX_AGE_MS } from './useTransit'
 import type { StopArrivalsDto, TransitArrivalDto, TransitStopDto, TransitVehicleDto } from '@/shared/types/transit'
 
 const visibility = ref<'visible' | 'hidden'>('visible')
@@ -126,5 +126,43 @@ describe('useNearestStop', () => {
     await vi.waitFor(() => expect(r.error.value).toBe('down'))
     expect(r.nearby.value).toBeNull()
     scope.stop()
+  })
+})
+
+describe('ageArrivals', () => {
+  const d: StopArrivalsDto = { stop, live: true, attribution: '', arrivals: [arrival(11, 0), arrival(11, 1), arrival(12, 4)] }
+
+  it('keeps the answer as is in the first minute', () => {
+    expect(ageArrivals(d, 59_000)).toBe(d)
+  })
+
+  it('counts down between requests and drops what left more than a minute ago', () => {
+    expect(ageArrivals(d, 60_000).arrivals.map((a) => a.minutes)).toEqual([0, 0, 3])
+    expect(ageArrivals(d, 2 * 60_000).arrivals.map((a) => [a.routeId, a.minutes])).toEqual([[11, 0], [12, 2]])
+  })
+})
+
+describe('cachedStatic', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('waits for the API the first time and keeps the answer on the phone', async () => {
+    const fetch = vi.fn().mockResolvedValue([1, 2])
+    expect(await cachedStatic('t', fetch)).toEqual([1, 2])
+    expect(JSON.parse(localStorage.getItem('ax.transit.t.v1')!).data).toEqual([1, 2])
+  })
+
+  it('answers instantly from the phone copy and refreshes it in the background', async () => {
+    localStorage.setItem('ax.transit.t.v1', JSON.stringify({ at: Date.now(), data: [1] }))
+    let resolve: (v: number[]) => void = () => {}
+    const fetch = vi.fn(() => new Promise<number[]>((r) => { resolve = r }))
+    expect(await cachedStatic('t', fetch)).toEqual([1]) // nu așteaptă rețeaua
+    resolve([1, 2])
+    await vi.waitFor(() => expect(JSON.parse(localStorage.getItem('ax.transit.t.v1')!).data).toEqual([1, 2]))
+  })
+
+  it('ignores a copy that is too old and survives a failed refresh', async () => {
+    localStorage.setItem('ax.transit.t.v1', JSON.stringify({ at: Date.now() - STATIC_MAX_AGE_MS - 1, data: [9] }))
+    expect(await cachedStatic('t', () => Promise.resolve([3]))).toEqual([3])
+    expect(await cachedStatic('t', () => Promise.reject(new Error('offline')))).toEqual([3])
   })
 })

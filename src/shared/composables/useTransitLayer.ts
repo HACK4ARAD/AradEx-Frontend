@@ -1,6 +1,6 @@
 import { computed, effectScope, getCurrentScope, onScopeDispose, ref, shallowRef, watch, type EffectScope } from 'vue'
 import { transitApi } from '@/shared/api/transit'
-import { loadTransitStops, transitMarkers, useTransitVehicles } from '@/shared/composables/useTransit'
+import { cachedStatic, loadTransitStops, transitMarkers, useTransitVehicles } from '@/shared/composables/useTransit'
 import type { MapLine } from '@/shared/components/map/types'
 import type { TransitMarker, TransitMode, TransitRouteDto, TransitStopDto, TransitVehicleDto } from '@/shared/types/transit'
 
@@ -52,9 +52,9 @@ export function filterTransitModes(modes: readonly TransitMode[], routes: Transi
 }
 
 let routesCache: Promise<TransitRouteDto[]> | null = null
-/** Liniile sunt statice: o singură cerere pe sesiune (și pentru tab-ul Transport, T19). */
+/** Liniile sunt statice: o singură cerere pe sesiune (și pentru tab-ul Transport, T19), păstrate și pe telefon. */
 export function loadTransitRoutes(): Promise<TransitRouteDto[]> {
-  routesCache ??= transitApi.routes().catch((err) => { routesCache = null; throw err })
+  routesCache ??= cachedStatic('routes', () => transitApi.routes()).catch((err) => { routesCache = null; throw err })
   return routesCache
 }
 

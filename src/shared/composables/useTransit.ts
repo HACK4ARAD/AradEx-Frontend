@@ -8,11 +8,49 @@ import type {
 /**
  * T22 · transport public CTP. Datele live trec prin BE (cache comun 25 s spre Telelink), deci aici doar citim:
  * cel mult o cerere la 30 s, niciodată două în paralel, și **doar cât ecranul e vizibil** (regulile din ARAD-DATA.md).
- * Stațiile/liniile sunt statice: o singură încărcare pe sesiune.
+ * Stațiile/liniile sunt statice: o singură încărcare pe sesiune, păstrate și pe telefon (`cachedStatic`), ca ecranele să
+ * pornească instant la următoarea deschidere. Între două cereri, „în N min” scade singur (`useArrivals`).
  */
 export const TRANSIT_POLL_MS = 30_000
 /** „Stația cea mai apropiată” are sens doar la mers pe jos: peste 1,5 km rândul nu se arată. */
 export const NEAREST_MAX_KM = 1.5
+/** Cât de des se recalculează „în N min” între două cereri (fără rețea). */
+export const COUNTDOWN_TICK_MS = 15_000
+/** Rețeaua păstrată pe telefon e folosită cel mult atât; oricum se reîmprospătează în fundal la fiecare pornire. */
+export const STATIC_MAX_AGE_MS = 7 * 24 * 3600_000
+
+/**
+ * Date statice (stațiile, liniile) păstrate în `localStorage`: dacă există o copie de cel mult {@link STATIC_MAX_AGE_MS},
+ * se întoarce imediat, iar cererea pleacă în fundal și o înlocuiește pentru data viitoare; altfel se așteaptă cererea.
+ * Storage-ul poate lipsi (mod privat): atunci e doar cererea.
+ */
+export function cachedStatic<T>(name: string, fetch: () => Promise<T[]>): Promise<T[]> {
+  const key = `ax.transit.${name}.v1`
+  let saved: T[] | null = null
+  try {
+    const raw = localStorage.getItem(key)
+    const v = raw ? (JSON.parse(raw) as { at: number; data: T[] }) : null
+    if (v && Array.isArray(v.data) && v.data.length && Date.now() - v.at < STATIC_MAX_AGE_MS) saved = v.data
+  } catch { /* copie stricată / storage blocat */ }
+  const fresh = fetch().then((data) => {
+    try { if (data.length) localStorage.setItem(key, JSON.stringify({ at: Date.now(), data })) } catch { /* plin / blocat */ }
+    return data
+  })
+  if (!saved) return fresh
+  fresh.catch(() => { /* rămâne copia de pe telefon */ })
+  return Promise.resolve(saved)
+}
+
+/** Sosirile „îmbătrânite” cu minutele trecute de la răspuns: „în 4 min” devine „în 3 min” fără o cerere nouă. */
+export function ageArrivals(d: StopArrivalsDto, elapsedMs: number): StopArrivalsDto {
+  const gone = Math.floor(elapsedMs / 60_000)
+  if (gone <= 0) return d
+  const arrivals = d.arrivals
+    .map((a) => ({ ...a, minutes: a.minutes - gone }))
+    .filter((a) => a.minutes >= -1) // a plecat de mai mult de un minut: dispare (ca în BE)
+    .map((a) => (a.minutes < 0 ? { ...a, minutes: 0 } : a))
+  return { ...d, arrivals }
+}
 
 type T = (key: string, params?: Record<string, unknown>) => string
 
@@ -97,9 +135,15 @@ export function useVisiblePolling(task: () => Promise<void>, ms = TRANSIT_POLL_M
     clear()
     stopWatch()
   }
+  /** Următoarea rulare peste `ms` de acum (datele tocmai au fost aduse altfel). */
+  function later() {
+    if (running || !active || hidden()) return
+    clear()
+    timer = setTimeout(tick, ms)
+  }
   if (getCurrentScope()) onScopeDispose(stop)
   void tick()
-  return { refresh: tick, stop }
+  return { refresh: tick, stop, later }
 }
 
 /** Vehiculele live, reîncărcate la 30 s cât ecranul e vizibil (pentru stratul „Transport” al hărții). */
@@ -122,7 +166,7 @@ export function useTransitVehicles() {
 let stopsCache: Promise<TransitStopDto[]> | null = null
 /** Stațiile (statice): o singură cerere pe sesiune, împărțită de toate ecranele. */
 export function loadTransitStops(): Promise<TransitStopDto[]> {
-  stopsCache ??= transitApi.stops().catch((err) => { stopsCache = null; throw err })
+  stopsCache ??= cachedStatic('stops', () => transitApi.stops()).catch((err) => { stopsCache = null; throw err })
   return stopsCache
 }
 
@@ -143,18 +187,24 @@ export function useNearestStop(point: Ref<{ lat: number; lng: number } | null | 
 }
 
 function useArrivals(fetch: () => Promise<StopArrivalsDto> | null, deps: Ref<unknown>[]) {
-  const data = shallowRef<StopArrivalsDto | null>(null)
+  const raw = shallowRef<StopArrivalsDto | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
+  // „în N min” scade singur între cereri: minutele trecute de la răspuns (ceasul telefonului doar măsoară scurgerea timpului)
+  let receivedAt = 0
+  const now = ref(Date.now())
+  const ticker = setInterval(() => { now.value = Date.now() }, COUNTDOWN_TICK_MS)
+  if (getCurrentScope()) onScopeDispose(() => clearInterval(ticker))
+  const data = computed(() => (raw.value ? ageArrivals(raw.value, now.value - receivedAt) : null))
   let seq = 0
   const polling = useVisiblePolling(async () => {
     const req = fetch()
-    if (!req) { data.value = null; return }
+    if (!req) { raw.value = null; return }
     const mine = ++seq
-    loading.value = data.value == null
+    loading.value = raw.value == null
     try {
       const res = await req
-      if (mine === seq) { data.value = res; error.value = null }
+      if (mine === seq) { receivedAt = Date.now(); now.value = receivedAt; raw.value = res; error.value = null }
     } catch (err) {
       if (mine === seq) error.value = err instanceof Error ? err.message : String(err)
     } finally {
@@ -162,6 +212,6 @@ function useArrivals(fetch: () => Promise<StopArrivalsDto> | null, deps: Ref<unk
     }
   })
   // seq++: răspunsul unei cereri pornite pentru punctul vechi nu mai are voie să scrie peste cel nou
-  watch(deps, () => { seq++; data.value = null; void polling.refresh() })
+  watch(deps, () => { seq++; raw.value = null; void polling.refresh() })
   return { data, loading, error, refresh: polling.refresh, stop: polling.stop }
 }
