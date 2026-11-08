@@ -12,10 +12,10 @@ vi.mock('@/shared/api/google', () => ({
 }))
 
 const info: GoogleInfoDto = {
-  rating: 4.6, userRatingCount: 1240, mapsUrl: 'https://maps.google.com/?cid=1', attribution: 'Powered by Google',
+  rating: 4.6, userRatingCount: 1240, mapsUrl: 'https://maps.google.com/?cid=1', attribution: 'Google Maps',
   reviews: [
     { author: 'Ana P.', authorUrl: 'https://g.co/a', rating: 5, text: 'Superb', relativeTime: 'acum o lună' },
-    { author: 'Mihai R.', rating: 3, text: 'Frumos, dar aglomerat' },
+    { author: 'Mihai R.', rating: 3, text: 'Frumos, dar aglomerat', translated: true, originalText: 'Nice but crowded', mapsUrl: 'https://maps.google.com/review/2' },
   ],
 }
 
@@ -37,7 +37,9 @@ describe('GoogleReviews', () => {
     expect(w.text()).toContain('Ana P.')
     expect(w.text()).toContain('acum o lună')
     expect(w.find('a[href="https://g.co/a"]').exists()).toBe(true)
-    expect(w.find('[data-test=google-attribution]').text()).toBe('Powered by Google')
+    expect(w.find('[data-test=google-attribution]').text()).toBe('Google Maps')
+    expect(w.find('[data-test=google-order]').text()).toContain('Cele mai bine notate primele')
+    expect(w.find('a[href="https://maps.google.com/review/2"]').exists()).toBe(true)
     expect(w.find('a[href="https://maps.google.com/?cid=1"]').exists()).toBe(true)
   })
 

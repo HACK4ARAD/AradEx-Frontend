@@ -12,6 +12,7 @@ import EventImage from '@/shared/components/events/EventImage.vue'
 import TicketQtyRows from '@/shared/components/tickets/TicketQtyRows.vue'
 import MapView from '@/shared/components/map/MapView.vue'
 import NearestStop from '@/shared/components/transit/NearestStop.vue'
+import EventGoogleReviews from '@/shared/components/google/EventGoogleReviews.vue'
 import type { MapMarker } from '@/shared/components/map/types'
 import { useEventFormat } from '@/shared/composables/useEvents'
 import AddToCalendar from '@/shared/components/events/AddToCalendar.vue'
@@ -96,6 +97,10 @@ const btnLg = 'w-full min-h-12 px-5 rounded-[14px] inline-flex items-center just
               <div v-if="e.externalUrl" class="text-muted text-[14px] mt-0.5 truncate">{{ e.externalUrl.replace(/^https?:\/\//, '') }}</div>
             </div>
           </template>
+        </div>
+        <!-- T17: recenziile Google ale locului (sala / obiectivul) sau, dacă nu sunt, ale firmei organizatoare -->
+        <div class="max-w-[680px]">
+          <EventGoogleReviews :place-id="e.placeId" :organizer-business-id="e.organizerBusinessId" />
         </div>
         <p class="text-muted text-[12px] mt-3.5 mb-0">{{ e.isDemo ? t('events.detail.demoNote') : t('events.detail.realNote') }}</p>
       </div>

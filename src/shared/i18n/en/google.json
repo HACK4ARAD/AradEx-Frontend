@@ -1,5 +1,7 @@
 {
   "title": "On Google",
+  "venueTitle": "The venue on Google",
+  "organizerTitle": "The organizer on Google",
   "ratings": {
     "zero": "no ratings",
     "one": "one rating",
@@ -12,9 +14,14 @@
   "less": "Less",
   "stars": "{n} out of 5 stars",
   "noReviews": "No written reviews on Google yet.",
+  "orderNotice": "Highest rated first · reviews selected by Google",
+  "translated": "Translated by Google",
+  "showOriginal": "See original",
+  "showTranslation": "See translation",
+  "openReview": "On Google Maps",
   "link": {
     "title": "Google listing",
-    "sub": "The Google rating and reviews are shown in the app, with “Powered by Google”. Read-only: nothing is written to Google.",
+    "sub": "The Google rating and reviews are shown in the app, credited to “Google Maps”. Read-only: nothing is written to Google.",
     "subPlace": "The ID is found automatically from the name and coordinates when someone opens the sight in the app; you can correct it here.",
     "label": "Google Place ID",
     "placeholder": "e.g. ChIJ7VFfQACZRUcRXFuEhkS_zss",

@@ -9,6 +9,11 @@ export interface GoogleReviewDto {
   text: string
   /** Textul Google, deja în limba cerută („acum o lună”). */
   relativeTime?: string
+  /** Recenzia pe Google Maps (politica Google: utilizatorul trebuie s-o poată deschide). */
+  mapsUrl?: string
+  /** `true` dacă Google a tradus-o în limba cerută; atunci `originalText` e textul original. */
+  translated?: boolean
+  originalText?: string
 }
 
 export interface GoogleInfoDto {
@@ -16,7 +21,8 @@ export interface GoogleInfoDto {
   userRatingCount?: number
   reviews: GoogleReviewDto[]
   mapsUrl: string
-  attribution: 'Powered by Google'
+  /** „Google Maps” (atribuirea cerută de politica Google când nu e hartă Google). */
+  attribution: string
 }
 
 /** Panouri (Primărie, firmă): legătura cu Google; `info` lipsește dacă nu e legat, nu e cheie sau e o problemă (`problem`). */

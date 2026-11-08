@@ -1,5 +1,7 @@
 {
   "title": "A Google-on",
+  "venueTitle": "A helyszín a Google-on",
+  "organizerTitle": "A szervező a Google-on",
   "ratings": {
     "zero": "nincs értékelés",
     "one": "egy értékelés",
@@ -12,9 +14,14 @@
   "less": "Kevesebb",
   "stars": "5-ből {n} csillag",
   "noReviews": "A Google-on még nincs írásos vélemény.",
+  "orderNotice": "A legjobbra értékeltek elöl · a Google által kiválasztott vélemények",
+  "translated": "A Google fordította",
+  "showOriginal": "Eredeti megjelenítése",
+  "showTranslation": "Fordítás megjelenítése",
+  "openReview": "A Google Térképen",
   "link": {
     "title": "Google-adatlap",
-    "sub": "A Google-értékelés és a vélemények megjelennek az alkalmazásban, „Powered by Google” jelöléssel. Csak olvasás: a Google-ba semmit sem írunk.",
+    "sub": "A Google-értékelés és a vélemények megjelennek az alkalmazásban, „Google Maps” jelöléssel. Csak olvasás: a Google-ba semmit sem írunk.",
     "subPlace": "Az azonosítót a név és a koordináták alapján automatikusan megkeressük, amikor valaki megnyitja a látnivalót az alkalmazásban; itt javíthatod.",
     "label": "Google Place ID",
     "placeholder": "pl. ChIJ7VFfQACZRUcRXFuEhkS_zss",
