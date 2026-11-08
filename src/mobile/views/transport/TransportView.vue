@@ -12,7 +12,7 @@ import LineBadge from '@/shared/components/transit/LineBadge.vue'
 import StopDepartures from '@/mobile/components/transport/StopDepartures.vue'
 import TripOptionCard from '@/mobile/components/transport/TripOptionCard.vue'
 import { useTransitVehicles } from '@/shared/composables/useTransit'
-import { useTransitNetwork, useTransportGeo, useTripPlan } from '@/shared/composables/useTransport'
+import { optionKey, useTransitNetwork, useTransportGeo, useTripPlan } from '@/shared/composables/useTransport'
 import { useSuggest } from '@/shared/composables/useSuggest'
 import SuggestDropdown from '@/shared/components/search/SuggestDropdown.vue'
 import { useUiStore } from '@/shared/stores/ui'
@@ -35,7 +35,7 @@ const initials = computed(() => (auth.user?.displayName ?? '').split(/\s+/).map(
 
 const net = useTransitNetwork()
 const geo = useTransportGeo()
-const tp = useTripPlan()
+const tp = useTripPlan({ live: true }) // plecările din plan se reiau la 30 s cât ecranul e vizibil
 const to = computed(() => parseTo(route.query.to))
 const sel = ref(0)
 
@@ -61,6 +61,13 @@ function clearDest() {
 const parking = shallowRef<ParkingData | null>(null)
 const allOptions = computed<TripOption[]>(() => (tp.plan.value ? [...tp.plan.value.options, ...tp.plan.value.others] : []))
 const current = computed(() => allOptions.value[Math.min(sel.value, allOptions.value.length - 1)] ?? null)
+// plecările se reiau la 30 s și ordinea poate să se schimbe: varianta aleasă rămâne aleasă (dacă mai există)
+watch(() => tp.plan.value, (p, old) => {
+  if (!p || !old || p.dest !== old.dest) return
+  const prev = [...old.options, ...old.others][Math.min(sel.value, old.options.length + old.others.length - 1)]
+  const i = prev ? allOptions.value.findIndex((o) => optionKey(o) === optionKey(prev)) : -1
+  sel.value = i >= 0 ? i : 0
+})
 
 const netData = () => ({ stops: net.stops.value, routes: net.routes.value, stopsById: net.stopsById.value })
 let locating = false
