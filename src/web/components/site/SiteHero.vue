@@ -10,9 +10,7 @@ const shots = ['/img/site/app-home.jpg', '/img/site/app-guide.jpg', '/img/site/a
 <template>
   <section id="download" class="scroll-mt-24 grid lg:grid-cols-[1.1fr_1fr] gap-10 items-center pt-4 md:pt-10">
     <div>
-      <div class="inline-flex items-center gap-2 text-[13px] font-semibold text-muted mb-3">
-        <span class="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {{ t('site.hero.kicker') }}
-      </div>
+      <div class="text-[13px] font-semibold text-muted mb-3">{{ t('site.hero.kicker') }}</div>
       <h1 class="text-[40px] md:text-[56px] font-semibold tracking-[-0.03em] leading-[1.05] m-0 mb-4">{{ t('site.hero.title') }}</h1>
       <p class="text-[17px] md:text-[18px] text-muted leading-relaxed m-0 mb-7 max-w-[560px]">{{ t('site.hero.text') }}</p>
       <DownloadButtons />
