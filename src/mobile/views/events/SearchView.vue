@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // T06 · S2 Căutare — design/final `/search`: câmp activ, Filtre, sugestii, rezultate: Locuri (T05) și Evenimente ca rânduri.
 // (Ofertele apar aici când vine T10.) Sub câmp, lista derulantă cu sugestii: populare cu câmpul gol, apoi după primele litere,
-// cu liniile CTP din apropierea fiecărui loc (comună cu „Unde vrei să ajungi?” din Transport).
+// cu liniile CTP din apropierea fiecărui loc (comună cu „Unde vrei să ajungi?” din Transport). Câmpul folosește `@input`, nu
+// `v-model`: pe Android tastatura „compune” cuvântul și `v-model` nu se actualiza până la sfârșitul lui (lista reacționa doar la ștergere).
 import { computed, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -58,8 +59,8 @@ onMounted(() => { input.value?.focus(); void sug.load() })
   <div class="relative">
   <div class="flex items-center gap-2.5 h-[52px] px-4 rounded-[16px] bg-white border border-ink shadow-[0_0_0_3px_rgba(17,17,17,.08)] text-muted">
     <AppIcon name="search" />
-    <input ref="input" v-model="text" type="search" enterkeyhint="search" :placeholder="t('events.search.placeholder')" :aria-label="t('events.search.title')"
-      class="flex-1 min-w-0 border-0 outline-none bg-transparent text-ink text-[16px] [&::-webkit-search-cancel-button]:appearance-none" @focus="focused = true" @blur="focused = false">
+    <input ref="input" :value="text" type="search" enterkeyhint="search" :placeholder="t('events.search.placeholder')" :aria-label="t('events.search.title')"
+      class="flex-1 min-w-0 border-0 outline-none bg-transparent text-ink text-[16px] [&::-webkit-search-cancel-button]:appearance-none" @input="text = ($event.target as HTMLInputElement).value" @focus="focused = true" @blur="focused = false">
     <button v-if="text" type="button" class="w-8 h-8 rounded-full flex items-center justify-center" :aria-label="t('events.search.clear')" @mousedown.prevent @click="text = ''"><AppIcon name="close" :size="18" /></button>
   </div>
   <SuggestDropdown v-if="focused" :items="sug.items.value" :query="text" class="absolute left-0 right-0 top-full mt-2 z-30" @pick="pick" />
