@@ -8,6 +8,7 @@ import { usePaymentMode } from '@/shared/composables/usePaymentMode'
 import { AppIcon, AppSheet, EmptyState, Skeleton } from '@/shared/components'
 import EventImage from '@/shared/components/events/EventImage.vue'
 import NearestStop from '@/shared/components/transit/NearestStop.vue'
+import EventGoogleReviews from '@/shared/components/google/EventGoogleReviews.vue'
 import { useEventFormat, useSaveEvent } from '@/shared/composables/useEvents'
 import AddToCalendar from '@/shared/components/events/AddToCalendar.vue'
 import { useEventPage } from '@/shared/composables/useEventPage'
@@ -123,6 +124,8 @@ function openExternal() {
 
       <h3 class="text-[16px] font-semibold mt-[18px] mb-1.5">{{ t('events.detail.about') }}</h3>
       <p class="text-[15px] text-muted leading-[1.45] m-0 whitespace-pre-line">{{ e.description }}</p>
+      <!-- T17: recenziile Google ale locului (sala / obiectivul) sau, dacă nu sunt, ale firmei organizatoare -->
+      <EventGoogleReviews :place-id="e.placeId" :organizer-business-id="e.organizerBusinessId" />
 
       <div class="flex gap-2 mt-[18px]">
         <button type="button" class="min-h-9 px-3 rounded-full inline-flex items-center gap-1.5 text-[13px] font-medium border border-line bg-white" @click="share"><AppIcon name="ios_share" :size="18" />{{ t('events.detail.share') }}</button>

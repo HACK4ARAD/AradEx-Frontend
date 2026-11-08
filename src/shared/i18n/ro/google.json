@@ -1,5 +1,7 @@
 {
   "title": "Pe Google",
+  "venueTitle": "Locul pe Google",
+  "organizerTitle": "Organizatorul pe Google",
   "ratings": {
     "zero": "nicio părere",
     "one": "o părere",
@@ -12,9 +14,14 @@
   "less": "Mai puțin",
   "stars": "{n} din 5 stele",
   "noReviews": "Încă nu sunt recenzii scrise pe Google.",
+  "orderNotice": "Cele mai bine notate primele · recenziile alese de Google",
+  "translated": "Tradus de Google",
+  "showOriginal": "Vezi originalul",
+  "showTranslation": "Vezi traducerea",
+  "openReview": "Pe Google Maps",
   "link": {
     "title": "Pagina de pe Google",
-    "sub": "Ratingul și recenziile Google se afișează în aplicație, cu „Powered by Google”. Doar citire: nu se scrie nimic pe Google.",
+    "sub": "Ratingul și recenziile Google se afișează în aplicație, cu mențiunea „Google Maps”. Doar citire: nu se scrie nimic pe Google.",
     "subPlace": "ID-ul se caută automat după nume și coordonate când cineva deschide obiectivul în aplicație; aici îl poți corecta.",
     "label": "Google Place ID",
     "placeholder": "ex. ChIJ7VFfQACZRUcRXFuEhkS_zss",

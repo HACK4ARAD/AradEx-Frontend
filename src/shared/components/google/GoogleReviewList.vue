@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // T17 · rezumatul Google („Pe Google · ★ 4,6 · 1.240 de păreri”) + recenziile, cu atribuirea cerută de Google:
-// numele autorului (cu link spre profil când există), poza lui, „Powered by Google” și linkul spre locul de pe Google Maps.
+// numele autorului (cu link spre profil când există), poza lui, linkul spre fiecare recenzie, nota despre ordine, „Google Maps” și linkul spre locul de pe Google Maps.
 // Folosit de blocul din aplicație (GoogleReviews) și de panoul firmei (Recenzii).
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -9,7 +9,7 @@ import { AppIcon } from '@/shared/components'
 import { formatRating, ratingsText, starsOf } from '@/shared/composables/useGoogle'
 import type { GoogleInfoDto } from '@/shared/types/google'
 
-const props = withDefaults(defineProps<{ info: GoogleInfoDto; limit?: number; heading?: boolean }>(), { limit: 5, heading: true })
+const props = withDefaults(defineProps<{ info: GoogleInfoDto; limit?: number; heading?: boolean; title?: string }>(), { limit: 5, heading: true })
 const { t } = useI18n()
 const open = ref<Set<number>>(new Set())
 const toggle = (i: number) => {
@@ -18,6 +18,13 @@ const toggle = (i: number) => {
   open.value = next
 }
 const initial = (name: string) => name.trim().charAt(0).toUpperCase() || 'G'
+/** Recenziile traduse de Google la care utilizatorul a cerut originalul. */
+const original = ref<Set<number>>(new Set())
+const toggleOriginal = (i: number) => {
+  const next = new Set(original.value)
+  if (next.has(i)) next.delete(i); else next.add(i)
+  original.value = next
+}
 
 /* „Mai mult” apare doar la recenziile tăiate efectiv la 4 rânduri (depinde de lățimea ecranului, nu de numărul de caractere). */
 const root = ref<HTMLElement | null>(null)
@@ -34,7 +41,7 @@ function measure() {
   clamped.value = next
 }
 onMounted(measure)
-watch(() => props.info, () => { open.value = new Set(); nextTick(measure) })
+watch(() => props.info, () => { open.value = new Set(); original.value = new Set(); nextTick(measure) })
 useResizeObserver(root, () => measure())
 </script>
 
@@ -42,7 +49,7 @@ useResizeObserver(root, () => measure())
   <div ref="root" data-test="google-reviews">
     <div>
       <div class="min-w-0">
-        <div v-if="heading" class="text-[12px] font-semibold uppercase tracking-[0.04em] text-muted">{{ t('google.title') }}</div>
+        <div v-if="heading" class="text-[12px] font-semibold uppercase tracking-[0.04em] text-muted">{{ props.title ?? t('google.title') }}</div>
         <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-0.5">
           <b v-if="props.info.rating != null" class="text-[26px] leading-none tracking-[-0.03em]">{{ formatRating(props.info.rating) }}</b>
           <span v-if="props.info.rating != null" class="flex text-[#F4B400]" :aria-label="t('google.stars', { n: formatRating(props.info.rating) })">
@@ -55,7 +62,8 @@ useResizeObserver(root, () => measure())
       </div>
     </div>
 
-    <div v-if="props.info.reviews.length" class="flex flex-col mt-3">
+    <p v-if="props.info.reviews.length > 1" class="text-[12px] text-muted mt-2 mb-0" data-test="google-order">{{ t('google.orderNotice') }}</p>
+    <div v-if="props.info.reviews.length" class="flex flex-col mt-2">
       <article v-for="(r, i) in props.info.reviews.slice(0, props.limit)" :key="i" class="py-3 border-t border-line">
         <div class="flex items-center gap-2.5">
           <img v-if="r.authorPhotoUrl" :src="r.authorPhotoUrl" alt="" referrerpolicy="no-referrer" class="w-8 h-8 rounded-full object-cover bg-soft shrink-0" loading="lazy">
@@ -67,11 +75,16 @@ useResizeObserver(root, () => measure())
               <span class="flex text-[#F4B400]" :aria-label="t('google.stars', { n: r.rating })">
                 <AppIcon v-for="(on, s) in starsOf(r.rating)" :key="s" name="star" :size="13" :fill="on" :class="on ? '' : 'text-line'" />
               </span>
-              <span v-if="r.relativeTime">{{ r.relativeTime }}</span>
+              <a v-if="r.mapsUrl" :href="r.mapsUrl" target="_blank" rel="noopener" class="text-muted underline" :title="t('google.openReview')">{{ r.relativeTime || t('google.openReview') }}</a>
+              <span v-else-if="r.relativeTime">{{ r.relativeTime }}</span>
             </div>
           </div>
         </div>
-        <p :ref="(el) => { texts[i] = el as HTMLElement | null }" class="text-[14px] leading-[1.45] mt-1.5 mb-0 whitespace-pre-line" :class="open.has(i) ? '' : 'line-clamp-4'">{{ r.text }}</p>
+        <p :ref="(el) => { texts[i] = el as HTMLElement | null }" class="text-[14px] leading-[1.45] mt-1.5 mb-0 whitespace-pre-line" :class="open.has(i) ? '' : 'line-clamp-4'">{{ original.has(i) && r.originalText ? r.originalText : r.text }}</p>
+        <div v-if="r.translated" class="text-[12px] text-muted mt-1" data-test="google-translated">
+          {{ t('google.translated') }} ·
+          <button type="button" class="p-0 bg-transparent border-0 underline text-muted text-[12px]" @click="toggleOriginal(i)">{{ original.has(i) ? t('google.showTranslation') : t('google.showOriginal') }}</button>
+        </div>
         <button v-if="clamped.has(i) || open.has(i)" type="button" class="text-[13px] font-semibold text-ink mt-1 p-0 bg-transparent border-0 underline" @click="toggle(i)">
           {{ open.has(i) ? t('google.less') : t('google.more') }}
         </button>
