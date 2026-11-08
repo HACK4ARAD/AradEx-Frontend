@@ -39,6 +39,8 @@ export interface MapProps {
   /** traseul e o estimare (linie dreaptă): se desenează punctat */
   routeApproximate?: boolean
   me?: GeoPoint | null
+  /** direcția în care mergi / ții telefonul (grade față de nord): săgeata punctului „tu ești aici”; null = doar punctul */
+  meHeading?: number | null
   /** centrul inițial (implicit: `me`, altfel centrul Aradului), de ex. pinul firmei pe pagina ei */
   center?: GeoPoint | null
   zoom?: number
@@ -52,7 +54,20 @@ export interface MapProps {
 export interface MapApi {
   zoomBy: (delta: number) => void
   flyTo: (p: GeoPoint, zoom?: number) => void
+  /** mută centrul fără să schimbe zoom-ul (urmărirea poziției) */
+  panTo: (p: GeoPoint) => void
   invalidate: () => void
+  /** rotirea hărții (grade față de nord); doar harta MapLibre se rotește, celelalte ignoră */
+  setBearing?: (deg: number, duration?: number) => void
+}
+
+/** Evenimentele comune ale hărților: pin apăsat, harta trasă de om (oprește urmărirea), apăsare pe hartă (lungă = alege punctul). */
+export type MapEmits = {
+  select: [id: string | null]
+  interact: []
+  press: [p: GeoPoint, long: boolean]
+  /** harta s-a rotit (grade față de nord; doar MapLibre) */
+  bearing: [deg: number]
 }
 
 /** Stilurile pinilor, comune ambelor hărți (design/final/shared/ui.css: .pin, .me-dot). */
@@ -64,10 +79,20 @@ export function pinElement(m: MapMarker, selected: boolean): HTMLDivElement {
   return el
 }
 
-export function meElement(): HTMLDivElement {
+/** Punctul „tu ești aici”, cu săgeata direcției (ascunsă cât nu știm direcția). */
+export function meElement(heading: number | null = null): HTMLDivElement {
   const el = document.createElement('div')
-  el.className = 'ax-me'
+  el.className = 'ax-me-wrap'
+  el.innerHTML = '<div class="ax-me-cone"></div><div class="ax-me"></div>'
+  setMeHeading(el, heading)
   return el
+}
+
+export function setMeHeading(el: HTMLElement | null | undefined, heading: number | null) {
+  const cone = el?.querySelector<HTMLElement>('.ax-me-cone')
+  if (!cone) return
+  cone.style.display = heading == null ? 'none' : ''
+  if (heading != null) cone.style.transform = `rotate(${Math.round(heading)}deg)`
 }
 
 /**

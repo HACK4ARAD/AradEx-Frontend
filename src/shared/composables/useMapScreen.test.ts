@@ -12,7 +12,7 @@ vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (k: string) => k }) }))
 vi.mock('@/shared/composables/useEvents', () => ({ periodRange: () => ({}), useEventFormat: () => ({}) }))
 vi.mock('@/shared/stores/ui', () => ({ useUiStore: () => ({ toast }) }))
 vi.mock('@/shared/composables/useGeo', () => ({
-  useGeo: () => ({ position: ref({ lat: 46.1866, lng: 21.3123 }), isFallback: ref(true), locate }),
+  useGeo: () => ({ position: ref({ lat: 46.1866, lng: 21.3123 }), isFallback: ref(true), heading: ref(null), locate, track: vi.fn() }),
 }))
 vi.mock('@/shared/composables/useDirections', async (orig) => ({
   ...(await orig<typeof import('./useDirections')>()),
@@ -175,5 +175,39 @@ describe('travel mode', () => {
     expect(visibleItems(items, 'all', null, 'transit')).toEqual([])
     expect(visibleItems(items, 'all', 'place:2', 'transit').map((i) => i.key)).toEqual(['place:2'])
     expect(visibleItems(items, 'event', null, 'car').map((i) => i.key)).toEqual(['event:1'])
+  })
+})
+
+describe('picked point (long press / ?pick=1)', () => {
+  it('a long press drops the point, a short tap closes it, and selecting a pin replaces it', () => {
+    const s = useMapScreen(undefined)
+    s.press({ lat: 46.123456789, lng: 21.3 }, false)
+    expect(s.picked.value).toBeNull()                          // atingere scurtă: nimic
+    s.press({ lat: 46.123456789, lng: 21.3 }, true)
+    expect(s.picked.value).toEqual({ lat: 46.12346, lng: 21.3 }) // rotunjit la ~1 m
+    expect(s.markers.value.some((m) => m.id === 'pick' && m.kind === 'dest')).toBe(true)
+    s.press({ lat: 46.2, lng: 21.4 }, false)
+    expect(s.picked.value).toBeNull()
+    s.press({ lat: 46.2, lng: 21.4 }, true)
+    s.select('event:1')
+    expect(s.picked.value).toBeNull()
+  })
+
+  it('in pick mode a single tap chooses the point, once', () => {
+    const s = useMapScreen(undefined, { pick: '1' })
+    expect(s.pickMode.value).toBe(true)
+    s.press({ lat: 46.17, lng: 21.32 }, false)
+    expect(s.picked.value).toEqual({ lat: 46.17, lng: 21.32 })
+    expect(s.pickMode.value).toBe(false)
+  })
+
+  it('routes to the picked point', async () => {
+    fetchDirections.mockResolvedValue(dir(1.2))
+    const s = useMapScreen(undefined)
+    s.press({ lat: 46.17, lng: 21.32 }, true)
+    await s.showRoute()
+    expect(s.routing.value).toBe(true)
+    expect(fetchDirections).toHaveBeenCalledWith({ lat: 46.18, lng: 21.31 }, expect.objectContaining({ lat: 46.17, lng: 21.32 }), 'foot')
+    expect(s.directions.value?.distanceKm).toBe(1.2)
   })
 })

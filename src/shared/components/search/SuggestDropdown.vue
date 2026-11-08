@@ -44,5 +44,6 @@ function parts(name: string): [string, string, string] {
       </span>
       <AppIcon name="chevron_right" :size="18" class="text-muted shrink-0" />
     </button>
+    <slot name="footer" />
   </div>
 </template>

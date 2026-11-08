@@ -1,4 +1,7 @@
 {
+  "pickOnMap": "Válaszd ki a pontot a térképen",
+  "pickOnMapSub": "Nem találod a helyet? Koppints rá a térképen.",
+  "picked": { "name": "A térképen kiválasztott pont", "type": "Térképen kiválasztva" },
   "title": "Tömegközlekedés",
   "from": "Honnan",
   "myLocation": "Saját hely",

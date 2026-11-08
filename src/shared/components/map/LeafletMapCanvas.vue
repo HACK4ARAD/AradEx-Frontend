@@ -6,12 +6,12 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { GeoPoint } from '@/shared/types/common'
 import { ARAD_CENTER } from '@/shared/composables/useGeo'
-import { LINE_OPACITY, LINE_WEIGHT, fitInsets, pinElement, type MapMarker, type MapProps } from './types'
+import { LINE_OPACITY, LINE_WEIGHT, fitInsets, meElement, pinElement, setMeHeading, type MapEmits, type MapMarker, type MapProps } from './types'
 
 const props = withDefaults(defineProps<MapProps>(),
   { selectedId: null, route: null, routeApproximate: false, me: null, center: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
 
-const emit = defineEmits<{ select: [id: string | null] }>()
+const emit = defineEmits<MapEmits>()
 
 const el = ref<HTMLDivElement | null>(null)
 const map = shallowRef<L.Map | null>(null)
@@ -78,16 +78,18 @@ function drawFit() {
   map.value.fitBounds(L.latLngBounds(props.fit), { paddingTopLeft: [40, pad.top], paddingBottomRight: [40, pad.bottom], animate: false })
 }
 
+/** Punctul tău: creat o dată, apoi doar mutat (urmărirea îl actualizează la 1–2 s), cu săgeata direcției. */
 function drawMe() {
   if (!map.value) return
-  meLayer?.remove()
-  meLayer = null
-  if (props.me) {
+  if (!props.me) { meLayer?.remove(); meLayer = null; return }
+  if (meLayer) meLayer.setLatLng([props.me.lat, props.me.lng])
+  else {
     meLayer = L.marker([props.me.lat, props.me.lng], {
-      icon: L.divIcon({ className: '', html: '<div class="ax-me"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }),
-      interactive: false, keyboard: false,
+      icon: L.divIcon({ className: '', html: meElement(props.meHeading ?? null), iconSize: [18, 18], iconAnchor: [9, 9] }),
+      interactive: false, keyboard: false, zIndexOffset: 900,
     }).addTo(map.value)
   }
+  setMeHeading(meLayer.getElement(), props.meHeading ?? null)
 }
 
 onMounted(() => {
@@ -98,7 +100,10 @@ onMounted(() => {
     maxZoom: 16,
     attribution: 'Esri, HERE, Garmin, © OpenStreetMap contributors',
   }).addTo(map.value)
-  map.value.on('click', () => emit('select', null))
+  map.value.on('click', (e: L.LeafletMouseEvent) => { emit('select', null); emit('press', { lat: e.latlng.lat, lng: e.latlng.lng }, false) })
+  // apăsare lungă pe telefon / click dreapta: alege punctul (destinație pusă de mână)
+  map.value.on('contextmenu', (e: L.LeafletMouseEvent) => emit('press', { lat: e.latlng.lat, lng: e.latlng.lng }, true))
+  map.value.on('dragstart', () => emit('interact'))
   // containerul își termină layout-ul după montare (ecran fix, tranziția rutei): Leaflet își recalculează dimensiunea
   setTimeout(() => map.value?.invalidateSize({ pan: false }), 0)
   drawLines()
@@ -116,16 +121,17 @@ onBeforeUnmount(() => {
 watch(() => [props.markers, props.selectedId], drawMarkers)
 watch(() => props.lines, drawLines)
 watch(() => [props.route, props.routeApproximate], drawRoute)
-watch(() => props.me, drawMe)
+watch(() => [props.me, props.meHeading], drawMe)
 watch(() => props.fit, drawFit)
 
 /** Controalele (+ / − / locația mea) le pune ecranul, în stilul lui. */
 function zoomBy(delta: number) { map.value?.setZoom(map.value.getZoom() + delta) }
 function flyTo(p: GeoPoint, zoom = 16) { map.value?.flyTo([p.lat, p.lng], zoom, { duration: 0.6 }) }
+function panTo(p: GeoPoint) { map.value?.panTo([p.lat, p.lng], { animate: true, duration: 0.5 }) }
 /** Leaflet trebuie anunțat când containerul își schimbă dimensiunea (sheet, sidebar). */
 function invalidate() { map.value?.invalidateSize() }
 
-defineExpose({ zoomBy, flyTo, invalidate })
+defineExpose({ zoomBy, flyTo, panTo, invalidate })
 </script>
 
 <template>

@@ -1,22 +1,36 @@
 <script setup lang="ts">
 // T08 · harta comună (mobil S7, web, itinerar T13, transport T22). Google Maps când există cheia de browser
-// (VITE_GOOGLE_MAPS_KEY); altfel, sau dacă Google nu se încarcă, rezerva Leaflet, ca harta să nu rămână goală.
-// Ecranele importă doar MapView; doar map/LeafletMapCanvas importă Leaflet și doar map/GoogleMapCanvas folosește Google.
-import { defineAsyncComponent, ref, watch } from 'vue'
+// (VITE_GOOGLE_MAPS_KEY); altfel (aplicația) MapLibre, care se poate roti; fără WebGL sau dacă una nu pornește, rezerva Leaflet,
+// ca harta să nu rămână goală. Ecranele importă doar MapView; doar map/LeafletMapCanvas importă Leaflet, doar
+// map/MapLibreMapCanvas importă MapLibre și doar map/GoogleMapCanvas folosește Google.
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import type { GeoPoint } from '@/shared/types/common'
 import { GOOGLE_MAPS_KEY, googleUnavailable } from '@/shared/composables/useGoogleMaps'
-import type { MapApi, MapProps } from './types'
+import type { MapApi, MapEmits, MapProps } from './types'
 
 export type { MapMarker } from './types'
 
 const props = withDefaults(defineProps<MapProps>(),
   { selectedId: null, route: null, routeApproximate: false, me: null, center: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
-const emit = defineEmits<{ select: [id: string | null] }>()
+const emit = defineEmits<MapEmits>()
 
 const GoogleMapCanvas = defineAsyncComponent(() => import('./GoogleMapCanvas.vue'))
 const LeafletMapCanvas = defineAsyncComponent(() => import('./LeafletMapCanvas.vue'))
+const MapLibreMapCanvas = defineAsyncComponent(() => import('./MapLibreMapCanvas.vue'))
 
-const useGoogle = ref(!!GOOGLE_MAPS_KEY && !googleUnavailable())
+/** WebGL (MapLibre) există în browserele și WebView-urile de azi; în teste / telefoane foarte vechi, nu. */
+function hasWebGL(): boolean {
+  try {
+    const c = document.createElement('canvas')
+    return !!(c.getContext('webgl2') || c.getContext('webgl'))
+  } catch { return false }
+}
+
+type Engine = 'google' | 'maplibre' | 'leaflet'
+const engine = ref<Engine>(GOOGLE_MAPS_KEY && !googleUnavailable() ? 'google' : hasWebGL() ? 'maplibre' : 'leaflet')
+function fallback() { engine.value = engine.value === 'google' && hasWebGL() ? 'maplibre' : 'leaflet' }
+/** harta curentă se poate roti (busola și modul „în direcția de mers” au sens doar atunci) */
+const rotates = computed(() => engine.value === 'maplibre')
 const canvas = ref<MapApi | null>(null)
 
 // harta se încarcă asincron: un „zboară la” cerut înainte (locația găsită la deschidere) se aplică imediat ce e gata
@@ -26,13 +40,19 @@ watch(canvas, (c) => { if (c && pendingFly) { c.flyTo(...pendingFly); pendingFly
 defineExpose({
   zoomBy: (d: number) => canvas.value?.zoomBy(d),
   flyTo: (p: GeoPoint, zoom?: number) => { if (canvas.value) canvas.value.flyTo(p, zoom); else pendingFly = [p, zoom] },
+  panTo: (p: GeoPoint) => { if (canvas.value) canvas.value.panTo(p); else pendingFly = [p, undefined] },
   invalidate: () => canvas.value?.invalidate(),
+  setBearing: (deg: number, duration?: number) => canvas.value?.setBearing?.(deg, duration),
+  rotates,
 })
 </script>
 
 <template>
-  <GoogleMapCanvas v-if="useGoogle" ref="canvas" v-bind="props" @select="emit('select', $event)" @failed="useGoogle = false" />
-  <LeafletMapCanvas v-else ref="canvas" v-bind="props" @select="emit('select', $event)" />
+  <GoogleMapCanvas v-if="engine === 'google'" ref="canvas" v-bind="props" @select="emit('select', $event)" @interact="emit('interact')"
+    @press="(p, long) => emit('press', p, long)" @failed="fallback" />
+  <MapLibreMapCanvas v-else-if="engine === 'maplibre'" ref="canvas" v-bind="props" @select="emit('select', $event)" @interact="emit('interact')"
+    @press="(p, long) => emit('press', p, long)" @bearing="emit('bearing', $event)" @failed="fallback" />
+  <LeafletMapCanvas v-else ref="canvas" v-bind="props" @select="emit('select', $event)" @interact="emit('interact')" @press="(p, long) => emit('press', p, long)" />
 </template>
 
 <style>
@@ -59,6 +79,14 @@ defineExpose({
 .leaflet-marker-icon.ax-pin-box { display: flex; align-items: center; justify-content: center; }
 .ax-me {
   width: 18px; height: 18px; border-radius: 50%; background: #1D5FD1; border: 3px solid #fff;
-  box-shadow: 0 0 0 10px rgba(29, 95, 209, .18);
+  box-shadow: 0 0 0 10px rgba(29, 95, 209, .18); position: relative;
+}
+/* săgeata direcției: un evantai albastru deasupra punctului, rotit din centrul lui (`setMeHeading`) */
+.ax-me-wrap { position: relative; width: 18px; height: 18px; }
+.ax-me-cone {
+  position: absolute; left: -21px; top: -21px; width: 60px; height: 60px; pointer-events: none;
+  background: conic-gradient(from -28deg at 50% 50%, rgba(29, 95, 209, .55) 0deg, rgba(29, 95, 209, 0) 56deg, transparent 56deg);
+  -webkit-mask: radial-gradient(circle at 50% 50%, #000 0 30px, transparent 31px); mask: radial-gradient(circle at 50% 50%, #000 0 30px, transparent 31px);
+  transition: transform .3s ease-out;
 }
 </style>

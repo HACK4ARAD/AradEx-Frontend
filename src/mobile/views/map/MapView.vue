@@ -3,7 +3,10 @@
 // pin → card jos cu „Arată traseul” (OSRM, pe jos / mașină) și „Deschide”. `?to=event:5` (din „Indicații”) deschide direct traseul.
 // Modul de deplasare (Pe jos / Transport / Mașină) alege straturile: liniile CTP + stațiile de biciclete, respectiv parcările cu plată.
 // Din tab-ul Transport (T19): `?travel=transit|car` deschide harta în modul ăla, `?focus=bike:<id>` cu stația de biciclete selectată.
-import { computed, onMounted, ref } from 'vue'
+// Poziția se urmărește cât harta e deschisă (punct live + săgeata direcției); „Locația mea” te ține în centru până tragi de hartă.
+// Apăsare lungă pe hartă (sau o atingere, cu `?pick=1` din Transport) = punctul ales: card cu „Trasee până aici” / traseul pe hartă.
+// Harta se rotește (MapLibre): cu două degete; busola readuce nordul sus; a doua atingere pe „Locația mea” = harta în direcția de mers.
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
@@ -14,7 +17,8 @@ import MapView from '@/shared/components/map/MapView.vue'
 import MapTravelBar from '@/shared/components/map/MapTravelBar.vue'
 import MapLayerPanel from '@/shared/components/map/MapLayerPanel.vue'
 import { MAP_KINDS as kinds, MAP_PERIODS as periods, useMapScreen } from '@/shared/composables/useMapScreen'
-import { googleMapsUrl } from '@/shared/composables/useDirections'
+import { distanceKm, googleMapsUrl } from '@/shared/composables/useDirections'
+import { ptKey } from '@/shared/data/transport/destinations'
 import { useFormat } from '@/shared/composables/useFormat'
 import { useAuthStore } from '@/shared/stores/auth'
 
@@ -25,20 +29,50 @@ const auth = useAuthStore()
 const f = useFormat()
 
 // starea (perioadă, tip, pin, traseu cu routeSeq, ținta din `?to=`) e comună cu harta de pe web: shared/composables/useMapScreen
-const { geo, period, kind, selected, mode, directions, items, loading, markers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init, locateMe, focusPoint } = useMapScreen(route.query.to, { travel: route.query.travel, focus: route.query.focus })
-const anyCard = computed(() => !!sel.value || selLayer.value)
+const { geo, period, kind, selected, mode, directions, items, loading, markers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init, locateMe, focusPoint, following, stopFollowing, meHeading, picked, pickMode, press } = useMapScreen(route.query.to, { travel: route.query.travel, focus: route.query.focus, pick: route.query.pick })
+const anyCard = computed(() => !!sel.value || selLayer.value || !!picked.value)
 const mapRef = ref<InstanceType<typeof MapView> | null>(null)
 const initials = computed(() => (auth.user?.displayName ?? '').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase())
 
+const fly = (p: { lat: number; lng: number }) => mapRef.value?.flyTo(p, 16)
+const pan = (p: { lat: number; lng: number }) => mapRef.value?.panTo(p)
+
+/** rotirea hărții (grade; 0 = nordul sus) și modul „în direcția de mers” (harta se rotește după săgeata ta) */
+const bearing = ref(0)
+const headingUp = ref(false)
+const rotates = computed(() => !!mapRef.value?.rotates)
+watch(meHeading, (h) => { if (headingUp.value && h != null) mapRef.value?.setBearing(h, 250) })
+// fără urmărire (ai tras de hartă, ai cerut un traseu) nici harta nu se mai rotește după tine
+watch(following, (f) => { if (!f) headingUp.value = false })
+function northUp() {
+  headingUp.value = false
+  mapRef.value?.setBearing(0)
+}
+/** „Locația mea”: 1) te găsește și te urmărește; 2) (dacă harta se rotește) harta în direcția de mers; 3) înapoi cu nordul sus */
 function myLocation() {
-  void locateMe((p) => mapRef.value?.flyTo(p, 16))
+  if (following.value && rotates.value && !headingUp.value) {
+    headingUp.value = true
+    if (meHeading.value != null) mapRef.value?.setBearing(meHeading.value, 250)
+    return
+  }
+  if (headingUp.value) { northUp(); return }
+  void locateMe(fly, { pan })
+}
+function onInteract() {
+  stopFollowing()
+  headingUp.value = false
+}
+/** cât de departe e punctul ales, de la tine (doar dacă știm unde ești) */
+const pickedKm = computed(() => (picked.value && !geo.isFallback.value ? distanceKm(geo.position.value, picked.value) : null))
+function pickedRoutes() {
+  if (picked.value) void router.push({ path: '/transport', query: { to: ptKey(picked.value) } })
 }
 
 onMounted(() => {
   void init()
   // la deschidere harta te caută singură (fără mesaj dacă locația e oprită); cu un traseu sau o stație cerută doar punctul albastru
   if (route.query.to || focusPoint) { if (geo.isFallback.value) void geo.locate() }
-  else void locateMe((p) => mapRef.value?.flyTo(p, 16), { silent: true })
+  else void locateMe(fly, { silent: true, pan })
 })
 </script>
 
@@ -47,7 +81,8 @@ onMounted(() => {
   <div class="fixed inset-0 mx-auto w-full max-w-[480px] z-0">
     <MapView ref="mapRef" :markers="markers" :selected-id="selected" :route="directions?.line ?? null"
       :route-approximate="directions?.approximate" :me="geo.isFallback.value ? null : geo.position.value"
-      :insets="{ top: 170, bottom: routing ? 480 : 330 }" :lines="lines" :center="focusPoint" :zoom="focusPoint ? 16 : 15" @select="select" />
+:insets="{ top: 170, bottom: routing ? 480 : 330 }" :lines="lines" :center="focusPoint" :zoom="focusPoint ? 16 : 15"
+      :me-heading="meHeading" @select="select" @interact="onInteract" @press="press" @bearing="bearing = $event" />
     <!-- Transport / Mașină: comutatoarele și legenda modului, cu sursele obligatorii ale datelor (cardurile le au și ele) -->
     <MapLayerPanel v-if="travel !== 'foot' && !anyCard" :modes="transit.modes.value" :zones="parking.zones.value" v-model:bikes="showBikes" :travel="travel" attributions
       @toggle-mode="transit.toggleMode"
@@ -82,13 +117,56 @@ onMounted(() => {
     <div class="absolute right-4 z-[500] flex flex-col gap-2" :class="!anyCard ? 'bottom-[130px]' : routing ? 'bottom-[456px]' : selParking ? 'bottom-[400px]' : selLayer ? 'bottom-[350px]' : 'bottom-[300px]'">
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomIn')" @click="mapRef?.zoomBy(1)"><AppIcon name="add" /></button>
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomOut')" @click="mapRef?.zoomBy(-1)"><AppIcon name="remove" /></button>
-      <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center text-[#1D5FD1]" :aria-label="t('map.myLocation')" @click="myLocation"><AppIcon name="my_location" fill /></button>
+      <!-- busola: apare când harta e rotită; acul arată nordul, o atingere îl readuce sus -->
+      <button v-if="Math.abs(((bearing % 360) + 540) % 360 - 180) > 1" type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center"
+        :aria-label="t('map.northUp')" data-test="compass" @click="northUp">
+        <svg width="22" height="22" viewBox="0 0 22 22" :style="{ transform: `rotate(${-bearing}deg)` }" aria-hidden="true">
+          <path d="M11 2 L15 11 L7 11 Z" fill="#E5402A" /><path d="M11 20 L15 11 L7 11 Z" fill="#9A9A93" />
+        </svg>
+      </button>
+      <button type="button" class="w-11 h-11 rounded-[14px] shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center"
+        :class="following ? 'bg-[#1D5FD1] text-white' : 'bg-white text-[#1D5FD1]'" :aria-label="t(headingUp ? 'map.headingUp' : 'map.myLocation')" :aria-pressed="following" data-test="my-location" @click="myLocation">
+        <AppIcon :name="headingUp ? 'explore' : 'my_location'" fill /></button>
+    </div>
+
+    <!-- „alege pe hartă” (din Transport): o atingere pune punctul -->
+    <div v-if="pickMode" class="absolute left-4 right-4 top-[calc(max(12px,env(safe-area-inset-top))+120px)] z-[550] flex items-center gap-2.5 px-3.5 py-2.5 rounded-[14px] bg-ink text-white text-[13.5px] shadow-[0_6px_20px_rgba(0,0,0,.25)]" role="status" data-test="pick-hint">
+      <AppIcon name="touch_app" :size="20" /><span class="flex-1">{{ t('map.picked.hint') }}</span>
+      <button type="button" class="w-8 h-8 -my-1 -mr-1 rounded-full flex items-center justify-center" :aria-label="t('map.close')" @click="pickMode = false"><AppIcon name="close" :size="18" /></button>
     </div>
 
     <div v-if="loading && !items.length" class="absolute left-1/2 -translate-x-1/2 top-[180px] z-[500] px-3.5 py-2 rounded-full bg-white/95 text-[13px] text-muted shadow">{{ t('map.loading') }}</div>
 
     <!-- cardul pinului selectat, deasupra tab bar-ului -->
-    <TransitPinCard v-if="selTransit" :pick="selTransit" :stops="transit.stops.value" class="absolute left-4 right-4 bottom-[110px] z-[600]" @close="select(null)" />
+    <div v-if="picked && !sel && !selLayer" class="absolute left-4 right-4 bottom-[110px] z-[600] bg-white rounded-[20px] p-4 shadow-[0_10px_30px_rgba(17,17,17,.18)]" data-test="picked-card">
+      <div class="flex gap-3 items-start">
+        <div class="w-12 h-12 rounded-[14px] shrink-0 bg-ink text-white flex items-center justify-center"><AppIcon name="flag" fill /></div>
+        <div class="flex-1 min-w-0">
+          <div class="text-[12px] uppercase tracking-[.05em] font-semibold text-muted">{{ t('map.picked.kind') }}</div>
+          <b class="block text-[16px] leading-tight">{{ t('map.picked.title') }}</b>
+          <span class="block text-[13px] text-muted truncate">{{ pickedKm != null ? t('map.picked.away', { km: f.km(pickedKm) }) : `${picked.lat.toFixed(5)}, ${picked.lng.toFixed(5)}` }}</span>
+          <div v-if="routing && directions" class="mt-1.5 text-[13px] font-semibold">
+            <AppIcon :name="mode === 'foot' ? 'directions_walk' : 'directions_car'" :size="16" class="align-[-3px]" />
+            {{ t('map.routeInfo', { min: directions.durationMin, km: f.km(directions.distanceKm) }) }}
+          </div>
+        </div>
+        <button type="button" class="w-9 h-9 -mt-1 -mr-1 rounded-full flex items-center justify-center" :aria-label="t('map.close')" @click="press(picked, false)"><AppIcon name="close" /></button>
+      </div>
+      <div v-if="routing" class="flex gap-1 mt-3 p-1 rounded-[12px] bg-soft" role="tablist">
+        <button v-for="m in (['foot', 'car'] as const)" :key="m" type="button" role="tab" :aria-selected="mode === m"
+          class="flex-1 h-9 rounded-[9px] text-[13.5px]" :class="mode === m ? 'bg-white font-semibold shadow-sm' : 'text-muted'" @click="mode = m">{{ t(`map.${m}`) }}</button>
+      </div>
+      <div class="flex gap-2 mt-3">
+        <button type="button" class="flex-1 h-11 rounded-[14px] bg-ink text-white text-[14.5px] font-semibold flex items-center justify-center gap-1.5" @click="pickedRoutes">
+          <AppIcon name="directions" :size="18" />{{ t('map.picked.routes') }}</button>
+        <a v-if="routing" :href="googleMapsUrl(picked, mode)" target="_blank" rel="noopener"
+          class="flex-1 h-11 rounded-[14px] bg-white border border-line text-ink text-[14.5px] font-semibold flex items-center justify-center gap-1.5 no-underline">
+          <AppIcon name="open_in_new" :size="18" />{{ t('map.googleMaps') }}</a>
+        <button v-else type="button" class="flex-1 h-11 rounded-[14px] bg-white border border-line text-ink text-[14.5px] font-semibold flex items-center justify-center gap-1.5" @click="showRoute">
+          <AppIcon name="directions_walk" :size="18" />{{ t('map.showRoute') }}</button>
+      </div>
+    </div>
+    <TransitPinCard v-else-if="selTransit" :pick="selTransit" :stops="transit.stops.value" class="absolute left-4 right-4 bottom-[110px] z-[600]" @close="select(null)" />
     <ParkingPinCard v-else-if="selParking && parking.data.value" :spot="selParking" :data="parking.data.value" class="absolute left-4 right-4 bottom-[110px] z-[600]" @close="select(null)" />
     <BikePinCard v-else-if="selBike" :station="selBike" class="absolute left-4 right-4 bottom-[110px] z-[600]" @close="select(null)" />
     <div v-else-if="sel" class="absolute left-4 right-4 bottom-[110px] z-[600] bg-white rounded-[20px] p-4 shadow-[0_10px_30px_rgba(17,17,17,.18)]">
