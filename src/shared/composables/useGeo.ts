@@ -10,7 +10,10 @@ export const GOOD_ACCURACY_M = 25
 /** Cât timp mai ascultăm GPS-ul după prima citire, ca să prindem una mai precisă. */
 export const REFINE_MS = 15_000
 /** Ultima poziție bună e refolosită de ecranele deschise după ea (harta pornește direct pe tine), cât e mai nouă de atât. */
-export const LAST_FIX_MS = 5 * 60_000
+export const LAST_FIX_MS = 15 * 60_000
+/** Poziția „rapidă” (ultima știută de telefon / browser, din rețea sau GPS) acceptată ca primă citire: cât de veche poate fi. */
+export const QUICK_MAX_AGE_MS = 10 * 60_000
+export const QUICK_TIMEOUT_MS = 4_000
 
 type Fix = { point: GeoPoint; accuracy: number | null; at: number }
 let lastFix: Fix | null = null
@@ -24,6 +27,10 @@ type Source = {
    *  `prompt` = browserul încă întreabă: așteptăm mai mult */
   prepare: () => Promise<'granted' | 'denied' | 'prompt'>
   watch: (ok: (p: Reading) => void, err: (code: 'denied' | 'unavailable') => void, opts: PositionOptions) => Promise<() => void>
+  /** poziția știută deja de telefon / browser (fără să aștepte GPS-ul): arată imediat un punct, GPS-ul îl rafinează după */
+  quick: (ok: (p: Reading) => void) => void
+  /** permisiunea e deja dată (fără să întrebe): pentru pornirea în fundal la deschiderea aplicației */
+  granted: () => Promise<boolean>
 }
 /** cât așteptăm o poziție cât browserul încă îți cere permisiunea */
 export const PROMPT_WAIT_MS = 60_000
@@ -38,6 +45,15 @@ const nativeSource: Source = {
       perm = await Geolocation.requestPermissions({ permissions: ['location', 'coarseLocation'] }).catch(() => null)
     }
     return perm && perm.location !== 'granted' && perm.coarseLocation !== 'granted' ? 'denied' : 'granted'
+  },
+  quick(ok) {
+    void import('@capacitor/geolocation').then(({ Geolocation }) =>
+      Geolocation.getCurrentPosition({ enableHighAccuracy: false, maximumAge: QUICK_MAX_AGE_MS, timeout: QUICK_TIMEOUT_MS }).then(ok)).catch(() => {})
+  },
+  async granted() {
+    const { Geolocation } = await import('@capacitor/geolocation')
+    const p = await Geolocation.checkPermissions().catch(() => null)
+    return !!p && (p.location === 'granted' || p.coarseLocation === 'granted')
   },
   async watch(ok, err, opts) {
     const { Geolocation } = await import('@capacitor/geolocation')
@@ -63,6 +79,13 @@ const browserSource: Source = {
       return st?.state === 'denied' ? 'denied' : st?.state === 'prompt' ? 'prompt' : 'granted'
     } catch { return 'granted' } // fără Permissions API (Safari vechi): cererea însăși întreabă
   },
+  quick(ok) {
+    const geo = typeof navigator === 'undefined' ? undefined : navigator.geolocation
+    geo?.getCurrentPosition(ok, () => {}, { enableHighAccuracy: false, maximumAge: QUICK_MAX_AGE_MS, timeout: QUICK_TIMEOUT_MS })
+  },
+  async granted() {
+    try { return (await navigator.permissions?.query({ name: 'geolocation' as PermissionName }))?.state === 'granted' } catch { return false }
+  },
   async watch(ok, err, opts) {
     const geo = typeof navigator === 'undefined' ? undefined : navigator.geolocation
     if (!geo) { err('unavailable'); return () => {} }
@@ -83,7 +106,8 @@ const isNative = () => { try { return Capacitor.isNativePlatform() } catch { ret
  * fără GPS sau după timeout rămâne pe centrul Aradului cu `isFallback = true`, fără eroare în consolă.
  * Prima citire e adesea aproximativă (rețea / Wi-Fi, sute de metri), mai ales în browserul telefonului: `locate()` se
  * rezolvă la prima citire, dar ascultă GPS-ul încă `REFINE_MS` și mută poziția la fiecare citire mai precisă, până la
- * `GOOD_ACCURACY_M`. Nu folosește poziții vechi din cache (`maximumAge: 0`).
+ * `GOOD_ACCURACY_M`. Ca punctul să apară imediat, prima citire poate fi poziția deja știută de telefon / browser (≤ 10 min,
+ * `quick`), înlocuită apoi de citirile GPS proaspete (`maximumAge: 0`) mai precise.
  * Folosit de hartă (T08), „lângă tine” (T06/T10), transport (T19).
  * În aplicație citirile vin din GPS-ul nativ (`@capacitor/geolocation`, cu permisiunea sistemului), pe web din browser.
  */
@@ -160,6 +184,8 @@ export function useGeo() {
         const wait = perm === 'prompt' ? PROMPT_WAIT_MS : Math.max(REFINE_MS, timeoutMs)
         const opts: PositionOptions = { enableHighAccuracy: true, timeout: perm === 'prompt' ? PROMPT_WAIT_MS : timeoutMs, maximumAge: 0 }
         stopTimer = setTimeout(() => { if (mine !== run) return; if (!resolved) error.value = 'unavailable'; stop() }, wait)
+        // poziția știută deja apare imediat (rezolvă cererea); citirile GPS de după o înlocuiesc dacă sunt mai precise
+        src.quick((p) => { if (mine === run && !firstTaken) onFix(p) })
         const u = await src.watch(onFix, onError, opts)
         if (mine === run) unwatch = u; else u()
       })().catch(() => onError('unavailable'))
@@ -170,4 +196,15 @@ export function useGeo() {
   const near = () => `${position.value.lat.toFixed(5)},${position.value.lng.toFixed(5)}`
 
   return { position, isFallback, loading, error, accuracy, locate, stop, near }
+}
+
+/**
+ * La deschiderea aplicației (mobil și web): dacă locația e deja permisă (fără să întrebe), poziția se caută în fundal, ca harta,
+ * Transport și „lângă tine” să pornească direct pe tine. Fără permisiune nu face nimic (fereastra apare abia la o acțiune).
+ */
+export async function warmUpLocation(): Promise<void> {
+  try {
+    const src = isNative() ? nativeSource : browserSource
+    if (await src.granted()) await useGeo().locate()
+  } catch { /* fără locație: ecranele pornesc din centru */ }
 }
