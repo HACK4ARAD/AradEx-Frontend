@@ -18,7 +18,8 @@ type Period = 'near' | 'today' | 'weekend' | 'week'
 const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
-const period = ref<Period>('today')
+// implicit „7 zile”: dimineața sau seara, „Azi” are adesea puține evenimente (sau deloc)
+const period = ref<Period>('week')
 const { active, query: filterQuery, byDistance } = useEventFilters()
 const saver = useSaveEvent()
 
@@ -43,6 +44,13 @@ onMounted(async () => {
     places.value = [...withGuide.filter((p) => FIRST.includes(p.id)).sort((a, b) => FIRST.indexOf(a.id) - FIRST.indexOf(b.id)), ...withGuide.filter((p) => !FIRST.includes(p.id))].slice(0, 6)
   } catch { /* secțiunea rămâne ascunsă */ }
 })
+/** rândul de chips se derulează pe orizontală: „7 zile” (implicit) e la capăt, așa că îl aducem în vedere la deschidere */
+const chipRow = ref<HTMLElement | null>(null)
+onMounted(() => {
+  const row = chipRow.value
+  const active = row?.querySelector<HTMLElement>('[aria-pressed="true"]')
+  if (row && active && active.offsetLeft + active.offsetWidth > row.clientWidth) row.scrollLeft = active.offsetLeft + active.offsetWidth - row.clientWidth + 20
+})
 const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' }, { key: 'today' }, { key: 'weekend' }, { key: 'week' }]
 </script>
 
@@ -53,7 +61,7 @@ const chips: { key: Period; icon?: string }[] = [{ key: 'near', icon: 'near_me' 
     <AppIcon name="chevron_right" />
   </button>
 
-  <div class="flex gap-2 overflow-x-auto -mx-5 px-5 py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+  <div ref="chipRow" class="flex gap-2 overflow-x-auto -mx-5 px-5 py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
     <button v-for="c in chips" :key="c.key" type="button" :aria-pressed="period === c.key"
       class="min-h-11 px-4 rounded-full inline-flex items-center gap-1.5 shrink-0 text-[14px] font-medium border whitespace-nowrap transition-colors"
       :class="period === c.key ? 'bg-ink text-white border-ink font-semibold' : 'bg-white border-line text-ink'" @click="choose(c.key)">

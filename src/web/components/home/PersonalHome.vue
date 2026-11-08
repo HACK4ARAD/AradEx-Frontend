@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // T23 · W1 pentru un cont personal conectat (Vizitator / Localnic), ca Acasă din aplicație (design/final web `/`): data de azi,
-// „Ce faci în Arad?”, căutare (→ /events?q=), Azi / Weekend / 7 zile, până la 6 evenimente; în dreapta harta de azi (pinii din
+// „Ce faci în Arad?”, căutare (→ /events?q=), Azi / Weekend / 7 zile (implicit 7 zile), până la 6 evenimente; în dreapta harta de azi (pinii din
 // useMapData, chips pe tip, „Deschide harta”), punctele (localnic) sau ce e Comunitatea, următoarele 2 acțiuni; jos câteva oferte.
 // Lăsate deoparte din design: „Locuri din Arad” și cardul planificatorului AI (web-ul nu are paginile de obiective / planificator).
 import { computed, onMounted, ref } from 'vue'
@@ -36,7 +36,8 @@ function search() {
 }
 
 // evenimente
-const period = ref<Period>('today')
+// implicit „7 zile”, ca Acasă din aplicație
+const period = ref<Period>('week')
 const periods: { key: Period; label: string }[] = [
   { key: 'today', label: 'events.period.today' }, { key: 'weekend', label: 'events.period.weekendShort' }, { key: 'week', label: 'events.period.weekShort' },
 ]
