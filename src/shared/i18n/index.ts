@@ -18,10 +18,10 @@ type Messages = Record<string, Record<string, unknown>>
 type Files = Record<string, Record<string, unknown>>
 // Fiecare build încarcă doar textele lui (VITE_APP și MODE sunt constante la build, deci celelalte glob-uri nu intră în bundle):
 // - web: fără modulele care sunt doar în aplicație (chat, home, transport); `plan` intră pentru pagina publică /itinerary/:code;
-// - mobil: fără prezentare, Confidențialitate și administrare (site, legal, admin);
+// - mobil: fără prezentare și administrare (site, admin); `legal` intră pentru bifa cu Termenii la crearea contului;
 // - testele (vitest) au toate textele, ca să poată testa componentele ambelor aplicații.
 const webFiles = import.meta.glob<Record<string, unknown>>(['./*/*.json', '!./*/{chat,home,transport}.json'], { eager: true, import: 'default' })
-const mobileFiles = import.meta.glob<Record<string, unknown>>(['./*/*.json', '!./*/{site,legal,admin}.json'], { eager: true, import: 'default' })
+const mobileFiles = import.meta.glob<Record<string, unknown>>(['./*/*.json', '!./*/{site,admin}.json'], { eager: true, import: 'default' })
 const allFiles = import.meta.glob<Record<string, unknown>>('./*/*.json', { eager: true, import: 'default' })
 const files: Files = import.meta.env.MODE === 'test' ? allFiles : import.meta.env.VITE_APP === 'mobile' ? mobileFiles : webFiles
 

@@ -1,10 +1,10 @@
 {
   "privacy": {
     "title": "Privacy",
-    "updated": "Updated on 7 November 2026",
+    "updated": "Updated on 8 November 2026",
     "intro": "AradExperience is the Arad city app for events, guided sights, local offers and community actions. This page explains which data we use and why.",
     "sections": {
-      "account": { "title": "Your account", "text": "Your name, email address and password (stored encrypted) create your account. On your phone the app only remembers your session (a token), so you don't have to sign in every time." },
+      "account": { "title": "Your account", "text": "Your name and phone number (and, for businesses, an email address and a password stored encrypted) create your account; we also keep the moment you accepted the Terms and conditions. On your phone the app only remembers your session (a token), so you don't have to sign in every time." },
       "activity": { "title": "What you do in the app", "text": "We save your tickets and bookings, saved events, community action sign-ups, points earned and spent, redeemed offers and your itineraries, so you can see them any time." },
       "location": { "title": "Location", "text": "Location is used only when you allow it, on your phone, for the map, routes and \"near me\". Coordinates are sent on request to compute distances and are not stored in your account." },
       "camera": { "title": "Camera", "text": "The camera only turns on when you scan a QR code (tickets, offers, actions). Images are not stored and never leave your phone." },
@@ -13,5 +13,21 @@
       "rights": { "title": "Your rights", "text": "You can ask for a copy of your data or for your account to be deleted at any time, together with the related tickets, points and sign-ups." }
     },
     "contact": "Contact: {email}"
+  },
+  "terms": {
+    "title": "Terms and conditions",
+    "updated": "Updated on 8 November 2026",
+    "intro": "These terms apply to the AradExperience app and website. By creating an account you confirm that you have read them and agree to them and to the Privacy policy.",
+    "sections": {
+      "about": { "title": "About the service", "text": "AradExperience helps you find events, guided sights, public transport, local offers and community actions in Arad. It is free to use; you only pay for tickets to paid events." },
+      "account": { "title": "Your account", "text": "You must be at least 16 to create an account. Use real details and keep your phone and password safe: you are responsible for what happens in your account. A business account is checked by the City Hall before its posts and offers become public." },
+      "use": { "title": "Fair use", "text": "Do not post illegal, offensive or misleading content, do not send spam and do not try to access other people's accounts or game the points and codes. We may suspend accounts that break these rules." },
+      "tickets": { "title": "Tickets and payments", "text": "Tickets are issued for the event organiser and paid through Stripe. Cancellations and refunds follow the organiser's rules shown on the event. A ticket's QR code is personal and can be scanned only once." },
+      "points": { "title": "Points, offers and actions", "text": "Points are earned for confirmed participation in community actions; they have no cash value and cannot be transferred. Offers are provided by businesses, who are responsible for them." },
+      "info": { "title": "Information in the app", "text": "CTP departures, event schedules, parking and other data come from public sources and may contain errors or delays. The AI assistant can be wrong: check its answers before important decisions." },
+      "data": { "title": "Your data", "text": "We use personal data only as described in the Privacy policy. We keep the moment you accepted these terms. You can ask for a copy of your data or for your account to be deleted at any time." },
+      "changes": { "title": "Changes", "text": "If we change these terms we will tell you in the app; for important changes we will ask for your consent again." },
+      "law": { "title": "Governing law", "text": "Romanian law applies. If we cannot settle a dispute amicably, it goes to the courts in Arad; as a consumer you can also contact ANPC." }
+    }
   }
 }

@@ -16,6 +16,8 @@ export interface AuthFormValues {
   businessName: string
   businessCategory: BusinessCategory
   businessAddress: string
+  /** GDPR: bifa cu Termenii și condițiile + Confidențialitatea (obligatorie la cont nou) */
+  acceptTerms: boolean
 }
 
 export const BUSINESS_CATEGORIES: BusinessCategory[] = ['CAFE', 'RESTAURANT', 'PRODUCER', 'WINERY', 'SHOP', 'OTHER']
@@ -27,7 +29,7 @@ export const DEMO_PASSWORD = 'demo1234'
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 
 export function emptyAuthForm(): AuthFormValues {
-  return { email: '', password: '', displayName: '', role: 'VISITOR', businessName: '', businessCategory: 'CAFE', businessAddress: '' }
+  return { email: '', password: '', displayName: '', role: 'VISITOR', businessName: '', businessCategory: 'CAFE', businessAddress: '', acceptTerms: false }
 }
 
 /**
@@ -42,6 +44,7 @@ export function validateAuthForm(v: AuthFormValues, mode: AuthMode): string | nu
     if (!v.businessName.trim()) return 'auth.errors.businessName'
     if (!v.businessAddress.trim()) return 'auth.errors.businessAddress'
   }
+  if (mode !== 'login' && !v.acceptTerms) return 'auth.consent.required'
   return null
 }
 

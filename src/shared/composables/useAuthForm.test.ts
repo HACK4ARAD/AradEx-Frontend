@@ -4,7 +4,7 @@ import type { Role } from '@/shared/types/common'
 import { authErrorMessage, emptyAuthForm, homeFor, landingFor, safeNext, validateAuthForm } from './useAuthForm'
 
 describe('validateAuthForm', () => {
-  const ok = { ...emptyAuthForm(), email: 'ana@exemplu.ro', password: 'demo1234', displayName: 'Ana' }
+  const ok = { ...emptyAuthForm(), email: 'ana@exemplu.ro', password: 'demo1234', displayName: 'Ana', acceptTerms: true }
 
   it('accepts a valid login and register', () => {
     expect(validateAuthForm(ok, 'login')).toBeNull()
@@ -26,6 +26,8 @@ describe('validateAuthForm', () => {
   it('requires business name and address for a business account', () => {
     expect(validateAuthForm(ok, 'business')).toBe('auth.errors.businessName')
     expect(validateAuthForm({ ...ok, businessName: 'Ceainăria' }, 'business')).toBe('auth.errors.businessAddress')
+    expect(validateAuthForm({ ...ok, businessName: 'Ceainăria', businessAddress: 'Str. X 1', acceptTerms: false }, 'business')).toBe('auth.consent.required')
+    expect(validateAuthForm({ ...ok, acceptTerms: false }, 'login')).toBeNull() // la conectare nu se cere
     expect(validateAuthForm({ ...ok, businessName: 'Ceainăria', businessAddress: 'Str. X 1' }, 'business')).toBeNull()
   })
 })

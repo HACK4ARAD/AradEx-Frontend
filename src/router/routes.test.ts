@@ -49,6 +49,7 @@ describe('web routes', () => {
     expect(r.resolve('/community').name).toBe('w-community')
     expect(r.resolve('/community').meta.roles).toBeUndefined()
     expect(r.resolve('/privacy').name).toBe('w-privacy')
+    expect(r.resolve('/terms').name).toBe('w-terms')
     expect(r.resolve('/login').name).toBe('w-login')
   })
 

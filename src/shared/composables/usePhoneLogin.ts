@@ -41,6 +41,8 @@ export function usePhoneLogin() {
   const code = ref('')
   const displayName = ref('')
   const role = ref<'VISITOR' | 'LOCAL'>('VISITOR')
+  /** GDPR: bifa cu Termenii și condițiile + Confidențialitatea (obligatorie la cont nou) */
+  const acceptTerms = ref(false)
   const demoCode = ref<string | null>(null)
   const cooldown = ref(0)
   const error = ref('')
@@ -128,7 +130,8 @@ export function usePhoneLogin() {
   async function register(): Promise<UserDto | null> {
     const name = displayName.value.trim()
     if (!name) { error.value = 'auth.errors.nameRequired'; return null }
-    const res = await run(() => authApi.otpRegister({ signupToken, displayName: name, role: role.value }), (e) => {
+    if (!acceptTerms.value) { error.value = 'auth.consent.required'; return null }
+    const res = await run(() => authApi.otpRegister({ signupToken, displayName: name, role: role.value, acceptTerms: true }), (e) => {
       if (e.status === 401) { restart(); error.value = 'auth.phone.errors.expired' }
       else if (e.status === 409) { restart(); error.value = 'auth.phone.errors.taken' }
       else error.value = 'auth.errors.generic'
@@ -144,7 +147,7 @@ export function usePhoneLogin() {
     signupToken = ''
   }
 
-  return { step, phone, code, displayName, role, demoCode, cooldown, error, info, busy, send, verify, register, restart }
+  return { step, phone, code, displayName, role, acceptTerms, demoCode, cooldown, error, info, busy, send, verify, register, restart }
 }
 
 /** Contul demo de vizitator (seed): „Intră ca vizitator” pe web intră direct pe el. */

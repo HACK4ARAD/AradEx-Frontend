@@ -5,6 +5,7 @@ import { computed, nextTick, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppButton, AppIcon, AppInput } from '@/shared/components'
+import TermsConsent from '@/shared/components/auth/TermsConsent.vue'
 import { useUiStore } from '@/shared/stores/ui'
 import { DEMO_ENABLED, landingFor } from '@/shared/composables/useAuthForm'
 import { usePhoneLogin } from '@/shared/composables/usePhoneLogin'
@@ -98,6 +99,7 @@ function useDemo(phone: string) {
             </button>
           </div>
         </div>
+        <TermsConsent v-model="f.acceptTerms.value" :invalid="f.error.value === 'auth.consent.required'" />
         <AppButton type="submit" block :loading="f.busy.value" class="mt-1">{{ t('auth.phone.submitProfile') }}</AppButton>
       </form>
     </template>
