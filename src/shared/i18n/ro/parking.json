@@ -25,5 +25,19 @@
     "1": "roșie",
     "2": "galbenă",
     "3": "albastră"
+  },
+  "sms": {
+    "open": "Plătește prin SMS",
+    "title": "Plata prin SMS",
+    "duration": "Durata",
+    "plate": "Numărul de înmatriculare",
+    "platePh": "ex. AR 01 ABC",
+    "plateInvalid": "Scrie numărul ca pe plăcuță: județ, cifre, litere (ex. AR 01 ABC).",
+    "needPlate": "Scrie numărul de înmatriculare ca să pregătim mesajul.",
+    "preview": "Mesajul:",
+    "to": "către",
+    "send": "Deschide Mesaje, gata de trimis",
+    "freeNow": "Acum parcarea e gratuită (seara, în weekend); plătești doar L–V 08:00–17:00.",
+    "note": "Plata e făcută abia când primești SMS-ul de confirmare. Verifică numărul {number} pe panoul din parcare. Pe Orange se mai plătește 0,05 EUR + TVA pe SMS."
   }
 }
