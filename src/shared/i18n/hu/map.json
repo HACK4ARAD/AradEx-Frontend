@@ -1,4 +1,5 @@
 {
+  "picked": { "hint": "Koppints a térképre oda, ahová menni szeretnél.", "kind": "Kiválasztott pont", "title": "A térképen kiválasztott pont", "away": "{km} távolságra tőled", "routes": "Útvonalak ide" },
   "search": "Keresés a térképen",
   "period": {
     "today": "Ma",

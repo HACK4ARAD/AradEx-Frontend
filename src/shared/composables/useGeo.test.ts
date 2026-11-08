@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ARAD_CENTER, GOOD_ACCURACY_M, REFINE_MS, resetLastFix, useGeo } from './useGeo'
+import { ARAD_CENTER, GOOD_ACCURACY_M, MOVING_MPS, REFINE_MS, TRACK_MAX_ACCURACY_M, TRACK_MAX_AGE_MS, resetLastFix, useGeo } from './useGeo'
 
 const original = navigator.geolocation
 
@@ -154,5 +154,54 @@ describe('useGeo', () => {
     w.emit(fix(46.17, 21.32, 12))
     expect(g.position.value).toEqual({ lat: 46.17, lng: 21.32 })
     expect(g.accuracy.value).toBe(12)
+  })
+})
+
+describe('useGeo.track', () => {
+  const moving = (lat: number, lng: number, accuracy: number, speed: number | null, heading: number | null) =>
+    ({ coords: { latitude: lat, longitude: lng, accuracy, speed, heading } }) as GeolocationPosition
+
+  it('follows every precise fix with direction while moving, and drops the direction when you stop', async () => {
+    const w = mockWatch()
+    const g = useGeo()
+    g.track()
+    await started()
+    expect(w.state.opts).toMatchObject({ enableHighAccuracy: true, maximumAge: TRACK_MAX_AGE_MS })
+    w.emit(moving(46.17, 21.31, 8, 5, 92))
+    expect(g.position.value).toEqual({ lat: 46.17, lng: 21.31 })
+    expect(g.heading.value).toBe(92)
+    w.emit(moving(46.171, 21.311, 9, 5.5, 95))
+    expect(g.position.value).toEqual({ lat: 46.171, lng: 21.311 })
+    w.emit(moving(46.171, 21.311, 9, MOVING_MPS / 2, 300))   // pe loc: direcția GPS nu mai e de încredere
+    expect(g.heading.value).toBeNull()
+    g.untrack()
+    expect(w.state.cleared).toBe(1)
+  })
+
+  it('does not jump from a good fix to a rough network fix', async () => {
+    const w = mockWatch()
+    const g = useGeo()
+    g.track()
+    await started()
+    w.emit(moving(46.17, 21.31, 10, null, null))
+    w.emit(moving(46.30, 21.50, TRACK_MAX_ACCURACY_M + 200, null, null))
+    expect(g.position.value).toEqual({ lat: 46.17, lng: 21.31 })
+    g.untrack()
+  })
+
+  it('pauses while the app is in the background', async () => {
+    const w = mockWatch()
+    const g = useGeo()
+    g.track()
+    await started()
+    const vis = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    document.dispatchEvent(new Event('visibilitychange'))
+    expect(w.state.cleared).toBe(1)
+    vis.mockReturnValue('visible')
+    document.dispatchEvent(new Event('visibilitychange'))
+    await started()
+    expect((navigator.geolocation.watchPosition as ReturnType<typeof vi.fn>).mock.calls.length).toBe(2)
+    vis.mockRestore()
+    g.untrack()
   })
 })

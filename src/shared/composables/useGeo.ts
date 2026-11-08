@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { getCurrentScope, onScopeDispose, ref } from 'vue'
 import { Capacitor } from '@capacitor/core'
 import type { GeoPoint } from '@/shared/types/common'
 
@@ -14,6 +14,12 @@ export const LAST_FIX_MS = 15 * 60_000
 /** Poziția „rapidă” (ultima știută de telefon / browser, din rețea sau GPS) acceptată ca primă citire: cât de veche poate fi. */
 export const QUICK_MAX_AGE_MS = 10 * 60_000
 export const QUICK_TIMEOUT_MS = 4_000
+/** Urmărirea continuă (harta deschisă): citiri GPS de cel mult 2 s, ca punctul să țină pasul când mergi / ești în mașină. */
+export const TRACK_MAX_AGE_MS = 2_000
+/** Cât urmărim, o citire mai imprecisă de atât nu mută un punct bun (salturile de la rețea, în clădiri). */
+export const TRACK_MAX_ACCURACY_M = 80
+/** Peste viteza asta (m/s, ~3 km/h) direcția GPS e de încredere: săgeata punctului arată încotro mergi. */
+export const MOVING_MPS = 0.8
 
 type Fix = { point: GeoPoint; accuracy: number | null; at: number }
 let lastFix: Fix | null = null
@@ -21,7 +27,7 @@ let lastFix: Fix | null = null
 export function resetLastFix() { lastFix = null }
 
 /** O citire, în forma comună browserului și pluginului nativ. */
-type Reading = { coords: { latitude: number; longitude: number; accuracy: number } }
+type Reading = { coords: { latitude: number; longitude: number; accuracy: number; heading?: number | null; speed?: number | null } }
 type Source = {
   /** permisiunea, cerută înainte de cronometru (cât omul se uită la fereastra sistemului nu trebuie să expire cererea);
    *  `prompt` = browserul încă întreabă: așteptăm mai mult */
@@ -192,10 +198,68 @@ export function useGeo() {
     })
   }
 
+  /** direcția de mers (grade față de nord, 0–360) din GPS, doar când te miști; null = pe loc / necunoscută */
+  const heading = ref<number | null>(null)
+  /** viteza (m/s) din ultima citire, dacă GPS-ul o dă */
+  const speed = ref<number | null>(null)
+  /** urmărirea continuă e pornită (`track()`) */
+  const tracking = ref(false)
+  let untrackFn: (() => void) | null = null
+  let trackRun = 0
+  let lastTrackAt = 0
+
+  function onTrackFix(p: Reading) {
+    const acc = Number.isFinite(p.coords.accuracy) ? p.coords.accuracy : null
+    // un punct bun și proaspăt nu sare la o citire de rețea mult mai imprecisă
+    const good = accuracy.value != null && accuracy.value <= TRACK_MAX_ACCURACY_M && Date.now() - lastTrackAt < 20_000
+    if (good && (acc == null || acc > TRACK_MAX_ACCURACY_M)) return
+    accept(p)
+    lastTrackAt = Date.now()
+    const s = p.coords.speed
+    speed.value = s != null && Number.isFinite(s) ? s : null
+    const h = p.coords.heading
+    if (speed.value != null && speed.value >= MOVING_MPS && h != null && Number.isFinite(h)) heading.value = ((h % 360) + 360) % 360
+    else if (speed.value != null && speed.value < MOVING_MPS) heading.value = null
+  }
+
+  async function startTrack() {
+    const mine = ++trackRun
+    const src = isNative() ? nativeSource : browserSource
+    const perm = await src.prepare().catch(() => 'granted' as const)
+    if (mine !== trackRun || !tracking.value) return
+    if (perm === 'denied') { error.value = 'denied'; tracking.value = false; return }
+    const u = await src.watch((p) => { if (mine === trackRun) onTrackFix(p) }, (code) => { if (mine === trackRun && code === 'denied') { error.value = code; untrack() } },
+      { enableHighAccuracy: true, maximumAge: TRACK_MAX_AGE_MS, timeout: 30_000 })
+    if (mine === trackRun && tracking.value) untrackFn = u; else u()
+  }
+  function pauseTrack() { trackRun++; untrackFn?.(); untrackFn = null }
+  function onVisibility() {
+    if (!tracking.value) return
+    if (document.visibilityState === 'hidden') pauseTrack(); else void startTrack()
+  }
+
+  /**
+   * Urmărirea continuă a poziției, cât harta e deschisă: GPS precis, citiri la ~1–2 s, plus direcția și viteza; pe pauză cât
+   * aplicația nu e vizibilă (bateria). Se oprește cu `untrack()` sau singură când ecranul dispare.
+   */
+  function track() {
+    if (tracking.value) return
+    tracking.value = true
+    if (typeof document !== 'undefined') document.addEventListener('visibilitychange', onVisibility)
+    if (typeof document === 'undefined' || document.visibilityState !== 'hidden') void startTrack()
+  }
+  function untrack() {
+    if (!tracking.value) return
+    tracking.value = false
+    pauseTrack()
+    if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', onVisibility)
+  }
+  if (getCurrentScope()) onScopeDispose(() => { untrack(); stop() })
+
   /** `near` pentru API (`lat,lng`), ex. GET /events?near=46.18,21.31 */
   const near = () => `${position.value.lat.toFixed(5)},${position.value.lng.toFixed(5)}`
 
-  return { position, isFallback, loading, error, accuracy, locate, stop, near }
+  return { position, isFallback, loading, error, accuracy, heading, speed, tracking, locate, stop, near, track, untrack }
 }
 
 /**

@@ -11,7 +11,7 @@ import { loadTransitRoutes } from '@/shared/composables/useTransitLayer'
 import { buildPlan, stopLabel, transitCandidates, withDepartures, type Dest, type TransitOption, type TripOption, type TripPlan } from '@/shared/composables/useTripPlanner'
 import { BIKE_STATIONS } from '@/shared/data/bikes/bikes'
 import { loadParking } from '@/shared/data/parking/parking'
-import { findPoi } from '@/shared/data/transport/destinations'
+import { findPoi, parsePt } from '@/shared/data/transport/destinations'
 import type { GeoPoint } from '@/shared/types/common'
 import type { PlaceSummary } from '@/shared/types/places'
 import type { TransitRouteDto, TransitStopDto } from '@/shared/types/transit'
@@ -81,6 +81,10 @@ type T = (key: string, params?: Record<string, unknown>) => string
 /** Destinația din `?to=`; null dacă nu mai există. */
 export async function resolveDest(key: string, t: T, stops: TransitStopDto[]): Promise<Dest | null> {
   const [kind, id] = key.split(':')
+  if (kind === 'pt') {
+    const p = parsePt(key)
+    return p ? { key, name: t('transport.picked.name'), type: t('transport.picked.type'), icon: 'location_on', ...p } : null
+  }
   try {
     if (kind === 'poi') {
       const p = findPoi(id)

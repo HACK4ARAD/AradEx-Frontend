@@ -157,7 +157,20 @@ onMounted(async () => {
   </div>
 
   <!-- sugestiile căutării -->
-  <SuggestDropdown v-if="!to && focused" :items="sug.items.value" :query="q" class="absolute left-0 right-0 top-full mt-2 z-30" @pick="(x) => goTo(x.key)" />
+  <SuggestDropdown v-if="!to && focused" :items="sug.items.value" :query="q" class="absolute left-0 right-0 top-full mt-2 z-30" @pick="(x) => goTo(x.key)">
+    <!-- locul nu e în listă (ex. un complex de pe Aurel Vlaicu): îl alegi pe hartă, apoi „Trasee până aici” -->
+    <template #footer>
+      <button type="button" class="w-full flex items-center gap-3 px-4 py-3 border-t border-line text-left bg-soft/60 active:bg-soft" data-test="pick-on-map"
+        @mousedown.prevent @click="router.push({ path: '/map', query: { pick: '1' } })">
+        <span class="w-10 h-10 rounded-[12px] shrink-0 bg-white border border-line flex items-center justify-center text-ink"><AppIcon name="add_location_alt" :size="20" /></span>
+        <span class="flex-1 min-w-0">
+          <span class="block text-[15px] font-semibold text-ink">{{ t('transport.pickOnMap') }}</span>
+          <span class="block text-[12.5px] text-muted">{{ t('transport.pickOnMapSub') }}</span>
+        </span>
+        <AppIcon name="chevron_right" :size="18" class="text-muted" />
+      </button>
+    </template>
+  </SuggestDropdown>
   </div>
 
   <!-- ================= plan de drum ================= -->

@@ -1,4 +1,7 @@
 {
+  "pickOnMap": "Alege punctul pe hartă",
+  "pickOnMapSub": "Nu găsești locul? Atinge-l pe hartă.",
+  "picked": { "name": "Punctul ales pe hartă", "type": "Ales pe hartă" },
   "title": "Transport în comun",
   "from": "De la",
   "myLocation": "Locația ta",

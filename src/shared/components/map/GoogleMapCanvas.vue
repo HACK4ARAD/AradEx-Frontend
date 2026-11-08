@@ -7,11 +7,11 @@ import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import type { GeoPoint } from '@/shared/types/common'
 import { ARAD_CENTER } from '@/shared/composables/useGeo'
 import { loadGoogleMaps, markGoogleUnavailable, onGoogleUnavailable } from '@/shared/composables/useGoogleMaps'
-import { LINE_OPACITY, LINE_WEIGHT, fitInsets, meElement, pinElement, type MapProps } from './types'
+import { LINE_OPACITY, LINE_WEIGHT, fitInsets, meElement, pinElement, setMeHeading, type MapEmits, type MapProps } from './types'
 
 const props = withDefaults(defineProps<MapProps>(),
   { selectedId: null, route: null, routeApproximate: false, me: null, center: null, zoom: 15, insets: () => ({ top: 70, bottom: 70 }) })
-const emit = defineEmits<{ select: [id: string | null]; failed: [] }>()
+const emit = defineEmits<MapEmits & { failed: [] }>()
 
 /**
  * Stilul hărții: fără locurile Google (POI — afaceri, atracții, parcuri cu pictograme) și fără stațiile Google de transport
@@ -23,7 +23,7 @@ const MAP_STYLES: google.maps.MapTypeStyle[] = [
 ]
 
 /** Un element HTML pe hartă, centrat pe coordonată (`map.panes`: `overlayMouseTarget` dacă se poate apăsa). */
-interface HtmlMarker { remove(): void }
+interface HtmlMarker { remove(): void; move(p: GeoPoint): void; el: HTMLElement }
 let makeMarker: ((pos: GeoPoint, content: HTMLElement, z: number, onClick?: () => void) => HtmlMarker) | null = null
 
 /** Clasa se creează după ce scriptul Google e încărcat (extinde google.maps.OverlayView). */
@@ -57,6 +57,8 @@ function overlayFactory(map: google.maps.Map) {
     }
     onRemove() { this.box.remove() }
     remove() { this.setMap(null) }
+    move(p: GeoPoint) { this.pos = new google.maps.LatLng(p.lat, p.lng); this.draw() }
+    get el() { return this.box }
   }
   return (pos: GeoPoint, content: HTMLElement, z: number, onClick?: () => void): HtmlMarker => new Overlay(pos, content, z, onClick)
 }
@@ -112,10 +114,13 @@ function drawFit() {
   map.value.fitBounds(bounds, { top: pad.top, bottom: pad.bottom, left: 40, right: 40 })
 }
 
+/** Punctul tău: creat o dată, apoi doar mutat (urmărirea îl actualizează la 1–2 s), cu săgeata direcției. */
 function drawMe() {
   if (!map.value || !makeMarker) return
-  meMarker?.remove()
-  meMarker = props.me ? makeMarker(props.me, meElement(), 900) : null
+  if (!props.me) { meMarker?.remove(); meMarker = null; return }
+  if (meMarker) meMarker.move(props.me)
+  else meMarker = makeMarker(props.me, meElement(props.meHeading ?? null), 900)
+  setMeHeading(meMarker.el, props.meHeading ?? null)
 }
 
 /** Cât așteptăm primele dale ale hărții; peste atât (rețea, cheie refuzată fără semnal) trecem pe Leaflet. */
@@ -135,7 +140,13 @@ onMounted(async () => {
       disableDefaultUI: true, clickableIcons: false, gestureHandling: 'greedy',
     })
     makeMarker = overlayFactory(map.value)
-    map.value.addListener('click', () => emit('select', null))
+    map.value.addListener('click', (e: google.maps.MapMouseEvent) => {
+      emit('select', null)
+      if (e.latLng) emit('press', { lat: e.latLng.lat(), lng: e.latLng.lng() }, false)
+    })
+    // apăsare lungă pe telefon / click dreapta: alege punctul (destinație pusă de mână)
+    map.value.addListener('contextmenu', (e: google.maps.MapMouseEvent) => { if (e.latLng) emit('press', { lat: e.latLng.lat(), lng: e.latLng.lng() }, true) })
+    map.value.addListener('dragstart', () => emit('interact'))
     tilesTimer = setTimeout(() => markGoogleUnavailable(), TILES_TIMEOUT_MS)
     google.maps.event.addListenerOnce(map.value, 'tilesloaded', () => { if (tilesTimer) clearTimeout(tilesTimer); tilesTimer = null })
     drawLines()
@@ -163,7 +174,7 @@ onBeforeUnmount(() => {
 watch(() => [props.markers, props.selectedId], drawMarkers)
 watch(() => props.lines, drawLines)
 watch(() => [props.route, props.routeApproximate], drawRoute)
-watch(() => props.me, drawMe)
+watch(() => [props.me, props.meHeading], drawMe)
 watch(() => props.fit, drawFit)
 
 function zoomBy(delta: number) { const z = map.value?.getZoom(); if (map.value && z != null) map.value.setZoom(z + delta) }
@@ -173,9 +184,10 @@ function flyTo(p: GeoPoint, zoom = 16) {
   if (!map.value) { pendingFly = { p, zoom }; return }
   map.value.panTo(p); map.value.setZoom(zoom)
 }
+function panTo(p: GeoPoint) { if (map.value) map.value.panTo(p); else pendingFly = { p, zoom: props.zoom } }
 function invalidate() { /* Google Maps își urmărește singur dimensiunea containerului */ }
 
-defineExpose({ zoomBy, flyTo, invalidate })
+defineExpose({ zoomBy, flyTo, panTo, invalidate })
 </script>
 
 <template>

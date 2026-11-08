@@ -1,4 +1,7 @@
 {
+  "pickOnMap": "Choose the point on the map",
+  "pickOnMapSub": "Can't find the place? Tap it on the map.",
+  "picked": { "name": "Point chosen on the map", "type": "Chosen on the map" },
   "title": "Public transport",
   "from": "From",
   "myLocation": "Your location",

@@ -3,7 +3,8 @@ import { useI18n } from 'vue-i18n'
 import type { MapLine, MapMarker } from '@/shared/components/map/types'
 import { filterItems, parseTarget, useMapData, type MapItem, type MapKind, type MapPeriod } from '@/shared/composables/useMapData'
 import { distanceKm, fetchDirections, type Directions, type TravelMode } from '@/shared/composables/useDirections'
-import { REFINE_MS, useGeo } from '@/shared/composables/useGeo'
+import { useGeo } from '@/shared/composables/useGeo'
+import { useCompass } from '@/shared/composables/useCompass'
 import { useParkingLayer } from '@/shared/composables/useParkingLayer'
 import { BIKE_STATIONS, bikeMarkers, findBike } from '@/shared/data/bikes/bikes'
 import { useTransitLayer } from '@/shared/composables/useTransitLayer'
@@ -55,7 +56,11 @@ export function byDistance(items: MapItem[], from: GeoPoint): { item: MapItem; k
  * `opts` (din tab-ul Transport, T19): `travel` = modul cu care se deschide harta (`?travel=transit|car`), `focus` = un pin de strat
  * selectat de la început (`?focus=bike:dock-11`), cu `focusPoint` pentru centrul inițial.
  */
-export function useMapScreen(to: unknown, opts: { travel?: unknown; focus?: unknown } = {}) {
+/** Cheia punctului ales de mână pe hartă (apăsare lungă), ca țintă de traseu. */
+export const PICK_KEY = 'pick'
+const round5 = (x: number) => Math.round(x * 1e5) / 1e5
+
+export function useMapScreen(to: unknown, opts: { travel?: unknown; focus?: unknown; pick?: unknown } = {}) {
   const { t } = useI18n()
   const ui = useUiStore()
   const geo = useGeo()
@@ -92,7 +97,8 @@ export function useMapScreen(to: unknown, opts: { travel?: unknown; focus?: unkn
   if (focusBike) { travel.value = 'transit'; selected.value = opts.focus as string }
   const focusPoint = focusBike ? { lat: focusBike.lat, lng: focusBike.lng } : null
 
-  const markers = computed<MapMarker[]>(() => [...toMarkers(visible.value), ...layerMarkers.value])
+  const markers = computed<MapMarker[]>(() => [...toMarkers(visible.value), ...layerMarkers.value,
+    ...(picked.value ? [{ id: PICK_KEY, kind: 'dest' as const, label: 'flag', ...picked.value }] : [])])
   /** pinii straturilor (parcări, biciclete, transport), peste pinii aplicației */
   const layerMarkers = computed<MapMarker[]>(() => [...parking.markers.value, ...bikeMarkers(bikes.value), ...transit.markers.value])
   /** liniile straturilor: străzile cu parcări sub traseele transportului */
@@ -106,12 +112,30 @@ export function useMapScreen(to: unknown, opts: { travel?: unknown; focus?: unkn
   const selBike = computed(() => findBike(selected.value, bikes.value))
   /** e deschis un card de strat (transport, parcare, bicicletă) */
   const selLayer = computed(() => !!(selTransit.value || selParking.value || selBike.value))
-  const routing = computed(() => !!sel.value && target.value === sel.value.key)
+  /**
+   * Punctul ales de mână (apăsare lungă pe hartă, sau o atingere cât e pornit „alege pe hartă” — `?pick=1` din Transport):
+   * pin cu steag + card cu traseul până acolo, pentru locurile pe care căutarea nu le găsește.
+   */
+  const picked = ref<GeoPoint | null>(null)
+  const pickMode = ref(opts.pick === '1' || opts.pick === 'true')
+  function pickAt(p: GeoPoint) {
+    select(null)
+    picked.value = { lat: round5(p.lat), lng: round5(p.lng) }
+    pickMode.value = false
+  }
+  /** apăsare pe hartă (de la MapView): lungă sau în modul „alege” → punctul; scurtă → închide cardul punctului */
+  function press(p: GeoPoint, long: boolean) {
+    if (long || pickMode.value) pickAt(p)
+    else if (picked.value) { picked.value = null; if (target.value === PICK_KEY) select(null) }
+  }
+  /** ținta traseului: pinul selectat sau punctul ales */
+  const routeDest = computed(() => sel.value ?? (picked.value ? { key: PICK_KEY, ...picked.value } : null))
+  const routing = computed(() => !!routeDest.value && target.value === routeDest.value.key)
 
   let routeSeq = 0
 
   async function showRoute() {
-    const dest = sel.value
+    const dest = routeDest.value
     if (!dest) return
     const seq = ++routeSeq
     const m = mode.value
@@ -125,6 +149,7 @@ export function useMapScreen(to: unknown, opts: { travel?: unknown; focus?: unkn
   }
 
   function select(id: string | null) {
+    if (id && id !== PICK_KEY) picked.value = null
     selected.value = id
     if (id !== target.value) { routeSeq++; target.value = null; directions.value = null }
   }
@@ -133,26 +158,36 @@ export function useMapScreen(to: unknown, opts: { travel?: unknown; focus?: unkn
   // pinul selectat a dispărut (altă perioadă): închidem cardul și traseul, să nu rămână o linie fără destinație
   watch([sel, selLayer], ([s, l]) => { if (!s && !l && selected.value) select(null) })
 
-  let stopFollow: (() => void) | null = null
   /**
-   * „Locația mea”: harta zboară la prima poziție, apoi o urmează cât timp GPS-ul mai trimite citiri mai precise (prima e
-   * adesea aproximativă, de la rețea), ca punctul albastru să nu rămână în afara hărții. `silent` = pornită singură la
-   * deschiderea hărții: fără mesaj dacă locația e oprită.
+   * „Locația mea” + urmărirea: după prima poziție GPS-ul rămâne pornit cât e deschisă harta (`geo.track()`, citiri la 1–2 s),
+   * punctul albastru se mută singur și arată direcția (GPS-ul în mers, busola pe loc). Cât `following` e pornit, harta te
+   * ține în centru (`pan`, fără să schimbe zoom-ul); se oprește când tragi de hartă și repornește la „Locația mea”.
+   * `silent` = pornită singură la deschiderea hărții: fără mesaj dacă locația e oprită.
    */
-  async function locateMe(fly: (p: GeoPoint) => void, { silent = false } = {}) {
-    stopFollow?.()
+  const following = ref(false)
+  const compass = useCompass()
+  const meHeading = computed(() => geo.heading.value ?? compass.heading.value)
+  let panFn: ((p: GeoPoint) => void) | null = null
+  watch(geo.position, (q) => { if (following.value && !geo.isFallback.value) panFn?.(q) })
+  function stopFollowing() { following.value = false }
+
+  async function locateMe(fly: (p: GeoPoint) => void, { silent = false, pan }: { silent?: boolean; pan?: (p: GeoPoint) => void } = {}) {
+    panFn = pan ?? fly
+    // busola: pe iOS cere permisiunea, deci doar la o atingere (nu la deschiderea hărții)
+    if (!silent) void compass.start()
     // o poziție știută de curând (alt ecran): harta zboară imediat acolo, apoi se mută la citirea nouă
-    if (!geo.isFallback.value) fly(geo.position.value)
+    if (!geo.isFallback.value) { fly(geo.position.value); following.value = true }
     const p = await geo.locate()
     // fără locație nu mai zburăm în centrul Aradului (părea că „nu te găsește”): spunem de ce
     if (geo.isFallback.value) {
+      following.value = false
       if (!silent) ui.toast(t(geo.error.value === 'denied' ? 'map.locationDenied' : 'map.locationUnavailable'), 'info')
       return
     }
     fly(p)
-    const stop = watch(geo.position, (q) => fly(q))
-    const timer = setTimeout(() => stopFollow?.(), REFINE_MS)
-    stopFollow = () => { stop(); clearTimeout(timer); stopFollow = null }
+    following.value = true
+    geo.track()
+    if (silent) void compass.start()
   }
 
   /** Încarcă pinii; ținta din `?to=` poate fi în afara perioadei afișate: ensure o aduce și deschide direct traseul. */
@@ -163,7 +198,8 @@ export function useMapScreen(to: unknown, opts: { travel?: unknown; focus?: unkn
     else { ui.toast(t('map.notFound'), 'info'); target.value = null; selected.value = null }
   }
 
-  return { geo, period, kind, target, selected, mode, directions, items, loading, visible, markers, layerMarkers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init, locateMe, focusPoint }
+  return { geo, period, kind, target, selected, mode, directions, items, loading, visible, markers, layerMarkers, lines, sel, selTransit, selParking, selBike, selLayer, travel, transit, parking, showBikes, routing, showRoute, select, init, locateMe, focusPoint,
+    following, stopFollowing, meHeading, picked, pickMode, press, pickAt }
 }
 
 export function toMarkers(items: MapItem[]): MapMarker[] {

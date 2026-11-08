@@ -1,4 +1,5 @@
 {
+  "picked": { "hint": "Atinge harta unde vrei să ajungi.", "kind": "Punct ales", "title": "Punctul ales pe hartă", "away": "la {km} de tine", "routes": "Trasee până aici" },
   "search": "Caută pe hartă",
   "period": {
     "today": "Azi",

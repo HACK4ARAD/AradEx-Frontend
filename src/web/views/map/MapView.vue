@@ -23,7 +23,7 @@ const { t } = useI18n()
 const route = useRoute()
 const f = useFormat()
 
-const { geo, period, kind, target, selected, mode, directions, items, loading, visible, layerMarkers, lines, sel, selTransit, selParking, selBike, travel, transit, parking, showBikes, routing, showRoute, select, init, locateMe } = useMapScreen(route.query.to)
+const { geo, period, kind, target, selected, mode, directions, items, loading, visible, layerMarkers, lines, sel, selTransit, selParking, selBike, travel, transit, parking, showBikes, routing, showRoute, select, init, locateMe, meHeading, stopFollowing } = useMapScreen(route.query.to)
 const q = ref('')
 const listed = computed(() => byDistance(searchItems(visible.value, q.value, target.value), geo.position.value))
 const markers = computed(() => [...toMarkers(listed.value.map((r) => r.item)), ...layerMarkers.value])
@@ -52,7 +52,7 @@ function onPin(id: string | null) {
 }
 
 function myLocation() {
-  void locateMe((p) => mapRef.value?.flyTo(p, 16))
+  void locateMe((p) => mapRef.value?.flyTo(p, 16), { pan: (p) => mapRef.value?.panTo(p) })
 }
 
 function resetFilters() { q.value = ''; kind.value = 'all'; period.value = 'week' }
@@ -60,7 +60,7 @@ function resetFilters() { q.value = ''; kind.value = 'all'; period.value = 'week
 onMounted(() => {
   void init()
   // la deschidere harta te caută singură (fără mesaj dacă locația e oprită sau refuzată); cu `?to=` traseul o cere oricum
-  if (!route.query.to) void locateMe((p) => mapRef.value?.flyTo(p, 16), { silent: true })
+  if (!route.query.to) void locateMe((p) => mapRef.value?.flyTo(p, 16), { silent: true, pan: (p) => mapRef.value?.panTo(p) })
 })
 </script>
 
@@ -145,7 +145,7 @@ onMounted(() => {
     <section class="relative isolate order-first lg:order-none h-[55vh] min-h-[320px] lg:h-[calc(100dvh-150px)] rounded-[16px] overflow-hidden border border-line bg-soft">
       <MapView ref="mapRef" :markers="markers" :selected-id="selected" :route="directions?.line ?? null"
         :route-approximate="directions?.approximate" :me="geo.isFallback.value ? null : geo.position.value"
-        :zoom="14" :insets="{ top: 60, bottom: sel ? 150 : 60 }" :lines="lines" @select="onPin" />
+        :zoom="14" :insets="{ top: 60, bottom: sel ? 150 : 60 }" :lines="lines" :me-heading="meHeading" @select="onPin" @interact="stopFollowing" />
       <!-- T22 / Parcări / Biciclete: atribuirea obligatorie a datelor, cât stratul e pornit -->
       <div v-if="transit.on.value || parking.on.value" class="absolute left-3 right-16 top-3 z-[500] flex flex-col items-start gap-1 pointer-events-none">
         <span v-if="parking.on.value" class="px-2.5 py-1 rounded-full bg-white/90 text-[11.5px] text-muted shadow-sm">{{ t('parking.attribution') }}</span>
