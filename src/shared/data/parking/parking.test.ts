@@ -98,3 +98,28 @@ describe('useParkingLayer', () => {
     scope.stop()
   })
 })
+
+describe('plata prin SMS', () => {
+  it('lists the SMS options of a zone, shortest first, only with a code', async () => {
+    const { smsOptions } = await import('./parking')
+    expect(smsOptions({ tariffs }, 1).map((o) => [o.minutes, o.smsCode])).toEqual([[30, '305'], [60, '101']])
+    expect(smsOptions(data, 1).map((o) => o.smsCode)).toEqual(['305', '101', '102'])
+    expect(smsOptions(data, 3).map((o) => o.smsCode)).toEqual(['311', '312'])
+  })
+
+  it('writes the plate the way the SMS needs it and checks it', async () => {
+    const { normalizePlate, isPlate } = await import('./parking')
+    expect(normalizePlate(' ar 01-abc ')).toBe('AR01ABC')
+    expect(isPlate('AR 01 ABC')).toBe(true)
+    expect(isPlate('B 123 XYZ')).toBe(true)
+    expect(isPlate('AR1ABC')).toBe(false)
+    expect(isPlate('')).toBe(false)
+  })
+
+  it('builds the message and the sms: link for Android and iOS', async () => {
+    const { smsBody, smsHref, PARKING_SMS_NUMBER } = await import('./parking')
+    expect(smsBody('101', 'ar 01 abc')).toBe('101AR01ABC')
+    expect(smsHref(PARKING_SMS_NUMBER, '101AR01ABC', false)).toBe('sms:7420?body=101AR01ABC')
+    expect(smsHref(PARKING_SMS_NUMBER, '101AR01ABC', true)).toBe('sms:7420&body=101AR01ABC')
+  })
+})

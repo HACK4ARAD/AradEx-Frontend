@@ -25,5 +25,19 @@
     "1": "red",
     "2": "yellow",
     "3": "blue"
+  },
+  "sms": {
+    "open": "Pay by SMS",
+    "title": "Pay by SMS",
+    "duration": "Duration",
+    "plate": "Licence plate",
+    "platePh": "e.g. AR 01 ABC",
+    "plateInvalid": "Type the plate as on the car: county, digits, letters (e.g. AR 01 ABC).",
+    "needPlate": "Enter your licence plate so we can prepare the message.",
+    "preview": "Message:",
+    "to": "to",
+    "send": "Open Messages, ready to send",
+    "freeNow": "Parking is free right now (evenings, weekends); you only pay Mon–Fri 08:00–17:00.",
+    "note": "You have paid only once the confirmation SMS arrives. Check the number {number} on the sign in the car park. Orange charges 0.05 EUR + VAT extra per SMS."
   }
 }
