@@ -3,15 +3,14 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppButton } from '@/shared/components'
+import LocaleSwitch from '@/shared/components/profile/LocaleSwitch.vue'
 import { useAuthStore } from '@/shared/stores/auth'
-import { useUiStore } from '@/shared/stores/ui'
 import { CONTACT_EMAIL } from '@/web/presentation'
 import { routeTitle } from '@/router/guard'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
-const ui = useUiStore()
 const { t, locale } = useI18n()
 
 // Site-ul de prezentare (T20): secțiunile prezentării + Comunitate. T23: un cont personal conectat (Vizitator / Localnic)
@@ -90,10 +89,6 @@ const panelLink = computed(() => {
 
 function logout() { auth.logout(); router.push('/') }
 
-/** Selector RO/EN (T03): local imediat; pentru utilizatorul logat se salvează și în cont (auth.changeLocale). */
-function toggleLocale() {
-  auth.changeLocale(locale.value === 'ro' ? 'en' : 'ro').catch((e) => ui.error(e))
-}
 </script>
 
 <template>
@@ -127,14 +122,12 @@ function toggleLocale() {
       </div>
     </aside>
     <div class="flex-1 min-w-0 flex flex-col">
-      <header class="h-14 bg-white border-b border-line flex items-center gap-2 px-4 lg:px-7 text-[14px] font-semibold sticky top-0 z-20">
+      <header class="h-14 bg-white border-b border-line flex items-center gap-2 px-4 lg:px-7 text-[14px] font-semibold sticky top-0 z-[25]">
         <button type="button" class="lg:hidden w-10 h-10 -ml-2 rounded-[10px] flex items-center justify-center" :aria-label="t('nav.menu')" :aria-expanded="menuOpen" @click="menuOpen = true">
           <AppIcon name="menu" />
         </button>
         <span class="truncate flex-1">{{ pageTitle }}</span>
-        <button type="button" class="h-8 px-2.5 rounded-full border border-line text-[12px] font-semibold uppercase shrink-0" :aria-label="t('nav.sidebar.language')" :title="t('nav.sidebar.language')" @click="toggleLocale">
-          {{ locale === 'ro' ? 'RO' : 'EN' }}
-        </button>
+        <LocaleSwitch compact />
       </header>
       <main class="flex-1 min-w-0 px-4 py-5 lg:px-8 lg:py-7 max-w-[1280px] w-full">
         <router-view />
@@ -144,7 +137,7 @@ function toggleLocale() {
 
   <!-- Site public: bară sus -->
   <div v-else class="min-h-dvh bg-bg flex flex-col">
-    <header class="h-16 bg-white border-b border-line flex items-center px-4 md:px-7 gap-3 md:gap-7 sticky top-0 z-20">
+    <header class="h-16 bg-white border-b border-line flex items-center px-4 md:px-7 gap-3 md:gap-7 sticky top-0 z-[25]">
       <router-link to="/" class="font-bold text-[16px] flex items-center gap-2 no-underline text-ink shrink-0">
         <img src="@/shared/assets/logo-ax.png" alt="AradExperience" class="h-[18px] w-auto shrink-0" /> {{ t('app.name') }}
       </router-link>
@@ -153,9 +146,7 @@ function toggleLocale() {
           :class="navActive(n.to) ? 'bg-soft text-ink font-semibold' : 'text-muted hover:text-ink'">{{ n.label }}</router-link>
       </nav>
       <div class="ml-auto flex items-center gap-2 md:gap-2.5 min-w-0">
-        <button type="button" class="h-8 px-2.5 rounded-full border border-line text-[12px] font-semibold uppercase" :aria-label="t('profile.language')" @click="toggleLocale">
-          {{ locale === 'ro' ? 'RO' : 'EN' }}
-        </button>
+        <LocaleSwitch compact />
         <router-link v-if="panelLink" :to="panelLink.to" class="text-[14px] font-semibold no-underline text-ink">{{ panelLink.label }}</router-link>
         <AppButton v-if="!auth.isLoggedIn" variant="ghost" size="sm" @click="router.push('/login')">{{ t('site.nav.login') }}</AppButton>
         <!-- contul: avatarul duce la profil (Contul meu) sau, pentru Primărie / firmă / Admin, la panou; „Deconectare” e în profil / panou -->

@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "features": "Funkciók",
+    "community": "Közösség",
+    "panels": "Vállalkozásoknak és a Városházának",
+    "download": "Töltsd le az alkalmazást",
+    "enterPanel": "Irányítópult megnyitása",
+    "login": "Bejelentkezés"
+  },
+  "hero": {
+    "kicker": "Arad városi alkalmazása",
+    "title": "Egész Arad egyetlen alkalmazásban",
+    "text": "Események jegyekkel, látnivalók hangos idegenvezetéssel, helyi vállalkozások ajánlatai és közösségi akciók, amelyekért pontokat kapsz. Azoknak, akik a városba látogatnak, és azoknak, akik itt élnek.",
+    "shots": "Képernyőképek az AradExperience alkalmazásból"
+  },
+  "download": {
+    "android": "Android",
+    "ios": "iPhone",
+    "getOn": "Letöltés:",
+    "soon": "Hamarosan"
+  },
+  "features": {
+    "title": "Mit tudsz csinálni az alkalmazással",
+    "events": {
+      "title": "Események és jegyek",
+      "text": "Mi a program ma, a hétvégén vagy a héten. Vedd meg a jegyet az alkalmazásban, és lépj be a QR-kóddal."
+    },
+    "guide": {
+      "title": "Virtuális idegenvezető",
+      "text": "A Vár, a Kultúrpalota, a Klasszikus Színház és még sok más, állomásról állomásra elmagyarázva, szövegben és hangban."
+    },
+    "offers": {
+      "title": "Helyi ajánlatok",
+      "text": "Aradi kávézók, termelők és borászatok. Válts be egy ajánlatot, és kapsz egy kódot, amit a pultnál mutatsz fel."
+    },
+    "community": {
+      "title": "Közösség és pontok",
+      "text": "Jelentkezz a Városháza akcióira, szerezz pontokat, amikor visszaigazolnak, és költsd el őket a partnervállalkozásoknál."
+    },
+    "transport": {
+      "title": "Tömegközlekedés",
+      "text": "Villamosjáratok és a teljes útvonal oda, ahová menni szeretnél, a megállókkal a térképen."
+    },
+    "ai": {
+      "title": "MI-asszisztens és napi program",
+      "text": "Kérdezd meg, mit csinálj a gyerekekkel a hétvégén, vagy kérj egynapos aradi programot időpontokkal és útvonallal."
+    }
+  },
+  "now": {
+    "title": "Most Aradon",
+    "text": "Néhány esemény az alkalmazásból. A részleteket, a jegyeket és az útvonalat az alkalmazásban találod.",
+    "empty": "Az események itt jelennek meg, amint közzéteszik őket."
+  },
+  "community": {
+    "kicker": "Közösség",
+    "title": "Tegyél valamit a városért, szerezz pontokat",
+    "text": "Faültetés, takarítás, véradás. Jelentkezz az alkalmazásban, mutasd fel a QR-kódodat az akción, és költsd el a pontokat a partnerkávézóknál és -termelőknél.",
+    "cta": "Az akciók megtekintése",
+    "pageTitle": "Közösség",
+    "pageText": "Arad Városháza közösségi akciói: jelentkezz az alkalmazásban, és a visszaigazolás után pontokat kapsz, amelyeket a partnervállalkozásoknál költhetsz el.",
+    "steps": {
+      "1": "Válassz egy akciót az alkalmazásban, és jelentkezz.",
+      "2": "Mutasd fel a QR-kódodat az akción; egy önkéntes vagy a Városháza beolvassa.",
+      "3": "Megkapod a pontokat, és feljebb kerülsz a havi ranglistán."
+    },
+    "soonTitle": "Az akciók listája és a ranglista hamarosan itt is megjelenik",
+    "soonText": "Addig az alkalmazásban találod őket, a Kezdőlap Közösség fülén.",
+    "photos": {
+      "plant": "Faültetés",
+      "clean": "Takarítás",
+      "blood": "Véradás"
+    }
+  },
+  "roles": {
+    "title": "Kinek szól",
+    "visitor": {
+      "title": "Látogató",
+      "text": "Mit csinálj ma, idegenvezetés a látnivalóknál, napi program."
+    },
+    "local": {
+      "title": "Helyi lakos",
+      "text": "Események, ajánlatok és pontok azért, amit a városért teszel."
+    },
+    "business": {
+      "title": "Helyi vállalkozás",
+      "text": "Ajánlatok, események és hirdetmények, kódok ellenőrzése."
+    },
+    "city": {
+      "title": "Városháza",
+      "text": "A város programja, közösségi akciók, látnivalók és idegenvezetések."
+    },
+    "volunteer": {
+      "title": "Önkéntes",
+      "text": "A résztvevők beolvasása az akciókon, közvetlenül az alkalmazásból."
+    }
+  },
+  "panels": {
+    "title": "Városháza vagy vállalkozás?",
+    "text": "A webes irányítópult az asztali munkához való: események, ajánlatok, közösségi akciók, ellenőrzések és statisztikák.",
+    "cta": "Irányítópult megnyitása"
+  },
+  "footer": {
+    "privacy": "Adatvédelem",
+    "contact": "Kapcsolat",
+    "made": "Készült a Hack4Arad 2026-on"
+  }
+}

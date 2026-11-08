@@ -1,0 +1,9 @@
+{
+  "popular": "Népszerű",
+  "results": "Találatok",
+  "stop": "CTP-megálló",
+  "linesNear": "Közeli járatok",
+  "noLines": "Nincs közeli CTP-járat",
+  "more": "+{n}",
+  "empty": "Nincs „{q}” kezdetű találat."
+}

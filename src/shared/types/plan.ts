@@ -38,7 +38,7 @@ export interface ItineraryRequest {
   interests: string[]
   freeText?: string
   start?: GeoPoint
-  locale?: 'ro' | 'en'
+  locale?: 'ro' | 'en' | 'hu'
 }
 
 export interface ItineraryDto {

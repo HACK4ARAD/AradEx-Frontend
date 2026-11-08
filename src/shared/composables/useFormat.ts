@@ -6,11 +6,13 @@ import { i18n } from '@/shared/i18n'
  */
 const TZ = 'Europe/Bucharest'
 
-/** Eticheta Intl pentru limba curentă: 'ro-RO' sau 'en-GB' (zi lună, ora pe 24 h, ca în română). */
-export function intlLocale(): 'ro-RO' | 'en-GB' {
-  return i18n.global.locale.value === 'en' ? 'en-GB' : 'ro-RO'
+/** Eticheta Intl pentru limba curentă: 'ro-RO', 'en-GB' (zi lună, ora pe 24 h, ca în română) sau 'hu-HU'. */
+export function intlLocale(): 'ro-RO' | 'en-GB' | 'hu-HU' {
+  const l = i18n.global.locale.value
+  return l === 'en' ? 'en-GB' : l === 'hu' ? 'hu-HU' : 'ro-RO'
 }
 const isEn = () => intlLocale() === 'en-GB'
+const isHu = () => intlLocale() === 'hu-HU'
 
 const cache = new Map<string, Intl.DateTimeFormat>()
 function dtf(opts: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
@@ -44,7 +46,7 @@ export function useFormat() {
   /** 40 → "40 lei", 0 → "Gratuit" / "Free" */
   function money(value?: number | null): string {
     if (value === undefined || value === null) return ''
-    if (value === 0) return isEn() ? 'Free' : 'Gratuit'
+    if (value === 0) return isEn() ? 'Free' : isHu() ? 'Ingyenes' : 'Gratuit'
     return `${new Intl.NumberFormat(intlLocale(), { maximumFractionDigits: 2 }).format(value)} lei`
   }
   /** 0.44 → "0,4 km" (EN „0.4 km”); 0.08 → "80 m" */
@@ -60,9 +62,10 @@ export function useFormat() {
     if (h === 0) return `${m} min`
     return m === 0 ? `${h} h` : `${h} h ${m} min`
   }
-  /** 270 → "270 de puncte", 12 → "12 puncte", 1 → "1 punct" (EN: "270 points", "1 point") */
+  /** 270 → "270 de puncte", 12 → "12 puncte", 1 → "1 punct" (EN: "270 points", "1 point"; HU: „270 pont”, fără plural după număr) */
   function points(n: number): string {
     if (isEn()) return n === 1 ? '1 point' : `${n} points`
+    if (isHu()) return `${n} pont`
     if (n === 1) return '1 punct'
     const abs = Math.abs(n)
     return abs >= 20 ? `${n} de puncte` : `${n} puncte`

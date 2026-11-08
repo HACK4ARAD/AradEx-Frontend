@@ -1,0 +1,22 @@
+{
+  "title": "Chat",
+  "sub": "Eseményeket keresek és válaszolok a kérdéseidre. Fizetést nem kezelek.",
+  "greeting": "Szia! Mondd el, mihez lenne kedved, mikor és kivel.",
+  "starters": [
+    "Mit csinálhatok gyerekekkel a hétvégén?",
+    "Milyen koncertek lesznek a héten?",
+    "Hogyan jutok el a Várhoz?",
+    "Tervezd meg a szombatomat"
+  ],
+  "placeholder": "Kérdezz valamit…",
+  "send": "Küldés",
+  "newChat": "Új beszélgetés",
+  "typing": "Az asszisztens ír",
+  "offline": "Offline válasz: az asszisztens most nem elérhető, íme néhány esemény az alkalmazásból.",
+  "retry": "Újra",
+  "errors": {
+    "tooMany": "Egy percen belül túl sok üzenetet küldtél. Próbáld újra kicsit később.",
+    "network": "Nem érjük el a szervert. Ellenőrizd a kapcsolatot.",
+    "generic": "Most nem tudtam válaszolni."
+  }
+}

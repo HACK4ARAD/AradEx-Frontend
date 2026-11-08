@@ -61,7 +61,7 @@ export function useChat() {
     const mine = conversation
     typing.value = true
     try {
-      const r = await aiApi.chat({ messages: history(), locale: locale.value === 'en' ? 'en' : 'ro' })
+      const r = await aiApi.chat({ messages: history(), locale: locale.value === 'en' || locale.value === 'hu' ? locale.value : 'ro' })
       await loadEvents(r.suggestedEventIds)
       if (mine !== conversation) return
       items.value.push({ from: 'bot', text: r.reply, chips: r.quickReplies, eventIds: r.suggestedEventIds.filter((id) => events.has(id)), offline: r.offline })

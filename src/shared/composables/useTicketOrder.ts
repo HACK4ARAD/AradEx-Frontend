@@ -96,7 +96,7 @@ export function useCheckout() {
       const p = await ticketsApi.preparePayment(o.event.id, { qtyAdult: o.adult, qtyChild: o.child })
       if (p.mode !== 'STRIPE' || !p.clientSecret || !p.publishableKey) { mode.value = 'DEMO'; return }
       stripe = await loadStripe(p.publishableKey)
-      elements = stripe.elements({ clientSecret: p.clientSecret, locale: locale.value === 'en' ? 'en' : 'ro', appearance: STRIPE_APPEARANCE })
+      elements = stripe.elements({ clientSecret: p.clientSecret, locale: locale.value === 'en' || locale.value === 'hu' ? locale.value : 'ro', appearance: STRIPE_APPEARANCE })
       mode.value = 'STRIPE'
       await nextTick()
       element?.destroy()
