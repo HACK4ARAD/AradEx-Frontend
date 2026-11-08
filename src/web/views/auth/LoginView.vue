@@ -2,7 +2,7 @@
 // W0 — Conectare pe web (design/final/web.html → /login): stânga panou de prezentare, dreapta două tab-uri:
 // „Cont personal”: butonul „Intră ca vizitator” (un clic, contul demo de vizitator, oricâți deodată) sau telefon + cod OTP
 // (Vizitator / Localnic, ca în aplicație); „Panouri” (Primărie, firme, Admin cu e-mail + parolă, + „Înregistrează-ți firma”).
-// Fără scurtături spre celelalte conturi demo. Cu `?tab=panels` se deschide direct tab-ul panourilor (butonul „Intră în panou” din site).
+// În „Panouri”, cardurile conturilor demo (Primărie, Firmă, Admin) completează formularul (dev / VITE_DEMO). Cu `?tab=panels` se deschide direct tab-ul panourilor (butonul „Intră în panou” din site).
 // Pagina e în afara WebLayout (fără bara de sus), ca în design. Sub 1100px rămâne doar formularul.
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -10,7 +10,7 @@ import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import LoginForm from '@/shared/components/auth/LoginForm.vue'
 import PhoneLogin from '@/shared/components/auth/PhoneLogin.vue'
-import { initialLoginTab, landingFor } from '@/shared/composables/useAuthForm'
+import { DEMO_ENABLED, initialLoginTab, landingFor } from '@/shared/composables/useAuthForm'
 import { useVisitorLogin } from '@/shared/composables/usePhoneLogin'
 import { useUiStore } from '@/shared/stores/ui'
 import { routeRoles } from '@/router/guard'
@@ -21,6 +21,15 @@ const router = useRouter()
 const tab = ref<'personal' | 'panels'>(initialLoginTab(route.query.tab, route.query.next, (p) => routeRoles(router, p)))
 const ui = useUiStore()
 const visitor = useVisitorLogin()
+const panelsForm = ref<InstanceType<typeof LoginForm> | null>(null)
+const panels = [
+  { email: 'primaria@demo.ro', icon: 'account_balance', bg: 'bg-ink', title: 'auth.panels.cityTitle', desc: 'auth.panels.cityDesc' },
+  { email: 'firma@demo.ro', icon: 'storefront', bg: 'bg-accent', title: 'auth.panels.businessTitle', desc: 'auth.panels.businessDesc' },
+  { email: 'admin@demo.ro', icon: 'shield_person', bg: 'bg-[#2A2A30]', title: 'auth.panels.adminTitle', desc: 'auth.panels.adminDesc' },
+]
+function pick(email: string) {
+  panelsForm.value?.useDemo(email)
+}
 const features = [
   { icon: 'event', label: 'auth.side.events' },
   { icon: 'headphones', label: 'auth.side.places' },
@@ -84,7 +93,16 @@ async function enterAsVisitor() {
         </template>
 
         <template v-else>
-        <LoginForm ui="w" />
+        <LoginForm ref="panelsForm" ui="w" />
+        <div v-if="DEMO_ENABLED" class="text-[13px] text-muted mt-1">{{ t('auth.panels.pick') }}</div>
+        <button v-for="p in (DEMO_ENABLED ? panels : [])" :key="p.email" type="button"
+          class="bg-white border border-line rounded-2xl p-4 flex items-center gap-3 text-left w-full hover:border-ink transition-colors" @click="pick(p.email)">
+          <span class="w-11 h-11 rounded-xl text-white flex items-center justify-center shrink-0" :class="p.bg"><AppIcon :name="p.icon" /></span>
+          <span class="min-w-0">
+            <b class="block text-[15px]">{{ t(p.title) }}</b>
+            <span class="block text-[13px] text-muted mt-0.5">{{ p.email }} · {{ t(p.desc) }}</span>
+          </span>
+        </button>
         <div class="flex gap-2.5 items-start px-3.5 py-3 rounded-xl bg-[#F1F1EC] text-muted text-[12.5px] leading-normal">
           <AppIcon name="badge" :size="18" /><span>{{ t('auth.panels.volunteers') }}</span>
         </div>
