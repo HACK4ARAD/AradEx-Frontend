@@ -1,10 +1,10 @@
 {
   "privacy": {
     "title": "Confidențialitate",
-    "updated": "Actualizat pe 7 noiembrie 2026",
+    "updated": "Actualizat pe 8 noiembrie 2026",
     "intro": "AradExperience e aplicația orașului Arad pentru evenimente, obiective cu ghid, oferte locale și acțiuni comunitare. Pagina asta spune ce date folosim și de ce.",
     "sections": {
-      "account": { "title": "Contul tău", "text": "Numele, adresa de email și parola (salvată criptat) îți creează contul. Pe telefon, aplicația ține minte doar sesiunea (un token), ca să nu te conectezi de fiecare dată." },
+      "account": { "title": "Contul tău", "text": "Numele și numărul de telefon (iar pentru firme adresa de email și parola, salvată criptat) îți creează contul; păstrăm și momentul în care ai acceptat Termenii și condițiile. Pe telefon, aplicația ține minte doar sesiunea (un token), ca să nu te conectezi de fiecare dată." },
       "activity": { "title": "Ce faci în aplicație", "text": "Salvăm biletele și rezervările, evenimentele salvate, înscrierile la acțiunile comunitare, punctele primite și folosite, ofertele revendicate și itinerariile tale, ca să le vezi oricând." },
       "location": { "title": "Locația", "text": "Locația e folosită doar când o permiți, pe telefon, pentru hartă, trasee și „lângă mine”. Coordonatele se trimit la cerere pentru a calcula distanțele și nu se salvează în contul tău." },
       "camera": { "title": "Camera", "text": "Camera pornește doar când scanezi un cod QR (bilete, oferte, acțiuni). Imaginile nu se salvează și nu pleacă de pe telefon." },
@@ -13,5 +13,21 @@
       "rights": { "title": "Drepturile tale", "text": "Poți cere oricând o copie a datelor sau ștergerea contului, împreună cu biletele, punctele și înscrierile asociate." }
     },
     "contact": "Contact: {email}"
+  },
+  "terms": {
+    "title": "Termeni și condiții",
+    "updated": "Actualizat pe 8 noiembrie 2026",
+    "intro": "Acești termeni se aplică aplicației și site-ului AradExperience. Creând un cont, confirmi că i-ai citit și că ești de acord cu ei și cu Politica de confidențialitate.",
+    "sections": {
+      "about": { "title": "Despre serviciu", "text": "AradExperience te ajută să găsești evenimente, obiective cu ghid, transportul în comun, oferte locale și acțiuni comunitare din Arad. Folosirea e gratuită; plătești doar biletele la evenimentele cu plată." },
+      "account": { "title": "Contul tău", "text": "Trebuie să ai cel puțin 16 ani ca să îți faci cont. Folosește date reale și ține-ți telefonul și parola în siguranță: răspunzi de ce se face din contul tău. Contul unei firme e verificat de Primărie înainte ca anunțurile și ofertele ei să apară public." },
+      "use": { "title": "Folosire corectă", "text": "Nu publica conținut ilegal, ofensator sau înșelător, nu trimite spam și nu încerca să intri în conturile altora sau să păcălești sistemul de puncte și coduri. Putem suspenda conturile care încalcă aceste reguli." },
+      "tickets": { "title": "Bilete și plăți", "text": "Biletele sunt emise pentru organizatorul evenimentului, iar plata se face prin Stripe. Anularea și rambursarea urmează regulile organizatorului, afișate la eveniment. Codul QR al biletului e personal și se scanează o singură dată." },
+      "points": { "title": "Puncte, oferte și acțiuni", "text": "Punctele se primesc pentru participarea confirmată la acțiunile comunitare; nu au valoare în bani și nu se pot transfera. Ofertele sunt date de firme, care răspund de ele." },
+      "info": { "title": "Informațiile din aplicație", "text": "Plecările CTP, programul evenimentelor, parcările și celelalte date vin din surse publice și pot avea erori sau întârzieri. Răspunsurile asistentului AI pot greși: verifică-le înainte de decizii importante." },
+      "data": { "title": "Datele tale", "text": "Datele personale le folosim doar cum scrie în Politica de confidențialitate. Păstrăm momentul în care ai acceptat acești termeni. Poți cere oricând o copie a datelor sau ștergerea contului." },
+      "changes": { "title": "Modificări", "text": "Dacă schimbăm termenii, te anunțăm în aplicație; pentru schimbările importante îți cerem din nou acordul." },
+      "law": { "title": "Legea aplicabilă", "text": "Se aplică legea română. Dacă nu ne înțelegem pe cale amiabilă, litigiile se judecă la instanțele din Arad; ca și consumator te poți adresa și ANPC." }
+    }
   }
 }

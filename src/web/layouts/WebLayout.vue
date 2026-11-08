@@ -173,6 +173,7 @@ function logout() { auth.logout(); router.push('/') }
       <div class="max-w-[1280px] mx-auto px-4 md:px-8 py-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[14px] text-muted">
         <span class="font-bold text-ink flex items-center gap-2"><img src="@/shared/assets/logo-ax.png" alt="AradExperience" class="h-[18px] w-auto shrink-0" /> {{ t('app.name') }}</span>
         <router-link to="/privacy" class="no-underline text-muted hover:text-ink">{{ t('site.footer.privacy') }}</router-link>
+        <router-link to="/terms" class="no-underline text-muted hover:text-ink">{{ t('site.footer.terms') }}</router-link>
         <a v-if="CONTACT_EMAIL" :href="`mailto:${CONTACT_EMAIL}`" class="no-underline text-muted hover:text-ink">{{ t('site.footer.contact') }}: {{ CONTACT_EMAIL }}</a>
         <span class="ml-auto">{{ t('site.footer.made') }}</span>
       </div>

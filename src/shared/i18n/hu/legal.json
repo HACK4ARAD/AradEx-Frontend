@@ -1,10 +1,10 @@
 {
   "privacy": {
     "title": "Adatvédelem",
-    "updated": "Frissítve: 2026. november 7.",
+    "updated": "Frissítve: 2026. november 8.",
     "intro": "Az AradExperience Arad városi alkalmazása eseményekhez, idegenvezetéses látnivalókhoz, helyi ajánlatokhoz és közösségi akciókhoz. Ez az oldal elmagyarázza, milyen adatokat használunk és miért.",
     "sections": {
-      "account": { "title": "A fiókod", "text": "A neved, az e-mail-címed és a jelszavad (titkosítva tároljuk) alkotja a fiókodat. A telefonon az alkalmazás csak a munkamenetedet (egy tokent) jegyzi meg, hogy ne kelljen mindig bejelentkezned." },
+      "account": { "title": "A fiókod", "text": "A neved és a telefonszámod (cégeknél az e-mail-cím és a titkosítva tárolt jelszó) alkotja a fiókodat; azt is megőrizzük, mikor fogadtad el a Felhasználási feltételeket. A telefonon az alkalmazás csak a munkamenetedet (egy tokent) jegyzi meg, hogy ne kelljen mindig bejelentkezned." },
       "activity": { "title": "Amit az alkalmazásban csinálsz", "text": "Elmentjük a jegyeidet és foglalásaidat, a mentett eseményeket, a közösségi akciókra való jelentkezéseket, a szerzett és elköltött pontokat, a beváltott ajánlatokat és az útitervenidet, hogy bármikor megnézhesd őket." },
       "location": { "title": "Helyadatok", "text": "A helyadatot csak akkor használjuk, ha engedélyezed, a telefonon, a térképhez, az útvonalakhoz és a „közelemben” funkcióhoz. A koordinátákat kérésre küldjük el a távolságok számításához, és nem tároljuk a fiókodban." },
       "camera": { "title": "Kamera", "text": "A kamera csak QR-kód beolvasásakor kapcsol be (jegyek, ajánlatok, akciók). A képeket nem tároljuk, és nem hagyják el a telefonodat." },
@@ -13,5 +13,21 @@
       "rights": { "title": "A jogaid", "text": "Bármikor kérhetsz másolatot az adataidról vagy kérheted a fiókod törlését, a hozzá tartozó jegyekkel, pontokkal és jelentkezésekkel együtt." }
     },
     "contact": "Kapcsolat: {email}"
+  },
+  "terms": {
+    "title": "Felhasználási feltételek",
+    "updated": "Frissítve: 2026. november 8.",
+    "intro": "Ezek a feltételek az AradExperience alkalmazásra és weboldalra vonatkoznak. A fiók létrehozásával megerősíted, hogy elolvastad és elfogadod őket, valamint az Adatvédelmi tájékoztatót.",
+    "sections": {
+      "about": { "title": "A szolgáltatásról", "text": "Az AradExperience segít megtalálni Arad eseményeit, idegenvezetéssel bemutatott látnivalóit, a tömegközlekedést, a helyi ajánlatokat és a közösségi akciókat. A használata ingyenes; csak a fizetős események jegyeiért fizetsz." },
+      "account": { "title": "A fiókod", "text": "Fiókot legalább 16 évesen hozhatsz létre. Valós adatokat adj meg, és vigyázz a telefonodra és a jelszavadra: te felelsz azért, ami a fiókodban történik. A cégek fiókját a Polgármesteri Hivatal ellenőrzi, mielőtt hirdetéseik és ajánlataik nyilvánosak lesznek." },
+      "use": { "title": "Tisztességes használat", "text": "Ne tegyél közzé törvénytelen, sértő vagy félrevezető tartalmat, ne küldj kéretlen üzeneteket, és ne próbálj belépni mások fiókjába vagy kijátszani a pont- és kódrendszert. Az ezeket megszegő fiókokat felfüggeszthetjük." },
+      "tickets": { "title": "Jegyek és fizetés", "text": "A jegyeket az esemény szervezője nevében állítjuk ki, a fizetés a Stripe-on keresztül történik. A lemondásra és a visszatérítésre a szervezőnek az eseménynél feltüntetett szabályai vonatkoznak. A jegy QR-kódja személyes, és csak egyszer olvasható be." },
+      "points": { "title": "Pontok, ajánlatok és akciók", "text": "Pontot a közösségi akciókon való igazolt részvételért kapsz; nincs pénzbeli értékük, és nem ruházhatók át. Az ajánlatokat a cégek adják, és ők felelnek értük." },
+      "info": { "title": "Az alkalmazás adatai", "text": "A CTP indulási idők, az események programja, a parkolók és a többi adat nyilvános forrásokból származik, és tartalmazhat hibákat vagy késéseket. Az AI-asszisztens tévedhet: fontos döntések előtt ellenőrizd a válaszait." },
+      "data": { "title": "Az adataid", "text": "A személyes adatokat csak az Adatvédelmi tájékoztatóban leírtak szerint használjuk. Megőrizzük, mikor fogadtad el ezeket a feltételeket. Bármikor kérheted az adataid másolatát vagy a fiókod törlését." },
+      "changes": { "title": "Változások", "text": "Ha módosítjuk a feltételeket, az alkalmazásban értesítünk; fontos változások esetén újra a hozzájárulásodat kérjük." },
+      "law": { "title": "Irányadó jog", "text": "A román jog az irányadó. Ha egy vitát nem sikerül békésen rendezni, azt az aradi bíróságok elé visszük; fogyasztóként az ANPC-hez (a román fogyasztóvédelmi hatósághoz) is fordulhatsz." }
+    }
   }
 }

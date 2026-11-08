@@ -55,6 +55,7 @@ export const webRoutes: RouteRecordRaw[] = [
         ],
       },
       { path: 'privacy', name: 'w-privacy', component: () => import('@/web/views/legal/PrivacyView.vue'), meta: { title: 'Confidențialitate', task: 'T20' } },
+      { path: 'terms', name: 'w-terms', component: () => import('@/web/views/legal/TermsView.vue'), meta: { title: 'Termeni și condiții', task: 'GDPR' } },
       // Panou firmă (W4): o rută + un view pe secțiune; `:sub?` = new / :id pentru formulare
       {
         path: 'business', meta: { roles: ['BUSINESS'], screen: 'W4' },

@@ -118,8 +118,12 @@ describe('usePhoneLogin', () => {
 
     f.displayName.value = ' Ana Pop '
     f.role.value = 'VISITOR'
+    expect(await f.register()).toBeNull()                       // fără bifă nu se creează contul
+    expect(f.error.value).toBe('auth.consent.required')
+    expect(api.otpRegister).not.toHaveBeenCalled()
+    f.acceptTerms.value = true
     const u = await f.register()
-    expect(api.otpRegister).toHaveBeenCalledWith({ signupToken: 'signup', displayName: 'Ana Pop', role: 'VISITOR' })
+    expect(api.otpRegister).toHaveBeenCalledWith({ signupToken: 'signup', displayName: 'Ana Pop', role: 'VISITOR', acceptTerms: true })
     expect(u?.id).toBe(99)
     expect(useAuthStore().isLoggedIn).toBe(true)
   })
@@ -167,6 +171,7 @@ describe('usePhoneLogin', () => {
     f.code.value = '123456'
     await f.verify()
     f.displayName.value = 'Ana'
+    f.acceptTerms.value = true
     await f.register()
 
     expect(f.step.value).toBe('phone')

@@ -5,6 +5,7 @@
 import { computed, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import TermsConsent from '@/shared/components/auth/TermsConsent.vue'
 import { AppButton, AppIcon, AppInput } from '@/shared/components'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
@@ -47,7 +48,7 @@ function setMode(m: AuthMode) { mode.value = m; error.value = '' }
 function useDemo(mail: string) { form.email = mail; form.password = DEMO_PASSWORD; setMode('login') }
 
 function buildRegister(): RegisterRequest {
-  const base = { email: form.email.trim(), password: form.password, displayName: form.displayName.trim() }
+  const base = { email: form.email.trim(), password: form.password, displayName: form.displayName.trim(), acceptTerms: form.acceptTerms }
   if (mode.value === 'business') {
     return { ...base, role: 'BUSINESS', business: { name: form.businessName.trim(), category: form.businessCategory, address: form.businessAddress.trim() } }
   }
@@ -104,6 +105,7 @@ defineExpose({ useDemo })
         <AppIcon name="error" :size="18" /><span>{{ error }}</span>
       </div>
 
+      <TermsConsent v-if="mode !== 'login'" v-model="form.acceptTerms" :invalid="error === t('auth.consent.required')" />
       <AppButton type="submit" block :loading="busy" class="mt-1" :icon="mode === 'business' ? 'add_business' : undefined">{{ submitLabel }}</AppButton>
 
       <button v-if="mode === 'business'" type="button" class="self-center text-[14px] font-semibold underline underline-offset-[3px] py-1"

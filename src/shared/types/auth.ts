@@ -25,6 +25,8 @@ export interface RegisterRequest {
   displayName: string
   role: SelfRegisterRole
   business?: { name: string; category: BusinessCategory; address: string; lat?: number; lng?: number }
+  /** GDPR: bifa cu Termenii și condițiile + Confidențialitatea; BE cere `true` și păstrează momentul + versiunea */
+  acceptTerms: boolean
 }
 
 /** POST /auth/otp/request → 202 */
@@ -33,6 +35,6 @@ export interface OtpRequestResponse { retryAfterSeconds: number; demoCode?: stri
 /** POST /auth/otp/verify: cont existent → token + user; număr nou → signupToken (pentru /auth/otp/register) */
 export interface OtpVerifyResponse { token?: string; user?: UserDto; signupToken?: string }
 
-export interface OtpRegisterRequest { signupToken: string; displayName: string; role: 'VISITOR' | 'LOCAL' }
+export interface OtpRegisterRequest { signupToken: string; displayName: string; role: 'VISITOR' | 'LOCAL'; acceptTerms: boolean }
 
 export interface UpdateMeRequest { displayName?: string; locale?: 'ro' | 'en' | 'hu' }
