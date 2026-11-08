@@ -1,4 +1,6 @@
 {
+  "northUp": "North up",
+  "headingUp": "Map follows your direction",
   "picked": { "hint": "Tap the map where you want to go.", "kind": "Chosen point", "title": "Point chosen on the map", "away": "{km} from you", "routes": "Routes to here" },
   "search": "Search the map",
   "period": {

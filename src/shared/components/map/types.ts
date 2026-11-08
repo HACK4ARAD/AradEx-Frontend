@@ -57,6 +57,8 @@ export interface MapApi {
   /** mută centrul fără să schimbe zoom-ul (urmărirea poziției) */
   panTo: (p: GeoPoint) => void
   invalidate: () => void
+  /** rotirea hărții (grade față de nord); doar harta MapLibre se rotește, celelalte ignoră */
+  setBearing?: (deg: number, duration?: number) => void
 }
 
 /** Evenimentele comune ale hărților: pin apăsat, harta trasă de om (oprește urmărirea), apăsare pe hartă (lungă = alege punctul). */
@@ -64,6 +66,8 @@ export type MapEmits = {
   select: [id: string | null]
   interact: []
   press: [p: GeoPoint, long: boolean]
+  /** harta s-a rotit (grade față de nord; doar MapLibre) */
+  bearing: [deg: number]
 }
 
 /** Stilurile pinilor, comune ambelor hărți (design/final/shared/ui.css: .pin, .me-dot). */

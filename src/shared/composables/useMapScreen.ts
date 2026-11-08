@@ -139,6 +139,8 @@ export function useMapScreen(to: unknown, opts: { travel?: unknown; focus?: unkn
     if (!dest) return
     const seq = ++routeSeq
     const m = mode.value
+    // traseul se încadrează pe hartă: urmărirea poziției l-ar trage înapoi spre tine
+    following.value = false
     target.value = dest.key
     directions.value = null
     const stale = () => seq !== routeSeq || target.value !== dest.key

@@ -35,7 +35,7 @@ export function useCompass() {
     const angle = typeof screen !== 'undefined' && screen.orientation ? screen.orientation.angle : 0
     const h = compassHeading({ alpha: o.alpha, absolute: o.absolute || e.type === 'deviceorientationabsolute', webkitCompassHeading: o.webkitCompassHeading }, angle)
     if (h == null) return
-    if (heading.value == null || angleDelta(h, heading.value) >= COMPASS_MIN_DELTA) heading.value = Math.round(h)
+    if (heading.value == null || angleDelta(h, heading.value) >= COMPASS_MIN_DELTA) heading.value = Math.round(h) % 360
   }
 
   async function start() {

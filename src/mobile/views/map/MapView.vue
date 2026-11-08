@@ -5,7 +5,8 @@
 // Din tab-ul Transport (T19): `?travel=transit|car` deschide harta în modul ăla, `?focus=bike:<id>` cu stația de biciclete selectată.
 // Poziția se urmărește cât harta e deschisă (punct live + săgeata direcției); „Locația mea” te ține în centru până tragi de hartă.
 // Apăsare lungă pe hartă (sau o atingere, cu `?pick=1` din Transport) = punctul ales: card cu „Trasee până aici” / traseul pe hartă.
-import { computed, onMounted, ref } from 'vue'
+// Harta se rotește (MapLibre): cu două degete; busola readuce nordul sus; a doua atingere pe „Locația mea” = harta în direcția de mers.
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
@@ -35,8 +36,31 @@ const initials = computed(() => (auth.user?.displayName ?? '').split(' ').map((w
 
 const fly = (p: { lat: number; lng: number }) => mapRef.value?.flyTo(p, 16)
 const pan = (p: { lat: number; lng: number }) => mapRef.value?.panTo(p)
+
+/** rotirea hărții (grade; 0 = nordul sus) și modul „în direcția de mers” (harta se rotește după săgeata ta) */
+const bearing = ref(0)
+const headingUp = ref(false)
+const rotates = computed(() => !!mapRef.value?.rotates)
+watch(meHeading, (h) => { if (headingUp.value && h != null) mapRef.value?.setBearing(h, 250) })
+// fără urmărire (ai tras de hartă, ai cerut un traseu) nici harta nu se mai rotește după tine
+watch(following, (f) => { if (!f) headingUp.value = false })
+function northUp() {
+  headingUp.value = false
+  mapRef.value?.setBearing(0)
+}
+/** „Locația mea”: 1) te găsește și te urmărește; 2) (dacă harta se rotește) harta în direcția de mers; 3) înapoi cu nordul sus */
 function myLocation() {
+  if (following.value && rotates.value && !headingUp.value) {
+    headingUp.value = true
+    if (meHeading.value != null) mapRef.value?.setBearing(meHeading.value, 250)
+    return
+  }
+  if (headingUp.value) { northUp(); return }
   void locateMe(fly, { pan })
+}
+function onInteract() {
+  stopFollowing()
+  headingUp.value = false
 }
 /** cât de departe e punctul ales, de la tine (doar dacă știm unde ești) */
 const pickedKm = computed(() => (picked.value && !geo.isFallback.value ? distanceKm(geo.position.value, picked.value) : null))
@@ -58,7 +82,7 @@ onMounted(() => {
     <MapView ref="mapRef" :markers="markers" :selected-id="selected" :route="directions?.line ?? null"
       :route-approximate="directions?.approximate" :me="geo.isFallback.value ? null : geo.position.value"
 :insets="{ top: 170, bottom: routing ? 480 : 330 }" :lines="lines" :center="focusPoint" :zoom="focusPoint ? 16 : 15"
-      :me-heading="meHeading" @select="select" @interact="stopFollowing" @press="press" />
+      :me-heading="meHeading" @select="select" @interact="onInteract" @press="press" @bearing="bearing = $event" />
     <!-- Transport / Mașină: comutatoarele și legenda modului, cu sursele obligatorii ale datelor (cardurile le au și ele) -->
     <MapLayerPanel v-if="travel !== 'foot' && !anyCard" :modes="transit.modes.value" :zones="parking.zones.value" v-model:bikes="showBikes" :travel="travel" attributions
       @toggle-mode="transit.toggleMode"
@@ -93,9 +117,16 @@ onMounted(() => {
     <div class="absolute right-4 z-[500] flex flex-col gap-2" :class="!anyCard ? 'bottom-[130px]' : routing ? 'bottom-[456px]' : selParking ? 'bottom-[400px]' : selLayer ? 'bottom-[350px]' : 'bottom-[300px]'">
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomIn')" @click="mapRef?.zoomBy(1)"><AppIcon name="add" /></button>
       <button type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center" :aria-label="t('map.zoomOut')" @click="mapRef?.zoomBy(-1)"><AppIcon name="remove" /></button>
+      <!-- busola: apare când harta e rotită; acul arată nordul, o atingere îl readuce sus -->
+      <button v-if="Math.abs(((bearing % 360) + 540) % 360 - 180) > 1" type="button" class="w-11 h-11 rounded-[14px] bg-white shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center"
+        :aria-label="t('map.northUp')" data-test="compass" @click="northUp">
+        <svg width="22" height="22" viewBox="0 0 22 22" :style="{ transform: `rotate(${-bearing}deg)` }" aria-hidden="true">
+          <path d="M11 2 L15 11 L7 11 Z" fill="#E5402A" /><path d="M11 20 L15 11 L7 11 Z" fill="#9A9A93" />
+        </svg>
+      </button>
       <button type="button" class="w-11 h-11 rounded-[14px] shadow-[0_2px_10px_rgba(0,0,0,.14)] flex items-center justify-center"
-        :class="following ? 'bg-[#1D5FD1] text-white' : 'bg-white text-[#1D5FD1]'" :aria-label="t('map.myLocation')" :aria-pressed="following" data-test="my-location" @click="myLocation">
-        <AppIcon :name="following ? 'navigation' : 'my_location'" fill /></button>
+        :class="following ? 'bg-[#1D5FD1] text-white' : 'bg-white text-[#1D5FD1]'" :aria-label="t(headingUp ? 'map.headingUp' : 'map.myLocation')" :aria-pressed="following" data-test="my-location" @click="myLocation">
+        <AppIcon :name="headingUp ? 'explore' : 'my_location'" fill /></button>
     </div>
 
     <!-- „alege pe hartă” (din Transport): o atingere pune punctul -->

@@ -27,6 +27,7 @@
     "@vueuse/core": "^15.0.0",
     "html5-qrcode": "^2.3.8",
     "leaflet": "^1.9.4",
+    "maplibre-gl": "6.15.0",
     "pinia": "^4.1.0",
     "qrcode": "^1.5.4",
     "tailwindcss": "^4.3.4",
