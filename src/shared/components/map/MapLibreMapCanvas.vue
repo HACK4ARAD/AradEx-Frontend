@@ -23,6 +23,11 @@ let ready = false
 let pins: Marker[] = []
 let meMarker: Marker | null = null
 
+/**
+ * Zoom-ul vine în convenția Leaflet / Google (dale de 256 px). MapLibre numără zoom-ul pe dale de 512 px: același oraș la
+ * același „zoom 16” ar apărea de două ori mai aproape (și neclar, peste dalele maxime Esri). Convertim la intrare și la ieșire.
+ */
+const toMl = (z: number) => z - 1
 const TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
 const EMPTY = { type: 'FeatureCollection', features: [] } as GeoJSON.FeatureCollection
 /** [lat, lng] → [lng, lat] (MapLibre) */
@@ -66,7 +71,7 @@ function fitTo(points: [number, number][]) {
   if (!map.value) return
   map.value.resize()
   const pad = fitInsets(props.insets, map.value.getContainer().clientHeight)
-  map.value.fitBounds(bounds(points), { padding: { top: pad.top, bottom: pad.bottom, left: 40, right: 40 }, animate: false, maxZoom: 16, bearing: map.value.getBearing() })
+  map.value.fitBounds(bounds(points), { padding: { top: pad.top, bottom: pad.bottom, left: 40, right: 40 }, animate: false, maxZoom: toMl(16), bearing: map.value.getBearing() })
 }
 
 function drawRoute() {
@@ -109,7 +114,7 @@ onMounted(() => {
         sources: { esri: { type: 'raster', tiles: [TILES], tileSize: 256, maxzoom: 16, attribution: 'Esri, HERE, Garmin, © OpenStreetMap contributors' } },
         layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#E9E9E2' } }, { id: 'esri', type: 'raster', source: 'esri' }],
       },
-      center: [center.lng, center.lat], zoom: props.zoom, maxZoom: 18,
+      center: [center.lng, center.lat], zoom: toMl(props.zoom), maxZoom: toMl(18),
       // rotire cu două degete / click dreapta tras; fără înclinare (pitch), harta rămâne plană
       dragRotate: true, touchPitch: false, maxPitch: 0, pitchWithRotate: false,
       attributionControl: { compact: true },
@@ -172,7 +177,7 @@ watch(() => [props.me, props.meHeading], drawMe)
 watch(() => props.fit, drawFit)
 
 function zoomBy(delta: number) { map.value?.easeTo({ zoom: map.value.getZoom() + delta, duration: 250 }) }
-function flyTo(p: GeoPoint, zoom = 16) { map.value?.flyTo({ center: [p.lng, p.lat], zoom, duration: 600 }) }
+function flyTo(p: GeoPoint, zoom = 16) { map.value?.flyTo({ center: [p.lng, p.lat], zoom: toMl(zoom), duration: 600 }) }
 function panTo(p: GeoPoint) { map.value?.easeTo({ center: [p.lng, p.lat], duration: 500 }) }
 /** Rotirea hărții (grade, sens orar față de nord); 0 = nordul în sus. */
 function setBearing(deg: number, duration = 300) { map.value?.easeTo({ bearing: deg, duration }) }
