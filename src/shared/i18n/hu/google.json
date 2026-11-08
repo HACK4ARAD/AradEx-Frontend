@@ -1,0 +1,39 @@
+{
+  "title": "A Google-on",
+  "ratings": {
+    "zero": "nincs értékelés",
+    "one": "egy értékelés",
+    "few": "{n} értékelés",
+    "many": "{n} értékelés"
+  },
+  "openMaps": "Megnyitás a Google Térképen",
+  "allReviews": "Összes vélemény a Google-on",
+  "more": "Több",
+  "less": "Kevesebb",
+  "stars": "5-ből {n} csillag",
+  "noReviews": "A Google-on még nincs írásos vélemény.",
+  "link": {
+    "title": "Google-adatlap",
+    "sub": "A Google-értékelés és a vélemények megjelennek az alkalmazásban, „Powered by Google” jelöléssel. Csak olvasás: a Google-ba semmit sem írunk.",
+    "subPlace": "Az azonosítót a név és a koordináták alapján automatikusan megkeressük, amikor valaki megnyitja a látnivalót az alkalmazásban; itt javíthatod.",
+    "label": "Google Place ID",
+    "placeholder": "pl. ChIJ7VFfQACZRUcRXFuEhkS_zss",
+    "help": "Hol találom az azonosítót?",
+    "save": "Mentés",
+    "unlink": "Leválasztás",
+    "saved": "A Google-kapcsolat elmentve.",
+    "unlinked": "A Google-kapcsolat törölve.",
+    "invalid": "A Google-azonosító csak betűket, számjegyeket, „_” és „-” jelet tartalmazhat.",
+    "invalidId": "A Google nem ismeri ezt a Place ID-t: ellenőrizd (az értékelés addig nem jelenik meg az alkalmazásban, amíg nem helyes).",
+    "notLinked": "Nincs a Google-hoz kapcsolva",
+    "notConfigured": "A Google-kulcs nincs beállítva a szerveren: a vélemények még nem jelennek meg az alkalmazásban.",
+    "unavailable": "A Google most nem válaszol; az értékelés megjelenik, amint újra elérhető.",
+    "inApp": "Így néz ki az alkalmazásban"
+  },
+  "panel": {
+    "title": "Vélemények",
+    "sub": "Mit mondanak az ügyfelek a vállalkozásodról a Google-on. Az alkalmazásban írt vélemények az eseményértékelésekkel együtt érkeznek.",
+    "empty": "Kapcsold a vállalkozásodat a Google-adatlapjához, hogy itt lásd az értékelést és a véleményeket.",
+    "emptyTitle": "Nincs megjeleníthető vélemény"
+  }
+}

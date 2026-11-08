@@ -1,0 +1,24 @@
+{
+  "title": "Profil",
+  "connectedAs": "Bejelentkezve · {role}",
+  "guestTitle": "Látogatóként böngészel",
+  "guestText": "Jelentkezz be, ha jegyet veszel vagy pontokat szeretnél.",
+  "verified": "Ellenőrzött",
+  "pendingVerification": "Ellenőrzésre vár",
+  "points": "Pontjaid",
+  "pointsAvailable": "elérhető pont",
+  "language": "Az alkalmazás nyelve",
+  "roleRow": "Fiók szerepköre",
+  "roleHint": "A szerepkört a fiók határozza meg, és csak adminisztrátor módosíthatja.",
+  "loggedOut": "Kijelentkeztél.",
+  "settings": {
+    "title": "Beállítások",
+    "name": "Név",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "role": "Fiók szerepköre",
+    "language": "Nyelv",
+    "logout": "Kijelentkezés",
+    "logoutText": "Ezen az eszközön kijelentkezel."
+  }
+}

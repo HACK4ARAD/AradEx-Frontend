@@ -12,7 +12,7 @@ export interface UserDto {
   phone?: string
   displayName: string
   role: Role
-  locale: 'ro' | 'en'
+  locale: 'ro' | 'en' | 'hu'
   pointsBalance: number
   business?: BusinessSummary
 }
@@ -35,4 +35,4 @@ export interface OtpVerifyResponse { token?: string; user?: UserDto; signupToken
 
 export interface OtpRegisterRequest { signupToken: string; displayName: string; role: 'VISITOR' | 'LOCAL' }
 
-export interface UpdateMeRequest { displayName?: string; locale?: 'ro' | 'en' }
+export interface UpdateMeRequest { displayName?: string; locale?: 'ro' | 'en' | 'hu' }

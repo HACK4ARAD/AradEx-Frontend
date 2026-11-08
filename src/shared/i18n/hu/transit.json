@@ -1,0 +1,24 @@
+{
+  "tram": "{n}-es villamos",
+  "bus": "{n}-es busz",
+  "line": "{n}-es járat",
+  "now": "most",
+  "inMinutes": "{n} perc múlva",
+  "at": "{time}-kor",
+  "attribution": "Adatok: CTP Arad / Telelink",
+  "nearest": {
+    "title": "Legközelebbi megálló · {name}",
+    "distance": "{distance} gyalog",
+    "lines": "Járatok: {lines}",
+    "noLive": "Most nincs élő adat",
+    "noArrivals": "A közeljövőben nincs érkező járat",
+    "howTo": "Útvonal"
+  },
+  "card": {
+    "stop": "CTP-megálló",
+    "vehicle": "Élőben",
+    "delay": "{n} perc késés",
+    "onTime": "Pontos",
+    "nextStop": "Következő megálló: {name}"
+  }
+}

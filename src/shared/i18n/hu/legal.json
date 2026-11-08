@@ -1,0 +1,17 @@
+{
+  "privacy": {
+    "title": "Adatvédelem",
+    "updated": "Frissítve: 2026. november 7.",
+    "intro": "Az AradExperience Arad városi alkalmazása eseményekhez, idegenvezetéses látnivalókhoz, helyi ajánlatokhoz és közösségi akciókhoz. Ez az oldal elmagyarázza, milyen adatokat használunk és miért.",
+    "sections": {
+      "account": { "title": "A fiókod", "text": "A neved, az e-mail-címed és a jelszavad (titkosítva tároljuk) alkotja a fiókodat. A telefonon az alkalmazás csak a munkamenetedet (egy tokent) jegyzi meg, hogy ne kelljen mindig bejelentkezned." },
+      "activity": { "title": "Amit az alkalmazásban csinálsz", "text": "Elmentjük a jegyeidet és foglalásaidat, a mentett eseményeket, a közösségi akciókra való jelentkezéseket, a szerzett és elköltött pontokat, a beváltott ajánlatokat és az útitervenidet, hogy bármikor megnézhesd őket." },
+      "location": { "title": "Helyadatok", "text": "A helyadatot csak akkor használjuk, ha engedélyezed, a telefonon, a térképhez, az útvonalakhoz és a „közelemben” funkcióhoz. A koordinátákat kérésre küldjük el a távolságok számításához, és nem tároljuk a fiókodban." },
+      "camera": { "title": "Kamera", "text": "A kamera csak QR-kód beolvasásakor kapcsol be (jegyek, ajánlatok, akciók). A képeket nem tároljuk, és nem hagyják el a telefonodat." },
+      "ai": { "title": "MI-asszisztens", "text": "Az asszisztensnek küldött üzeneteidet az Anthropic (Claude) csak a válaszadáshoz dolgozza fel, a nyilvános események listájával együtt. Ne küldj személyes adatokat a chatben." },
+      "storage": { "title": "Hol tároljuk az adatokat", "text": "Az adatokat az Amazon Web Services szerverein tároljuk az Európai Unióban (Stockholm). Az adatokat nem adjuk el, és nem használjuk hirdetésekhez." },
+      "rights": { "title": "A jogaid", "text": "Bármikor kérhetsz másolatot az adataidról vagy kérheted a fiókod törlését, a hozzá tartozó jegyekkel, pontokkal és jelentkezésekkel együtt." }
+    },
+    "contact": "Kapcsolat: {email}"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "attribution": "Forrás: Arad Polgármesteri Hivatal · aradbikes.ro",
+  "attributionOsm": "© OpenStreetMap közreműködők",
+  "card": {
+    "dock": "Közbringa-állomás",
+    "rental": "Kerékpárkölcsönző",
+    "unlock": "A biciklit a GloBikes alkalmazásban oldod fel",
+    "return": "Bármelyik állomáson leadhatod, ahol van szabad hely",
+    "live": "A szabad biciklik csak az alkalmazásban látszanak",
+    "rentalText": "Saját nyitvatartású kölcsönzőpont (OpenStreetMap-adat)."
+  }
+}

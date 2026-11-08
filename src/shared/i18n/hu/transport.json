@@ -1,0 +1,137 @@
+{
+  "title": "Tömegközlekedés",
+  "from": "Honnan",
+  "myLocation": "Saját hely",
+  "center": "Arad központja",
+  "useLocation": "Saját hely használata",
+  "where": "Hová mennél?",
+  "clear": "Úti cél törlése",
+  "stopType": "CTP-megálló · járatok: {lines}",
+  "nearby": "Megállók a közelben",
+  "nearbyNone": "1,5 km-en belül nincs CTP-megálló.",
+  "lines": "Járatok",
+  "modes": {
+    "TRAM": "Villamosok",
+    "BUS": "Buszok"
+  },
+  "towards": "{name} felé",
+  "now": "most",
+  "min": "{n} perc",
+  "then": "utána {time}",
+  "at": "{time}-kor",
+  "scheduled": "menetrend szerint",
+  "noDepartures": "A közeljövőben nincs induló járat",
+  "noLive": "Most nincs élő adat: az itt megálló járatok: {lines}",
+  "lineRow": "{n} megálló · ~{min} perc végig",
+  "liveCount": "most nincs jármű | most egy jármű közlekedik | most {n} jármű közlekedik",
+  "routes": "Útvonalak odáig",
+  "routesSub": "{type} · válassz egyet, majd nézd meg az útvonalat a térképen",
+  "change": "Módosítás",
+  "planning": "Útvonalak keresése…",
+  "stops": "{n} megálló | {n} megálló",
+  "boardAt": "Felszállás:",
+  "alightAt": "leszállás:",
+  "inMin": "{n} perc múlva",
+  "noLiveDep": "nincs élő adat",
+  "towardsShort": "{name} felé",
+  "fastest": "Leggyorsabb",
+  "simplest": "Legegyszerűbb",
+  "arrive": "érkezés {time}",
+  "walkTitle": "Gyalog · {km}",
+  "walkSub": "Utcai útvonal kanyarról kanyarra · érkezés {time}",
+  "noFaster": "Egy járattal sem érsz oda gyorsabban: a legjobb lehetőség, a(z) {line}, {min} percig tartana.",
+  "noTransit": "Egyetlen CTP-járat sem köti össze ezt a helyet az úti céloddal; válassz más lehetőséget.",
+  "other": "További lehetőségek",
+  "bikeTitle": "Biciklivel · {km}",
+  "bikeSub": "A biciklit itt veszed fel: {from}, itt adod le: {to}",
+  "carTitle": "Autóval · {km}",
+  "carPark": "Parkolás: {name} · {zone}. zóna",
+  "carPaid": "most fizetős, {tariff}",
+  "carFree": "most ingyenes",
+  "carNoPark": "A közelben nincs fizetős parkoló; az utcán keress helyet",
+  "footnote": "Az útvonalak és a megállók a CTP Arad hálózatáéi; az indulások élő adatok (CTP Arad / Telelink), a menetidők becslések.",
+  "showOnMap": "Útvonal a térképen",
+  "start": "Indulás",
+  "notFound": "Ez az úti cél már nem létezik.",
+  "loadError": "A CTP-hálózat nem töltődött be.",
+  "retry": "Újra",
+  "more": {
+    "title": "A térképen",
+    "live": "Élő járatok",
+    "liveSub": "valós időben",
+    "bikes": "Biciklik",
+    "bikesSub": "{n} állomás",
+    "parking": "Parkolók",
+    "parkingSub": "zónák és díjak"
+  },
+  "bikesNear": "Biciklik a közelben",
+  "bikeDock": "Közbringa-állomás · {km}",
+  "line": {
+    "title": "{n}-es járat",
+    "towards": "{name} felé",
+    "info": "{n} megálló · ~{min} perc végig",
+    "departure": "indulás",
+    "plus": "+{n} perc",
+    "nearYou": "a közelben",
+    "arriving": "érkezik",
+    "tapStop": "Koppints egy megállóra, hogy lásd, hogyan jutsz el oda. Az idők az útvonal hosszából becsültek.",
+    "notFound": "Ez a járat már nem létezik."
+  },
+  "trip": {
+    "summary": "{min} perc · {stops}",
+    "badge": "{min} perc · érkezés {time}",
+    "walkToStop": "Gyalog {min} perc a megállóig:",
+    "ride": "{stops} · {min} perc, {to} felé · leszállás:",
+    "walkToDest": "Gyalog {min} perc az úti célig",
+    "walkAll": "Gyalog {min} perc ({km})",
+    "walkToDock": "Gyalog {min} perc a biciklis állomásig:",
+    "rideBike": "Biciklivel {min} perc az állomásig:",
+    "drive": "Autóval {min} perc ({km})",
+    "parkAt": "Parkolás itt:",
+    "start": "Utazás indítása",
+    "back": "Vissza",
+    "stop": "Utazás befejezése",
+    "left": "Még {stops} · {min} perc",
+    "next": "Következő: {name}",
+    "nextBtn": "Következő",
+    "getOff": "A következő megállónál szállj le",
+    "thenWalk": "{stop} · utána {min} perc gyalog",
+    "done": "Kész",
+    "ended": "Az utazás véget ért. Jó utat!",
+    "googleMaps": "Google Térkép",
+    "liveVehicles": "A járat járművei élőben",
+    "approximate": "A gyalogos szakasz hozzávetőleges (nincs útvonalhálózat)."
+  },
+  "poi": {
+    "teatru": {
+      "name": "„Ioan Slavici” Klasszikus Színház",
+      "type": "Színház"
+    },
+    "cetate": {
+      "name": "Aradi vár",
+      "type": "Látnivaló"
+    },
+    "faleza": {
+      "name": "Maros-part",
+      "type": "Park"
+    },
+    "gara": {
+      "name": "Aradi vasútállomás",
+      "type": "Vasútállomás"
+    },
+    "atrium": {
+      "name": "Atrium Mall",
+      "type": "Bevásárlóközpont"
+    },
+    "ceala": {
+      "name": "Csálai-erdő",
+      "type": "Természet"
+    },
+    "turn": {
+      "name": "Víztorony",
+      "type": "Látnivaló"
+    }
+  },
+  "liveShort": "most {n} élő",
+  "outside": "Aradon kívül vagy: az útvonalak a városközpontból indulnak."
+}

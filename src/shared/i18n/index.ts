@@ -1,6 +1,13 @@
 import { createI18n } from 'vue-i18n'
 
-export type Locale = 'ro' | 'en'
+export type Locale = 'ro' | 'en' | 'hu'
+/** Limbile aplicației, în ordinea din meniu, cu numele în limba lor (nu se traduc). */
+export const LOCALES: { id: Locale; name: string; short: string }[] = [
+  { id: 'ro', name: 'Română', short: 'RO' },
+  { id: 'en', name: 'English', short: 'EN' },
+  { id: 'hu', name: 'Magyar', short: 'HU' },
+]
+export const isLocale = (v: unknown): v is Locale => v === 'ro' || v === 'en' || v === 'hu'
 const LOCALE_KEY = 'ax.locale'
 
 /**
@@ -28,14 +35,14 @@ export function loadMessages(locale: Locale): Messages {
 }
 
 function savedLocale(): Locale {
-  try { return (localStorage.getItem(LOCALE_KEY) as Locale) || 'ro' } catch { return 'ro' }
+  try { const v = localStorage.getItem(LOCALE_KEY); return isLocale(v) ? v : 'ro' } catch { return 'ro' }
 }
 
 export const i18n = createI18n({
   legacy: false,
   locale: savedLocale(),
   fallbackLocale: 'ro',
-  messages: { ro: loadMessages('ro'), en: loadMessages('en') },
+  messages: { ro: loadMessages('ro'), en: loadMessages('en'), hu: loadMessages('hu') },
 })
 
 export function setLocale(locale: Locale) {

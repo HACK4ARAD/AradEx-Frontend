@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { authApi } from '@/shared/api/auth'
 import { tokenStore, setUnauthorizedHandler } from '@/shared/api/client'
-import { i18n, setLocale, type Locale } from '@/shared/i18n'
+import { i18n, isLocale, setLocale, type Locale } from '@/shared/i18n'
 import type { Role } from '@/shared/types/common'
 import type { AuthResponse, RegisterRequest, UpdateMeRequest, UserDto } from '@/shared/types/auth'
 import { APP } from '@/shared/app'
@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   /** Limba salvată în cont devine limba aplicației (login, pornire). */
   function applyAccountLocale(u: UserDto) {
-    if (u.locale === 'ro' || u.locale === 'en') setLocale(u.locale)
+    if (isLocale(u.locale)) setLocale(u.locale)
   }
 
   function setSession(t: string, u: UserDto) {

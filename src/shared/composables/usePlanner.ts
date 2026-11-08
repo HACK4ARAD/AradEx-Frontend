@@ -45,7 +45,7 @@ export function buildRequest(form: PlanForm, locale: string): ItineraryRequest {
     startTime: form.startTime,
     transport: form.transport,
     interests: INTERESTS.filter((i) => form.interests.includes(i)),
-    locale: locale === 'en' ? 'en' : 'ro',
+    locale: locale === 'en' || locale === 'hu' ? locale : 'ro',
   }
   if (form.time === '2d') req.days = 2
   else { req.hours = form.time === '3h' ? 3 : form.time === 'half' ? 4 : 8; req.days = 1 }

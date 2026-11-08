@@ -1,0 +1,21 @@
+{
+  "loading": "Betöltés…",
+  "retry": "Újra",
+  "empty": "Itt még nincs semmi",
+  "save": "Mentés",
+  "cancel": "Mégse",
+  "back": "Vissza",
+  "continue": "Tovább",
+  "search": "Események és programok keresése",
+  "apiOnline": "API elérhető",
+  "apiOffline": "API nem elérhető",
+  "demoData": "Mintaadatok",
+  "comingSoon": "Folyamatban — lásd docs/PLAN.md",
+  "close": "Bezárás",
+  "scanHint": "Irányítsd a kamerát a QR-kódra",
+  "cameraError": "Nem indul a kamera. Engedélyezd a kamerát, vagy írd be a kódot.",
+  "pagination": "Lapozás",
+  "pageRange": "{from}–{to} / {total}",
+  "prevPage": "Előző oldal",
+  "nextPage": "Következő oldal"
+}

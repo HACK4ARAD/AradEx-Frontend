@@ -17,7 +17,7 @@ const integrations = [
   { icon: 'photo_library', label: 'media', state: 'on' }, { icon: 'rate_review', label: 'places', state: 'optional' },
 ]
 /** Interfața e tradusă complet în engleză; conținutul din baza de date (evenimente, locuri, ghiduri, oferte, acțiuni) e doar în română. */
-const languages = [{ label: 'ro', state: 'complete' }, { label: 'en', state: 'uiOnly', hint: 'enHint' }, { label: 'hu', state: 'planned' }]
+const languages = [{ label: 'ro', state: 'complete' }, { label: 'en', state: 'uiOnly', hint: 'enHint' }, { label: 'hu', state: 'uiOnly', hint: 'enHint' }]
 const tone: Record<string, string> = { on: 'bg-ok-soft text-ok', complete: 'bg-ok-soft text-ok', uiOnly: 'bg-warn-soft text-warn', optional: 'bg-soft text-muted', planned: 'bg-soft text-muted' }
 </script>
 

@@ -1,0 +1,43 @@
+{
+  "attribution": "Forrás: Recons · © OpenStreetMap közreműködők",
+  "loadError": "A parkolási adatok nem töltődtek be. Próbáld újra.",
+  "card": {
+    "kicker": "Fizetős parkoló",
+    "zone": "Zóna",
+    "zoneName": "{n}. zóna · {color}",
+    "spaces": "Helyek",
+    "tariff": "Díj",
+    "maxStay": "Maximális időtartam",
+    "schedule": "Időszak",
+    "perHour": "{amount} / óra ({via})",
+    "plusVat": "{amount} + áfa",
+    "viaMeter": "parkolóautomata",
+    "viaSms": "SMS, kód: {code}",
+    "viaSmsPlain": "SMS",
+    "noTariff": "A forrás nem adja meg",
+    "noMaxStay": "A forrás nem adja meg",
+    "weekdays": "H–P 08:00–17:00 fizetős; este és hétvégén ingyenes",
+    "sundayObor": "Vasárnap 08:00–14:00 fizetős (az Obor piac környéke)",
+    "approximate": "Hozzávetőleges hely (referenciautca)"
+  },
+  "color": {
+    "0": "zöld",
+    "1": "piros",
+    "2": "sárga",
+    "3": "kék"
+  },
+  "sms": {
+    "open": "Fizetés SMS-ben",
+    "title": "Fizetés SMS-ben",
+    "duration": "Időtartam",
+    "plate": "Rendszám",
+    "platePh": "pl. AR 01 ABC",
+    "plateInvalid": "Írd be a rendszámot úgy, ahogy a táblán áll: megye, számok, betűk (pl. AR 01 ABC).",
+    "needPlate": "Add meg a rendszámot, hogy elkészítsük az üzenetet.",
+    "preview": "Üzenet:",
+    "to": "címzett:",
+    "send": "Üzenetek megnyitása, küldésre készen",
+    "freeNow": "Most ingyenes a parkolás (este, hétvégén); csak H–P 08:00–17:00 között kell fizetni.",
+    "note": "A parkolás csak a visszaigazoló SMS megérkezésekor van kifizetve. Ellenőrizd a(z) {number} számot a parkoló tábláján. Orange-nál SMS-enként további 0,05 EUR + áfa a díj."
+  }
+}

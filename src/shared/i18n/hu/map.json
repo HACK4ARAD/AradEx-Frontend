@@ -1,0 +1,67 @@
+{
+  "search": "Keresés a térképen",
+  "period": {
+    "today": "Ma",
+    "weekend": "Hétvége",
+    "week": "7 nap"
+  },
+  "kind": {
+    "all": "Mind",
+    "event": "Események",
+    "place": "Látnivalók",
+    "offer": "Ajánlatok",
+    "action": "Akciók"
+  },
+  "kindLabel": {
+    "event": "Esemény",
+    "place": "Látnivaló",
+    "offer": "Partnervállalkozás",
+    "action": "Közösségi akció"
+  },
+  "guide": "Virtuális idegenvezető · {n} állomás",
+  "offers": "nincs ajánlat | egy ajánlat | {n} ajánlat",
+  "points": "pont",
+  "showRoute": "Útvonal",
+  "open": "Megnyitás",
+  "googleMaps": "Google Térkép",
+  "foot": "Gyalog",
+  "car": "Autóval",
+  "routeInfo": "{min} perc · {km}",
+  "approximate": "Hozzávetőleges útvonal (légvonal)",
+  "fromCenter": "Arad központjából: engedélyezd a helyadatot, hogy onnan indulj, ahol vagy.",
+  "zoomIn": "Nagyítás",
+  "zoomOut": "Kicsinyítés",
+  "myLocation": "Saját hely",
+  "close": "Bezárás",
+  "notFound": "Ez a hely már nincs a térképen (véget ért vagy eltávolították).",
+  "loading": "A térkép betöltése…",
+  "web": {
+    "title": "Térkép",
+    "results": "nincs találat | egy találat | {n} találat",
+    "sortedCenter": "Arad központjától mért távolság szerint",
+    "sortedYou": "a tőled mért távolság szerint",
+    "list": "Találatok a térképen",
+    "empty": "Itt nincs semmi",
+    "emptyText": "Változtass az időszakon, a típuson vagy a keresésen.",
+    "reset": "Mindent mutass",
+    "routing": "Az útvonal számítása…",
+    "transitHint": "Tömegközlekedés módban a térkép csak a CTP-megállókat, -járatokat és -járműveket, valamint a biciklis állomásokat mutatja. Koppints egy megállóra az érkezésekért, vagy válaszd a „Gyalog” módot, hogy újra lásd az eseményeket és a helyeket."
+  },
+  "travel": {
+    "label": "Hogyan közlekedsz",
+    "foot": "Gyalog",
+    "transit": "Tömegközl.",
+    "car": "Autó"
+  },
+  "layers": {
+    "tram": "Villamosok",
+    "bus": "Buszok",
+    "bikes": "Biciklik",
+    "footHint": "Látnivalók, események és ajánlatok; az útvonalak gyalogosak.",
+    "transitHint": "CTP-járatok, élő járművek és közbringa-állomások.",
+    "carHint": "Fizetős parkolók zónák szerint színezve; az útvonalak autósak.",
+    "bikesMissing": "{total} biciklis állomásból {n} helye nyilvános."
+  },
+  "locationDenied": "A helyadat ki van kapcsolva az alkalmazásnál. Engedélyezd a telefon (vagy a böngésző) beállításaiban, hogy a térkép megtaláljon.",
+  "locationUnavailable": "Nem találtunk meg. Kapcsold be a telefon helymeghatározását, és próbáld újra."
+}
