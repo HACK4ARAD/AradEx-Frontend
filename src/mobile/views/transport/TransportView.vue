@@ -39,7 +39,8 @@ const tp = useTripPlan()
 const to = computed(() => parseTo(route.query.to))
 const sel = ref(0)
 
-/* ---------- căutarea destinației: lista derulantă (populare cu câmpul gol, apoi după primele litere, cu liniile din apropiere) ---------- */
+/* ---------- căutarea destinației: lista derulantă (populare cu câmpul gol, apoi după primele litere, cu liniile din apropiere) ----------
+ * Câmpul folosește `@input`, nu `v-model`, ca lista să se schimbe la fiecare literă și pe tastaturile Android care compun cuvântul. */
 const q = ref('')
 const focused = ref(false)
 const sug = useSuggest(q, 'transport')
@@ -144,7 +145,7 @@ onMounted(async () => {
     </div>
     <label v-else class="flex items-center gap-3 py-3">
       <span class="w-3.5 h-3.5 rounded-[3px] bg-ink shrink-0" />
-      <input v-model="q" type="text" inputmode="search" autocomplete="off" enterkeyhint="go" class="flex-1 min-w-0 bg-transparent outline-none text-[17px] font-semibold text-ink placeholder:font-semibold" :placeholder="t('transport.where')" :aria-label="t('transport.where')" @focus="focused = true" @blur="focused = false" @keydown.enter.prevent="searchEnter">
+      <input :value="q" type="text" inputmode="search" autocomplete="off" enterkeyhint="go" class="flex-1 min-w-0 bg-transparent outline-none text-[17px] font-semibold text-ink placeholder:font-semibold" :placeholder="t('transport.where')" :aria-label="t('transport.where')" @input="q = ($event.target as HTMLInputElement).value" @focus="focused = true" @blur="focused = false" @keydown.enter.prevent="searchEnter">
     </label>
   </div>
 
