@@ -4,7 +4,7 @@ import { ApiError } from '@/shared/api/client'
 import { authApi } from '@/shared/api/auth'
 import { useAuthStore } from '@/shared/stores/auth'
 import type { UserDto } from '@/shared/types/auth'
-import { isDemoPhone, normalizePhone, usePhoneLogin } from './usePhoneLogin'
+import { VISITOR_DEMO_PHONE, isDemoPhone, normalizePhone, usePhoneLogin, useVisitorLogin } from './usePhoneLogin'
 
 vi.mock('@/shared/api/auth', () => ({
   authApi: { otpRequest: vi.fn(), otpVerify: vi.fn(), otpRegister: vi.fn(), updateMe: vi.fn() },
@@ -208,3 +208,44 @@ describe('usePhoneLogin', () => {
     expect(f.error.value).toBe('auth.phone.errors.wait')
   })
 })
+
+describe('useVisitorLogin', () => {
+  const visitor: UserDto = { id: 1, phone: '+40799000001', displayName: 'Ana Vizitator', role: 'VISITOR', locale: 'ro', pointsBalance: 0 }
+  beforeEach(() => { localStorage.clear(); setActivePinia(createPinia()); vi.clearAllMocks() })
+
+  it('signs straight in to the demo visitor: asks for the demo code and confirms it, no code typed', async () => {
+    api.otpRequest.mockResolvedValue({ retryAfterSeconds: 60, demoCode: '482913' })
+    api.otpVerify.mockResolvedValue({ token: 'jwt', user: visitor })
+    const v = useVisitorLogin()
+    const u = await v.enter()
+    expect(api.otpRequest).toHaveBeenCalledWith(VISITOR_DEMO_PHONE)
+    expect(api.otpVerify).toHaveBeenCalledWith(VISITOR_DEMO_PHONE, '482913')
+    expect(u?.role).toBe('VISITOR')
+    expect(useAuthStore().token).toBe('jwt')
+    expect(v.busy.value).toBe(false)
+  })
+
+  it('without a demo code or on a server error it shows an error and stays signed out', async () => {
+    api.otpRequest.mockResolvedValue({ retryAfterSeconds: 60 })
+    const v = useVisitorLogin()
+    expect(await v.enter()).toBeNull()
+    expect(v.error.value).toBe('auth.visitor.error')
+    api.otpRequest.mockRejectedValue(new ApiError(0, 'offline'))
+    expect(await v.enter()).toBeNull()
+    expect(v.error.value).toBe('auth.errors.network')
+    expect(useAuthStore().token).toBeFalsy()
+  })
+
+  it('a second click while signing in does nothing', async () => {
+    let done: (v: unknown) => void = () => {}
+    api.otpRequest.mockReturnValue(new Promise((r) => { done = r }) as never)
+    const v = useVisitorLogin()
+    const first = v.enter()
+    expect(await v.enter()).toBeNull()
+    done({ retryAfterSeconds: 60, demoCode: '111111' })
+    api.otpVerify.mockResolvedValue({ token: 'jwt', user: visitor })
+    await first
+    expect(api.otpRequest).toHaveBeenCalledTimes(1)
+  })
+})
+

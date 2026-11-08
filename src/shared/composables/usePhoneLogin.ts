@@ -146,3 +146,37 @@ export function usePhoneLogin() {
 
   return { step, phone, code, displayName, role, demoCode, cooldown, error, info, busy, send, verify, register, restart }
 }
+
+/** Contul demo de vizitator (seed): „Intră ca vizitator” pe web intră direct pe el. */
+export const VISITOR_DEMO_PHONE = '+40799000001'
+
+/**
+ * „Intră ca vizitator” (W0): un clic și ești conectat pe contul demo de vizitator, fără cod de tastat — cerem codul demo
+ * (vine în răspuns, fără SMS) și îl confirmăm imediat. Oricâți oameni deodată: în BE numerele demo n-au limite și orice cod
+ * demo încă valabil merge.
+ */
+export function useVisitorLogin() {
+  const auth = useAuthStore()
+  const busy = ref(false)
+  const error = ref('')
+
+  async function enter(): Promise<UserDto | null> {
+    if (busy.value) return null
+    busy.value = true
+    error.value = ''
+    try {
+      const req = await authApi.otpRequest(VISITOR_DEMO_PHONE)
+      if (!req.demoCode) throw new Error('no demo code')
+      const res = await authApi.otpVerify(VISITOR_DEMO_PHONE, req.demoCode)
+      if (!res.token || !res.user) throw new Error('no session')
+      return auth.acceptSession({ token: res.token, user: res.user })
+    } catch (e) {
+      error.value = e instanceof ApiError && e.status === 0 ? 'auth.errors.network' : 'auth.visitor.error'
+      return null
+    } finally {
+      busy.value = false
+    }
+  }
+
+  return { busy, error, enter }
+}
