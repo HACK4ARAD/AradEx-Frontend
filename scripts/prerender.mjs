@@ -67,7 +67,9 @@ for (const [route, name] of PAGES) {
   const broken = await page.evaluate(() => /Nu am putut încărca|Eroare \d{3}/.test(document.body.innerText))
   if (broken) { console.error(`prerender ${route}: pagina arată o eroare, nu scriu`); failed = true; await context.close(); continue }
   if (text < 200) { console.error(`prerender ${route}: prea puțin text (${text}), nu scriu`); failed = true; await context.close(); continue }
-  const html = '<!doctype html>\n' + await page.evaluate(() => document.documentElement.outerHTML)
+  // Vite pune linkurile modulelor încărcate la cerere cu adresa completă a serverului de aici; le facem relative (/assets/…)
+  const html = ('<!doctype html>\n' + await page.evaluate(() => document.documentElement.outerHTML)).replaceAll(origin, '')
+  if (html.includes('127.0.0.1')) { console.error(`prerender ${route}: a rămas o adresă locală, nu scriu`); failed = true; await context.close(); continue }
   await writeFile(path.join(DIST, 'prerender', `${name}.html`), html)
   console.log(`prerender ${route} → dist/prerender/${name}.html · ${text} caractere · ${title}`)
   await context.close()
