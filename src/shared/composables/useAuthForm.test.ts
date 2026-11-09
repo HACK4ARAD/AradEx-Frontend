@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { ApiError } from '@/shared/api/client'
 import type { Role } from '@/shared/types/common'
-import { authErrorMessage, emptyAuthForm, homeFor, landingFor, safeNext, validateAuthForm } from './useAuthForm'
+import { authErrorMessage, buildRegisterRequest, emptyAuthForm, homeFor, landingFor, safeNext, validateAuthForm } from './useAuthForm'
 
 describe('validateAuthForm', () => {
   const ok = { ...emptyAuthForm(), email: 'ana@exemplu.ro', password: 'demo1234', displayName: 'Ana', acceptTerms: true }
@@ -23,6 +23,17 @@ describe('validateAuthForm', () => {
     expect(validateAuthForm({ ...ok, displayName: ' ' }, 'register')).toBe('auth.errors.nameRequired')
   })
 
+  it('a new account keeps the BE limits: password up to 72 characters, name up to 80', () => {
+    expect(validateAuthForm({ ...ok, password: 'x'.repeat(72) }, 'register')).toBeNull()
+    expect(validateAuthForm({ ...ok, password: 'x'.repeat(73) }, 'register')).toBe('auth.errors.passwordLong')
+    expect(validateAuthForm({ ...ok, password: 'x'.repeat(73) }, 'login')).toBeNull()
+    expect(validateAuthForm({ ...ok, displayName: 'A'.repeat(81) }, 'register')).toBe('auth.errors.nameLong')
+  })
+
+  it('a personal account needs the terms ticked too', () => {
+    expect(validateAuthForm({ ...ok, acceptTerms: false }, 'register')).toBe('auth.consent.required')
+  })
+
   it('requires business name and address for a business account', () => {
     expect(validateAuthForm(ok, 'business')).toBe('auth.errors.businessName')
     expect(validateAuthForm({ ...ok, businessName: 'Ceainăria' }, 'business')).toBe('auth.errors.businessAddress')
@@ -39,12 +50,31 @@ describe('authErrorMessage', () => {
     expect(authErrorMessage(new ApiError(0, 'offline'), 'login')).toEqual({ key: 'auth.errors.network' })
   })
 
-  it('tells personal accounts to use their phone (T21, 403 on email login)', () => {
-    expect(authErrorMessage(new ApiError(403, 'Personal accounts sign in with their phone number'), 'login')).toEqual({ key: 'auth.errors.usePhone' })
+  it('403 on login means the account is disabled', () => {
+    expect(authErrorMessage(new ApiError(403, 'Account disabled'), 'login')).toEqual({ key: 'auth.errors.disabled' })
   })
 
   it('falls back to the ProblemDetail detail', () => {
     expect(authErrorMessage(new ApiError(400, 'Unknown business category: X'), 'business')).toEqual({ text: 'Unknown business category: X' })
+  })
+})
+
+describe('buildRegisterRequest', () => {
+  const v = { ...emptyAuthForm(), email: ' ana@exemplu.ro ', password: 'demo1234', displayName: ' Ana Pop ', acceptTerms: true }
+
+  it('a visitor or a local signs up without business', () => {
+    const visitor = buildRegisterRequest({ ...v, role: 'VISITOR' }, 'register')
+    expect(visitor).toEqual({ email: 'ana@exemplu.ro', password: 'demo1234', displayName: 'Ana Pop', role: 'VISITOR', acceptTerms: true })
+    expect('business' in visitor).toBe(false)
+    expect(buildRegisterRequest({ ...v, role: 'LOCAL' }, 'register').role).toBe('LOCAL')
+  })
+
+  it('a business signs up as BUSINESS with its details', () => {
+    const req = buildRegisterRequest({ ...v, businessName: ' Ceainăria ', businessCategory: 'CAFE', businessAddress: ' Str. X 1 ' }, 'business')
+    expect(req).toEqual({
+      email: 'ana@exemplu.ro', password: 'demo1234', displayName: 'Ana Pop', acceptTerms: true,
+      role: 'BUSINESS', business: { name: 'Ceainăria', category: 'CAFE', address: 'Str. X 1' },
+    })
   })
 })
 

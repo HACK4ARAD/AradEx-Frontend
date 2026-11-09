@@ -40,14 +40,14 @@ export const useAuthStore = defineStore('auth', () => {
     return acceptNewAccount(await authApi.register(req))
   }
 
-  /** T21: sesiunea venită din login-ul cu telefon (cont existent). */
+  /** Sesiunea unui cont existent venită din alt flux decât login-ul (parola nouă după „Am uitat parola”). */
   function acceptSession(res: AuthResponse) {
     setSession(res.token, res.user)
     applyAccountLocale(res.user)
     return res.user
   }
 
-  /** Cont nou (email sau telefon): păstrează limba aleasă înainte de înregistrare. */
+  /** Cont nou: păstrează limba aleasă înainte de înregistrare. */
   async function acceptNewAccount(res: AuthResponse) {
     setSession(res.token, res.user)
     const chosen = i18n.global.locale.value as Locale

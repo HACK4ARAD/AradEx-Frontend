@@ -12,7 +12,7 @@ function stripPrefix(to: RouteLocation): RouteLocationRaw {
  * Web-ul (build-ul `npm run build`, aradexperience.site) = site-ul de prezentare al aplicației mobile + panourile (Primărie,
  * firme, Admin), fără prefix în URL. Nu conține nimic din aplicația mobilă (build separat, `npm run build:mobile`).
  */
-/** Login-ul (W0): conturile personale (telefon + cod) și panourile. */
+/** Login-ul (W0): e-mail + parolă pentru conturile personale și panouri. */
 export const WEB_LOGINS: Logins = { names: ['w-login'] }
 
 /** T23: paginile aplicației pe web, pentru conturile personale conectate (Adminul are voie peste tot). */
