@@ -14,6 +14,7 @@ import { DEMO_ENABLED, initialLoginTab, landingFor } from '@/shared/composables/
 import { useVisitorLogin } from '@/shared/composables/useVisitorLogin'
 import { useUiStore } from '@/shared/stores/ui'
 import { routeRoles } from '@/router/guard'
+import { CONTACT_EMAIL } from '@/web/presentation'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -88,12 +89,12 @@ async function enterAsVisitor() {
           </button>
           <p v-if="visitor.error.value" class="text-[#B3261E] text-[13px] m-0" role="alert">{{ t(visitor.error.value) }}</p>
           <div class="flex items-center gap-3 text-muted text-[12.5px] my-1"><span class="flex-1 h-px bg-line" />{{ t('auth.visitor.or') }}<span class="flex-1 h-px bg-line" /></div>
-          <LoginForm ui="w" audience="personal" />
+          <LoginForm ui="w" audience="personal" :contact-email="CONTACT_EMAIL" />
           <p class="text-muted text-[12.5px] m-0 mt-1">{{ t('auth.personalWeb') }}</p>
         </template>
 
         <template v-else>
-        <LoginForm ref="panelsForm" ui="w" audience="panels" />
+        <LoginForm ref="panelsForm" ui="w" audience="panels" :contact-email="CONTACT_EMAIL" />
         <div v-if="DEMO_ENABLED" class="text-[13px] text-muted mt-1">{{ t('auth.panels.pick') }}</div>
         <button v-for="p in (DEMO_ENABLED ? panels : [])" :key="p.email" type="button"
           class="bg-white border border-line rounded-2xl p-4 flex items-center gap-3 text-left w-full hover:border-ink transition-colors" @click="pick(p.email)">

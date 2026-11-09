@@ -35,9 +35,13 @@ export const useAuthStore = defineStore('auth', () => {
     return res.user
   }
 
-  /** Cont nou: păstrează limba aleasă înainte de înregistrare (contul nou pornește cu 'ro'). */
-  async function register(req: RegisterRequest) {
-    return acceptNewAccount(await authApi.register(req))
+  /**
+   * Cont nou: păstrează limba aleasă înainte de înregistrare (contul nou pornește cu 'ro'). Întoarce și codul de recuperare,
+   * pe care ecranul îl arată o singură dată înainte să meargă mai departe.
+   */
+  async function register(req: RegisterRequest): Promise<{ user: UserDto; recoveryCode: string | null }> {
+    const res = await authApi.register(req)
+    return { user: await acceptNewAccount(res), recoveryCode: res.recoveryCode ?? null }
   }
 
   /** Sesiunea unui cont existent venită din alt flux decât login-ul (parola nouă după „Am uitat parola”). */
@@ -55,6 +59,13 @@ export const useAuthStore = defineStore('auth', () => {
       try { user.value = await authApi.updateMe({ locale: chosen }) } catch { /* rămâne local; nu blocăm înregistrarea */ }
     }
     return user.value ?? res.user
+  }
+
+  /** Reîncarcă `/me` (de ex. după schimbarea parolei: `mustChangePassword`, `hasRecoveryCode`). */
+  async function refresh() {
+    const u = await authApi.me()
+    user.value = u
+    return u
   }
 
   /** Nu schimbă limba UI-ului din răspuns (vezi changeLocale), ca răspunsurile venite în altă ordine să nu o comute înapoi. */
@@ -121,5 +132,5 @@ export const useAuthStore = defineStore('auth', () => {
     })
   })
 
-  return { user, token, ready, savingLocale, isLoggedIn, role, login, register, acceptSession, acceptNewAccount, updateMe, changeLocale, logout, init, hasRole }
+  return { user, token, ready, savingLocale, isLoggedIn, role, login, register, acceptSession, acceptNewAccount, refresh, updateMe, changeLocale, logout, init, hasRole }
 })

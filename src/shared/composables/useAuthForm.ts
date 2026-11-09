@@ -28,7 +28,7 @@ export const DEMO_ENABLED = import.meta.env.DEV || import.meta.env.VITE_DEMO ===
 export const DEMO_PASSWORD = 'demo1234'
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
-/** limitele din BE (RegisterRequest, ResetPasswordRequest) */
+/** limitele din BE (RegisterRequest, RecoverPasswordRequest, ChangePasswordRequest) */
 export const PASSWORD_MIN = 8
 export const PASSWORD_MAX = 72
 export const NAME_MAX = 80
@@ -37,11 +37,29 @@ export function isEmail(s: string): boolean {
   return EMAIL_RE.test(s.trim())
 }
 
-/** Parola unui cont nou sau parola nouă după „Am uitat parola”: cheia i18n a erorii sau null. */
+/** Parola unui cont nou sau o parolă nouă („Am uitat parola”, „Schimbă parola”): cheia i18n a erorii sau null. */
 export function newPasswordError(password: string): string | null {
   if (password.length < PASSWORD_MIN) return 'auth.errors.password'
   if (password.length > PASSWORD_MAX) return 'auth.errors.passwordLong'
   return null
+}
+
+/** Alfabetul codurilor de recuperare (și al parolelor temporare): fără 0/O și 1/I/L, ca să nu se încurce la citit. */
+export const RECOVERY_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'
+const RECOVERY_RE = new RegExp(`^[${RECOVERY_ALPHABET}]{12}$`)
+
+/**
+ * Codul de recuperare tastat de om → forma canonică `K7QM-4XPT-9DWA`, sau null dacă nu are 12 caractere din alfabet.
+ * Ca BE: orice majuscule/minuscule, fără spații și cratime.
+ */
+export function normalizeRecoveryCode(raw: string): string | null {
+  const s = (raw ?? '').replace(/[\s-]/g, '').toUpperCase()
+  return RECOVERY_RE.test(s) ? `${s.slice(0, 4)}-${s.slice(4, 8)}-${s.slice(8)}` : null
+}
+
+/** Conturile demo din seed (`…@demo.ro`): parola lor e publică și nu se schimbă (BE răspunde 403). */
+export function isDemoAccount(u: { email?: string } | null | undefined): boolean {
+  return !!u?.email && u.email.trim().toLowerCase().endsWith('@demo.ro')
 }
 
 export function emptyAuthForm(): AuthFormValues {
