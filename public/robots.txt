@@ -1,0 +1,19 @@
+# AradExperience (Arad Experience): se indexează doar paginile publice; login-ul, panourile și contul nu.
+User-agent: *
+Allow: /
+Disallow: /login$
+Disallow: /password$
+Disallow: /account$
+Disallow: /account/
+Disallow: /city$
+Disallow: /city/
+Disallow: /business$
+Disallow: /business/
+Disallow: /admin$
+Disallow: /admin/
+Disallow: /checkout$
+Disallow: /confirm/
+Disallow: /tickets/
+Disallow: /api/
+
+Sitemap: https://aradexperience.site/sitemap.xml
