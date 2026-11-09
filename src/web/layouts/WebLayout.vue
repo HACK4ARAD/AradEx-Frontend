@@ -179,6 +179,7 @@ function logout() { auth.logout(); router.push('/') }
         <a :href="HACKATHON_URL" target="_blank" rel="noopener" class="ml-auto no-underline text-muted hover:text-ink">{{ t('site.footer.made') }}</a>
       </div>
       <div class="max-w-[1280px] mx-auto px-4 md:px-8 pb-6 -mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted">
+        <span>{{ t('site.footer.copyright', { year: 2026 }) }}</span>
         <span>{{ t('site.footer.sources') }}:</span>
         <a v-for="s in SOURCE_LINKS" :key="s.key" :href="s.href" target="_blank" rel="noopener" class="no-underline text-muted hover:text-ink underline-offset-2 hover:underline">{{ t(`site.footer.${s.key}`) }}</a>
       </div>

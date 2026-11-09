@@ -108,6 +108,7 @@
     "sources": "Sources",
     "cityHall": "Arad City Hall",
     "visitArad": "Visit Arad",
-    "ctp": "CTP Arad (public transport)"
+    "ctp": "CTP Arad (public transport)",
+    "copyright": "© {year} AradExperience · All rights reserved"
   }
 }
