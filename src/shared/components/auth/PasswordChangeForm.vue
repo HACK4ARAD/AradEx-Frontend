@@ -30,19 +30,19 @@ async function submit() {
   <div v-else>
     <template v-if="showTitle">
       <h1 class="m-0 font-semibold tracking-[-0.025em] leading-tight" :class="isWeb ? 'text-[24px]' : 'text-[30px]'">
-        {{ t(forced ? 'auth.password.forcedTitle' : 'auth.password.title') }}
+        {{ t(forced ? 'auth.passwordChange.forcedTitle' : 'auth.passwordChange.title') }}
       </h1>
-      <p v-if="forced" class="text-muted mt-2.5 mb-0 leading-relaxed" :class="isWeb ? 'text-[14px]' : 'text-[15px]'">{{ t('auth.password.forcedSub') }}</p>
+      <p v-if="forced" class="text-muted mt-2.5 mb-0 leading-relaxed" :class="isWeb ? 'text-[14px]' : 'text-[15px]'">{{ t('auth.passwordChange.forcedSub') }}</p>
     </template>
     <form class="flex flex-col gap-3.5" :class="showTitle ? 'mt-5' : ''" novalidate data-test="password-form" @submit.prevent="submit">
-      <AppInput v-model="f.currentPassword.value" :label="t(forced ? 'auth.password.currentTemporary' : 'auth.password.current')" type="password" icon="lock"
+      <AppInput v-model="f.currentPassword.value" :label="t(forced ? 'auth.passwordChange.currentTemporary' : 'auth.passwordChange.current')" type="password" icon="lock"
         autocomplete="current-password" />
-      <AppInput v-model="f.newPassword.value" :label="t('auth.password.new')" type="password" icon="lock_reset" :placeholder="t('auth.passwordPh')"
+      <AppInput v-model="f.newPassword.value" :label="t('auth.passwordChange.new')" type="password" icon="lock_reset" :placeholder="t('auth.passwordPh')"
         autocomplete="new-password" />
       <div v-if="errorText" role="alert" class="flex gap-2.5 items-start px-3.5 py-3 rounded-[14px] bg-[#FCE8E6] text-[#B3261E] text-[13.5px] leading-snug">
         <AppIcon name="error" :size="18" /><span>{{ errorText }}</span>
       </div>
-      <AppButton type="submit" block :loading="f.busy.value" class="mt-1">{{ t('auth.password.submit') }}</AppButton>
+      <AppButton type="submit" block :loading="f.busy.value" class="mt-1">{{ t('auth.passwordChange.submit') }}</AppButton>
     </form>
   </div>
 </template>

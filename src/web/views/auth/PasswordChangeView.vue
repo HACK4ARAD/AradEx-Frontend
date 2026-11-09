@@ -16,7 +16,7 @@ const auth = useAuthStore()
 const ui = useUiStore()
 
 async function done() {
-  ui.toast(t('auth.password.changed'), 'success')
+  ui.toast(t('auth.passwordChange.changed'), 'success')
   await router.replace(auth.user ? homeFor(auth.user.role, 'w') : '/')
 }
 function logout() {

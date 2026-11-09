@@ -59,7 +59,7 @@ describe('useChangePassword', () => {
     f.currentPassword.value = 'gresita'
     f.newPassword.value = 'parola-noua'
     expect(await f.submit()).toBeNull()
-    expect(f.error.value).toBe('auth.password.errors.wrongCurrent')
+    expect(f.error.value).toBe('auth.passwordChange.errors.wrongCurrent')
     expect(auth.token).toBe('jwt')
     expect(auth.user?.mustChangePassword).toBe(true)
   })
@@ -75,7 +75,7 @@ describe('useChangePassword', () => {
     api.changePassword.mockRejectedValue(new ApiError(403, 'Demo accounts cannot change their password', { status: 403 }))
     f.newPassword.value = 'parola-noua'
     await f.submit()
-    expect(f.error.value).toBe('auth.password.errors.demo')
+    expect(f.error.value).toBe('auth.passwordChange.errors.demo')
   })
 
   it('if /me fails after the change, the forced-change flag is cleared locally', async () => {
@@ -113,6 +113,6 @@ describe('useNewRecoveryCode', () => {
     api.newRecoveryCode.mockRejectedValue(new ApiError(400, 'Wrong password', { status: 400 }))
     r.password.value = 'gresita'
     expect(await r.submit()).toBeNull()
-    expect(r.error.value).toBe('auth.password.errors.wrongPassword')
+    expect(r.error.value).toBe('auth.passwordChange.errors.wrongPassword')
   })
 })
