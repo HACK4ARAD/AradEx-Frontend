@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { WEB_LOGINS, webRoutes } from '@/router/web'
 import { installGuard } from '@/router/guard'
+import { applySeo } from '@/web/seo'
 
 /** Routerul web-ului (build-ul `npm run build`): prezentarea + panourile. */
 export const router = createRouter({
@@ -11,3 +12,5 @@ export const router = createRouter({
 })
 
 installGuard(router, 'w', WEB_LOGINS)
+// SEO: titlul, descrierea și `noindex` pe rută (după titlul pus de guard)
+router.afterEach((to) => applySeo(to))
