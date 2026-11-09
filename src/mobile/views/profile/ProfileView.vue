@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// S11 — Profil (T03): contul conectat, rolul (vine din cont, nu se schimbă de aici), limba aplicației, deconectare.
+// S11 — Profil (T03): contul conectat, rolul (vine din cont, nu se schimbă de aici), limba aplicației, securitatea contului
+// (parola, codul de recuperare), deconectare.
 // Itinerariile, salvatele și punctele detaliate vin în story-urile lor (T06, T11, T13).
 import { computed, onMounted, ref } from 'vue'
 import { eventsApi } from '@/shared/api/events'
@@ -10,6 +11,7 @@ import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 import { useBack } from '@/shared/composables/useBack'
 import LocaleSwitch from '@/shared/components/profile/LocaleSwitch.vue'
+import AccountSecurity from '@/shared/components/profile/AccountSecurity.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -109,6 +111,8 @@ onMounted(async () => {
       </div>
     </div>
     <p class="text-muted text-[12.5px] mt-2 px-1">{{ t('profile.roleHint') }}</p>
+
+    <AccountSecurity v-if="auth.user && auth.user.role !== 'VOLUNTEER'" ui="m" />
 
     <button v-if="auth.user" type="button" class="block mx-auto mt-5 text-[14px] font-semibold text-muted underline underline-offset-[3px]" @click="logout">
       {{ t('nav.logout') }}

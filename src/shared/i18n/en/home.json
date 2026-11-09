@@ -11,6 +11,7 @@
   "routes": {
     "m-home": "Home",
     "m-login": "Log in",
+    "m-password": "New password",
     "m-search": "Search",
     "m-event": "Event",
     "m-event-tickets": "Choose tickets",

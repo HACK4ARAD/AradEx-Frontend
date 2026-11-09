@@ -11,6 +11,7 @@
   "routes": {
     "m-home": "Acasă",
     "m-login": "Conectare",
+    "m-password": "Parolă nouă",
     "m-search": "Caută",
     "m-event": "Eveniment",
     "m-event-tickets": "Alege biletele",

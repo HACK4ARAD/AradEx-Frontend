@@ -1,11 +1,14 @@
 <script setup lang="ts">
 // Formularul cu e-mail + parolă, comun mobil + web, pentru toate conturile (Vizitator, Localnic, firme, Primărie, Admin):
-// conectarea, „Cont nou” (cont personal: Vizitator / Localnic), „Am uitat parola” (PasswordReset) și, pe web, în tab-ul de
-// panouri, înregistrarea unei firme (contul rămâne neverificat până la Primărie/Admin). View-urile adaugă doar rama.
+// conectarea, „Cont nou” (cont personal: Vizitator / Localnic), „Am uitat parola” (RecoverForm: e-mail + cod de recuperare) și,
+// pe web, în tab-ul de panouri, înregistrarea unei firme (contul rămâne neverificat până la Primărie/Admin). După un cont nou
+// sau o recuperare, codul de recuperare (nou) se arată o dată (RecoveryCodeNotice) înainte de salut și de pagina rolului.
+// View-urile adaugă doar rama.
 import { computed, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import PasswordReset from '@/shared/components/auth/PasswordReset.vue'
+import RecoverForm from '@/shared/components/auth/RecoverForm.vue'
+import RecoveryCodeNotice from '@/shared/components/auth/RecoveryCodeNotice.vue'
 import TermsConsent from '@/shared/components/auth/TermsConsent.vue'
 import { AppButton, AppIcon, AppInput } from '@/shared/components'
 import { useAuthStore } from '@/shared/stores/auth'
@@ -22,7 +25,9 @@ const props = withDefaults(defineProps<{
   audience?: 'personal' | 'panels'
   /** conturile demo afișate ca scurtături (doar în dev / VITE_DEMO) */
   demoAccounts?: { label: string; email: string }[]
-}>(), { audience: 'personal', demoAccounts: () => [] })
+  /** adresa de contact (web: `CONTACT_EMAIL`), în nota „Ai pierdut și codul?” */
+  contactEmail?: string
+}>(), { audience: 'personal', demoAccounts: () => [], contactEmail: '' })
 
 const { t } = useI18n()
 const router = useRouter()
@@ -34,6 +39,8 @@ const mode = ref<AuthMode | 'forgot'>('login')
 const form = reactive(emptyAuthForm())
 const error = ref('')
 const busy = ref(false)
+/** sesiunea e deja acceptată; codul de recuperare se arată înainte de salut și de redirect */
+const pending = ref<{ user: UserDto; code: string; toastKey: string } | null>(null)
 const isWeb = props.ui === 'w'
 const showDemo = DEMO_ENABLED
 
@@ -56,6 +63,18 @@ async function finish(u: UserDto, toastKey: string) {
   await router.replace(landingFor(u.role, props.ui, route.query.next, (p) => { const r = router.resolve(p); return r.name ? r.meta.roles : null }))
 }
 
+/** Cont nou / recuperare: întâi codul de recuperare (dacă a venit), apoi `finish`. */
+async function afterSession(u: UserDto, code: string | null, toastKey: string) {
+  if (code) pending.value = { user: u, code, toastKey }
+  else await finish(u, toastKey)
+}
+async function continueAfterCode() {
+  const p = pending.value
+  if (!p) return
+  pending.value = null
+  await finish(p.user, p.toastKey)
+}
+
 async function submit() {
   const m = mode.value
   if (m === 'forgot') return
@@ -64,8 +83,11 @@ async function submit() {
   error.value = ''
   busy.value = true
   try {
-    const u = m === 'login' ? await auth.login(form.email.trim(), form.password) : await auth.register(buildRegisterRequest(form, m))
-    await finish(u, m === 'business' ? 'auth.businessCreated' : 'auth.welcome')
+    if (m === 'login') await finish(await auth.login(form.email.trim(), form.password), 'auth.welcome')
+    else {
+      const { user, recoveryCode } = await auth.register(buildRegisterRequest(form, m))
+      await afterSession(user, recoveryCode, m === 'business' ? 'auth.businessCreated' : 'auth.welcome')
+    }
   } catch (e) {
     const msg = authErrorMessage(e, m)
     error.value = 'key' in msg ? t(msg.key) : msg.text
@@ -79,7 +101,9 @@ defineExpose({ useDemo })
 
 <template>
   <div>
-    <PasswordReset v-if="mode === 'forgot'" :ui="props.ui" :email="form.email.trim()" @back="setMode('login')" @done="(u) => finish(u, 'auth.forgot.done')" />
+    <RecoveryCodeNotice v-if="pending" :code="pending.code" :ui="props.ui" @continue="continueAfterCode" />
+    <RecoverForm v-else-if="mode === 'forgot'" :ui="props.ui" :email="form.email.trim()" :contact-email="contactEmail" @back="setMode('login')"
+      @done="(u, code) => afterSession(u, code, 'auth.recover.done')" />
 
     <template v-else>
       <h1 class="m-0 font-semibold tracking-[-0.025em] leading-tight" :class="isWeb ? 'text-[24px]' : 'text-[30px]'">{{ title }}</h1>
@@ -127,7 +151,7 @@ defineExpose({ useDemo })
         <AppButton type="submit" block :loading="busy" class="mt-1" :icon="mode === 'business' ? 'add_business' : undefined">{{ submitLabel }}</AppButton>
 
         <div v-if="mode === 'login'" class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[14px]">
-          <button type="button" class="font-semibold underline underline-offset-[3px] py-1" data-test="to-forgot" @click="setMode('forgot')">{{ t('auth.forgot.link') }}</button>
+          <button type="button" class="font-semibold underline underline-offset-[3px] py-1" data-test="to-forgot" @click="setMode('forgot')">{{ t('auth.recover.link') }}</button>
           <button v-if="audience === 'personal'" type="button" class="font-semibold underline underline-offset-[3px] py-1" data-test="to-register"
             @click="setMode('register')">{{ t('auth.newAccount') }}</button>
         </div>

@@ -3,6 +3,7 @@ import { client } from './client'
 import type { Page, Role } from '@/shared/types/common'
 import type {
   AdminContentDto, AdminStatsDto, AdminUserDto, AdminUserUpdate, CityBusinessCreate, CityBusinessCreated, CityBusinessDto, ContentKind,
+  TemporaryPasswordResponse,
 } from '@/shared/types/admin'
 
 /** Administrare (`/admin/**`, doar ADMIN). */
@@ -13,6 +14,8 @@ export const adminApi = {
   setStatus: (kind: ContentKind, id: number, status: string) => client.patch<AdminContentDto>(`/admin/${kind}/${id}/status`, { status }),
   users: (q: { role?: Role; q?: string; page?: number; size?: number } = {}) => client.get<Page<AdminUserDto>>('/admin/users', { query: q }),
   updateUser: (id: number, req: AdminUserUpdate) => client.patch<AdminUserDto>(`/admin/users/${id}`, req),
+  /** Parolă temporară pentru cine și-a pierdut și parola, și codul de recuperare (Adminul i-o dă personal) */
+  temporaryPassword: (id: number) => client.post<TemporaryPasswordResponse>(`/admin/users/${id}/temporary-password`),
 }
 
 /** Firmele partenere în panoul Primăriei (`/city/businesses`, CITY_HALL și ADMIN). */

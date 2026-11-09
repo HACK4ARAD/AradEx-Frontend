@@ -187,7 +187,23 @@
       "errPoints": "Adj meg 0-tól eltérő egész számot (pl. +25 vagy -10).",
       "noChange": "Nem változtattál semmit.",
       "tickets": "{n} jegy",
-      "since": "{date} óta"
+      "since": "{date} óta",
+      "temp": {
+        "label": "Ideiglenes jelszó",
+        "hint": "Annak, aki a jelszavát és a helyreállító kódját is elvesztette. Az első belépéskor új jelszót választ.",
+        "confirm": "Ideiglenes jelszót hozol létre {name} számára? A mostani jelszava és a helyreállító kódja többé nem fog működni.",
+        "generate": "Létrehozás",
+        "cancel": "Mégse",
+        "note": "Személyesen küldd el neki; az első belépéskor új jelszót választ.",
+        "copied": "A jelszó kimásolva.",
+        "noAdmin": "Adminisztrátori fiókoknál nem lehetséges.",
+        "noVolunteer": "Az önkéntesek a Városházától kapott kóddal lépnek be, nem jelszóval.",
+        "noEmail": "A fióknak nincs e-mail-címe.",
+        "noDemo": "A demófiókok jelszava nem változtatható.",
+        "notAllowed": "Ez a fiók nem kaphat ideiglenes jelszót (önkéntes, nincs e-mail-címe, vagy demófiók).",
+        "notFound": "A fiók már nem létezik.",
+        "failed": "Nem sikerült létrehozni a jelszót. Próbáld újra."
+      }
     }
   },
   "settings": {

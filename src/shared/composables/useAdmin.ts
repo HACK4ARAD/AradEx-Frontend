@@ -6,6 +6,8 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { adminApi, cityBusinessesApi } from '@/shared/api'
+import { ApiError } from '@/shared/api/client'
+import { isDemoAccount } from '@/shared/composables/useAuthForm'
 import { useUiStore } from '@/shared/stores/ui'
 import type { BusinessCategory } from '@/shared/types/business'
 import type { Role } from '@/shared/types/common'
@@ -80,6 +82,29 @@ export function parsePointsAdjust(raw: string | number): number | null {
 
 export function totalUsers(s: Pick<AdminStatsDto, 'usersByRole'>): number {
   return Object.values(s.usersByRole).reduce((a, b) => a + b, 0)
+}
+
+/**
+ * „Parolă temporară” (pentru cine și-a pierdut și parola, și codul de recuperare): de ce nu se poate pentru contul ăsta
+ * (cheie i18n, afișată lângă butonul dezactivat) sau null. Aceleași reguli ca în BE: nu pentru administratori (403),
+ * voluntari (intră cu codul de la Primărie), conturi fără e-mail și conturile demo (400).
+ */
+export function temporaryPasswordBlock(u: Pick<AdminUserDto, 'role' | 'email'>): string | null {
+  if (u.role === 'ADMIN') return 'admin.users.sheet.temp.noAdmin'
+  if (u.role === 'VOLUNTEER') return 'admin.users.sheet.temp.noVolunteer'
+  if (!u.email) return 'admin.users.sheet.temp.noEmail'
+  if (isDemoAccount(u)) return 'admin.users.sheet.temp.noDemo'
+  return null
+}
+
+/** Eroarea de la POST /admin/users/{id}/temporary-password → cheie i18n. */
+export function temporaryPasswordErrorKey(e: unknown): string {
+  if (!(e instanceof ApiError)) return 'admin.users.sheet.temp.failed'
+  if (e.status === 0) return 'auth.errors.network'
+  if (e.status === 400) return 'admin.users.sheet.temp.notAllowed'
+  if (e.status === 403) return 'admin.users.sheet.temp.noAdmin'
+  if (e.status === 404) return 'admin.users.sheet.temp.notFound'
+  return 'admin.users.sheet.temp.failed'
 }
 
 const KNOWN_ERRORS: Record<string, string> = {
@@ -201,4 +226,24 @@ export function useAdminUsers() {
     } catch (e) { fail(e); return null } finally { saving.value = false }
   }
   return { items, total, loading, saving, load, update }
+}
+
+/** Parola temporară a unui cont (o vede doar Adminul, o singură dată). Fără i18n aici: eroarea e o cheie, afișată de ecran. */
+export function useTemporaryPassword() {
+  const busy = ref(false)
+  const error = ref('')
+  async function generate(id: number): Promise<string | null> {
+    if (busy.value) return null
+    busy.value = true
+    error.value = ''
+    try {
+      return (await adminApi.temporaryPassword(id)).temporaryPassword
+    } catch (e) {
+      error.value = temporaryPasswordErrorKey(e)
+      return null
+    } finally {
+      busy.value = false
+    }
+  }
+  return { busy, error, generate }
 }

@@ -5,8 +5,8 @@ import type { Logins } from './guard'
  * Aplicația mobilă (iOS + Android, Capacitor; build-ul `npm run build:mobile`): toate ecranele, fără prefix în URL. Vezi docs/API.md §Rute FE.
  * Fiecare rută are fișierul ei de view în `mobile/views/<feature>/`; story-ul din `meta.task` completează doar acel fișier.
  */
-/** Login-ul aplicației (S12) și al voluntarilor (T18, cod de 6 cifre). */
-export const MOBILE_LOGINS: Logins = { names: ['m-login', 'm-vol-login'], volunteer: '/vol/login' }
+/** Login-ul aplicației (S12) și al voluntarilor (T18, cod de 6 cifre); „Parolă nouă” după o parolă temporară. */
+export const MOBILE_LOGINS: Logins = { names: ['m-login', 'm-vol-login'], volunteer: '/vol/login', passwordChange: '/password' }
 
 export const mobileRoutes: RouteRecordRaw[] = [
   {
@@ -15,6 +15,8 @@ export const mobileRoutes: RouteRecordRaw[] = [
     children: [
       { path: '', name: 'm-home', component: () => import('@/mobile/views/home/HomeView.vue'), meta: { title: 'Acasă', screen: 'S1/E6', task: 'T06' } },
       { path: 'login', name: 'm-login', component: () => import('@/mobile/views/auth/LoginView.vue'), meta: { title: 'Conectare', screen: 'S12', task: 'T03', hideTabs: true } },
+      // după o parolă temporară de la Admin, guard-ul ține contul aici până își alege alta
+      { path: 'password', name: 'm-password', component: () => import('@/mobile/views/auth/PasswordChangeView.vue'), meta: { title: 'Parolă nouă', screen: 'S12', task: 'T03', hideTabs: true, roles: ['VISITOR', 'LOCAL', 'BUSINESS', 'CITY_HALL', 'ADMIN'] } },
       { path: 'search', name: 'm-search', component: () => import('@/mobile/views/events/SearchView.vue'), meta: { title: 'Caută', screen: 'S2', task: 'T06' } },
       { path: 'events/:id', name: 'm-event', component: () => import('@/mobile/views/events/EventView.vue'), meta: { title: 'Eveniment', screen: 'S3', task: 'T06' } },
       { path: 'events/:id/tickets', name: 'm-event-tickets', component: () => import('@/mobile/views/tickets/TicketPickView.vue'), meta: { title: 'Alege biletele', screen: 'S4', task: 'T07', roles: ['VISITOR', 'LOCAL', 'BUSINESS', 'CITY_HALL'] } },

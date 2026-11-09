@@ -1,14 +1,18 @@
 <script setup lang="ts">
 // T14 · Administrare › Utilizatori — design/final web `#/admin/users`: rezumatul pe roluri, filtre pe rol, căutare, tabel paginat
 // (Utilizator, Rol, Puncte, Bilete, Înregistrat) și „Detalii” = sheet cu rol, ajustare de puncte cu notă, dezactivare
-// (`GET/PATCH /admin/users`). Coloana „Ultima activitate” din design nu există în API.
+// (`GET/PATCH /admin/users`) și „Parolă temporară” (pentru cine și-a pierdut parola și codul de recuperare; Adminul o vede o dată
+// și i-o dă personal). Coloana „Ultima activitate” din design nu există în API.
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppSheet, Skeleton } from '@/shared/components'
 import * as P from '@/web/components/community/panel'
 import PanelPager from '@/web/components/community/PanelPager.vue'
+import CopyableCode from '@/shared/components/auth/CopyableCode.vue'
 import { intlLocale, useFormat } from '@/shared/composables/useFormat'
-import { ASSIGNABLE_ROLES, canChangeRole, parsePointsAdjust, totalUsers, useAdminStats, useAdminUsers } from '@/shared/composables/useAdmin'
+import {
+  ASSIGNABLE_ROLES, canChangeRole, parsePointsAdjust, temporaryPasswordBlock, totalUsers, useAdminStats, useAdminUsers, useTemporaryPassword,
+} from '@/shared/composables/useAdmin'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 import type { Role } from '@/shared/types/common'
@@ -52,10 +56,25 @@ const form = reactive({ role: 'LOCAL' as Role, points: '', note: '', disabled: f
 const pointsErr = ref(false)
 const isMe = computed(() => editing.value?.id === auth.user?.id)
 
+/* ---- parolă temporară: confirmare → parola, arătată o singură dată ---- */
+const temp = useTemporaryPassword()
+const tempConfirm = ref(false)
+const tempPassword = ref<string | null>(null)
+const tempBlock = computed(() => (editing.value ? temporaryPasswordBlock(editing.value) : null))
+async function generateTemp() {
+  const u = editing.value
+  if (!u) return
+  tempPassword.value = await temp.generate(u.id)
+  tempConfirm.value = false
+  if (!tempPassword.value) ui.toast(t(temp.error.value || 'admin.users.sheet.temp.failed'), 'error')
+}
+
 function details(u: AdminUserDto) {
   editing.value = u
   Object.assign(form, { role: u.role, points: '', note: '', disabled: u.disabled })
   pointsErr.value = false
+  tempConfirm.value = false
+  tempPassword.value = null
 }
 async function save() {
   const u = editing.value
@@ -164,6 +183,26 @@ async function save() {
         <label class="inline-flex items-center gap-2 text-[14px]" :class="isMe ? 'opacity-50' : ''">
           <input v-model="form.disabled" type="checkbox" class="accent-bad w-4 h-4" :disabled="isMe">{{ t('admin.users.sheet.disabledLabel') }}</label>
         <span v-if="isMe" :class="P.TS">{{ t('admin.users.sheet.selfLock') }}</span>
+      </div>
+      <div class="flex flex-col gap-1.5" data-test="temp-password">
+        <span :class="P.LABEL">{{ t('admin.users.sheet.temp.label') }}</span>
+        <template v-if="tempPassword">
+          <CopyableCode :code="tempPassword" :copied-text="t('admin.users.sheet.temp.copied')" />
+          <span :class="P.TS">{{ t('admin.users.sheet.temp.note') }}</span>
+        </template>
+        <template v-else-if="tempConfirm">
+          <p class="text-[13.5px] leading-snug m-0">{{ t('admin.users.sheet.temp.confirm', { name: editing.displayName }) }}</p>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" :class="P.BTN_SM" :disabled="temp.busy.value" data-test="temp-password-confirm" @click="generateTemp">
+              <AppIcon name="key" :size="16" />{{ t('admin.users.sheet.temp.generate') }}</button>
+            <button type="button" :class="P.BTN_SM_SEC" @click="tempConfirm = false">{{ t('admin.users.sheet.temp.cancel') }}</button>
+          </div>
+        </template>
+        <template v-else>
+          <button type="button" :class="[P.BTN_SM_SEC, 'self-start disabled:opacity-50']" :disabled="!!tempBlock" data-test="temp-password-btn" @click="tempConfirm = true">
+            <AppIcon name="key" :size="16" />{{ t('admin.users.sheet.temp.label') }}</button>
+          <span :class="P.TS">{{ t(tempBlock ?? 'admin.users.sheet.temp.hint') }}</span>
+        </template>
       </div>
     </div>
     <template #footer>

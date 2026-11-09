@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { ApiError } from '@/shared/api/client'
 import type { Role } from '@/shared/types/common'
-import { authErrorMessage, buildRegisterRequest, emptyAuthForm, homeFor, landingFor, safeNext, validateAuthForm } from './useAuthForm'
+import {
+  authErrorMessage, buildRegisterRequest, emptyAuthForm, homeFor, isDemoAccount, landingFor, normalizeRecoveryCode, safeNext, validateAuthForm,
+} from './useAuthForm'
 
 describe('validateAuthForm', () => {
   const ok = { ...emptyAuthForm(), email: 'ana@exemplu.ro', password: 'demo1234', displayName: 'Ana', acceptTerms: true }
@@ -75,6 +77,30 @@ describe('buildRegisterRequest', () => {
       email: 'ana@exemplu.ro', password: 'demo1234', displayName: 'Ana Pop', acceptTerms: true,
       role: 'BUSINESS', business: { name: 'Ceainăria', category: 'CAFE', address: 'Str. X 1' },
     })
+  })
+})
+
+describe('recovery code and demo accounts', () => {
+  it('normalizes a typed recovery code like the BE (any case, no spaces or dashes)', () => {
+    expect(normalizeRecoveryCode('k7qm-4xpt-9dwa')).toBe('K7QM-4XPT-9DWA')
+    expect(normalizeRecoveryCode(' K7QM 4XPT 9DWA ')).toBe('K7QM-4XPT-9DWA')
+    expect(normalizeRecoveryCode('K7QM4XPT9DWA')).toBe('K7QM-4XPT-9DWA')
+  })
+
+  it('rejects a wrong length or letters outside the alphabet (0, O, 1, I, L)', () => {
+    expect(normalizeRecoveryCode('K7QM-4XPT')).toBeNull()
+    expect(normalizeRecoveryCode('K7QM-4XPT-9DWAB')).toBeNull()
+    expect(normalizeRecoveryCode('K7QM-4XPT-9DW0')).toBeNull()
+    expect(normalizeRecoveryCode('K7QM-4XPT-9DWI')).toBeNull()
+    expect(normalizeRecoveryCode('')).toBeNull()
+  })
+
+  it('spots demo accounts by their @demo.ro email', () => {
+    expect(isDemoAccount({ email: 'visitor@demo.ro' })).toBe(true)
+    expect(isDemoAccount({ email: 'Admin@Demo.RO' })).toBe(true)
+    expect(isDemoAccount({ email: 'ana@exemplu.ro' })).toBe(false)
+    expect(isDemoAccount({})).toBe(false)
+    expect(isDemoAccount(null)).toBe(false)
   })
 })
 

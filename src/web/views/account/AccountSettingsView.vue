@@ -1,10 +1,12 @@
 <script setup lang="ts">
 // T23 · W14 Contul meu · Setări (design/final web `accountPage('settings')`, ca Profilul din aplicație, S11): numele, telefonul,
-// rolul (vine din cont), limba (RO / EN, salvată în cont) și deconectarea. Fără rândurile doar din aplicație (Salvate are tab-ul lui).
+// rolul (vine din cont), limba (RO / EN, salvată în cont), securitatea (parola, codul de recuperare) și deconectarea.
+// Fără rândurile doar din aplicație (Salvate are tab-ul lui).
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import LocaleSwitch from '@/shared/components/profile/LocaleSwitch.vue'
+import AccountSecurity from '@/shared/components/profile/AccountSecurity.vue'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 
@@ -52,6 +54,8 @@ function logout() {
       </div>
     </div>
     <p class="text-muted text-[12.5px] mt-2 px-1">{{ t('profile.roleHint') }}</p>
+
+    <AccountSecurity v-if="auth.user" ui="w" />
 
     <div class="bg-white border border-line rounded-[16px] px-4 mt-4">
       <button type="button" class="w-full flex items-center gap-3 py-3.5 text-left text-bad" @click="logout">
