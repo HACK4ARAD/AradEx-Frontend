@@ -17,10 +17,10 @@ function mobileRouter() {
   installGuard(r, 'm', MOBILE_LOGINS)
   return r
 }
-function signIn(role: Role | null) {
+function signIn(role: Role | null, mustChangePassword = false) {
   const auth = useAuthStore()
   auth.ready = true
-  auth.user = role ? ({ id: 1, email: 'x@demo.ro', displayName: 'X', role, locale: 'ro' } as never) : null
+  auth.user = role ? ({ id: 1, email: 'x@demo.ro', displayName: 'X', role, locale: 'ro', mustChangePassword, hasRecoveryCode: !mustChangePassword } as never) : null
 }
 async function go(r: ReturnType<typeof webRouter>, path: string) {
   await r.push(path)
@@ -45,6 +45,36 @@ describe('guard on the web', () => {
   it('sends the wrong role to the presentation', async () => {
     signIn('LOCAL')
     expect(await go(webRouter(), '/business')).toBe('/')
+  })
+})
+
+describe('forced password change (temporary password from the Admin)', () => {
+  it('on the web every page goes to "Parolă nouă", login included', async () => {
+    signIn('LOCAL', true)
+    expect(await go(webRouter(), '/events')).toBe('/password')
+    expect(await go(webRouter(), '/')).toBe('/password')
+    expect(await go(webRouter(), '/login')).toBe('/password')
+    signIn('CITY_HALL', true)
+    expect(await go(webRouter(), '/city/places')).toBe('/password')
+  })
+
+  it('in the app too, and the screen itself stays open', async () => {
+    signIn('VISITOR', true)
+    expect(await go(mobileRouter(), '/tickets')).toBe('/password')
+    expect(await go(mobileRouter(), '/profile')).toBe('/password')
+    expect(await go(mobileRouter(), '/password')).toBe('/password')
+    signIn('BUSINESS', true)
+    expect(await go(mobileRouter(), '/panel')).toBe('/password')
+  })
+
+  it('without the obligation the screen sends you home; signed out it asks for login; after logout no redirect', async () => {
+    signIn('BUSINESS')
+    expect(await go(webRouter(), '/password')).toBe('/business')
+    signIn('LOCAL')
+    expect(await go(mobileRouter(), '/password')).toBe('/')
+    signIn(null)
+    expect(await go(webRouter(), '/password')).toBe('/login?next=/password')
+    expect(await go(webRouter(), '/community')).toBe('/community')
   })
 })
 

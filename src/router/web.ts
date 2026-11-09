@@ -12,15 +12,19 @@ function stripPrefix(to: RouteLocation): RouteLocationRaw {
  * Web-ul (build-ul `npm run build`, aradexperience.site) = site-ul de prezentare al aplicației mobile + panourile (Primărie,
  * firme, Admin), fără prefix în URL. Nu conține nimic din aplicația mobilă (build separat, `npm run build:mobile`).
  */
-/** Login-ul (W0): e-mail + parolă pentru conturile personale și panouri. */
-export const WEB_LOGINS: Logins = { names: ['w-login'] }
+/** Login-ul (W0): e-mail + parolă pentru conturile personale și panouri; „Parolă nouă” după o parolă temporară. */
+export const WEB_LOGINS: Logins = { names: ['w-login'], passwordChange: '/password' }
 
 /** T23: paginile aplicației pe web, pentru conturile personale conectate (Adminul are voie peste tot). */
 const PERSONAL: Role[] = ['VISITOR', 'LOCAL']
+/** orice cont care intră cu e-mail + parolă */
+const ACCOUNTS: Role[] = ['VISITOR', 'LOCAL', 'BUSINESS', 'CITY_HALL', 'ADMIN']
 
 export const webRoutes: RouteRecordRaw[] = [
   // W0: pagină întreagă, fără WebLayout (ca în design/final/web.html)
   { path: '/login', name: 'w-login', component: () => import('@/web/views/auth/LoginView.vue'), meta: { title: 'Conectare', screen: 'W0', task: 'T03' } },
+  // după o parolă temporară de la Admin, guard-ul ține contul aici până își alege alta (tot pagină întreagă, ca login-ul)
+  { path: '/password', name: 'w-password', component: () => import('@/web/views/auth/PasswordChangeView.vue'), meta: { title: 'Parolă nouă', screen: 'W0', task: 'T03', roles: ACCOUNTS } },
   {
     path: '/',
     component: () => import('@/web/layouts/WebLayout.vue'),

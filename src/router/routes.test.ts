@@ -25,6 +25,7 @@ describe('mobile routes', () => {
     expect(r.resolve('/events/1').name).toBe('m-event')
     expect(r.resolve('/places/1').name).toBe('m-place')
     expect(r.resolve('/login').name).toBe('m-login')
+    expect(r.resolve('/password').name).toBe('m-password')
   })
 
   it('keep the role meta', () => {
@@ -51,6 +52,8 @@ describe('web routes', () => {
     expect(r.resolve('/privacy').name).toBe('w-privacy')
     expect(r.resolve('/terms').name).toBe('w-terms')
     expect(r.resolve('/login').name).toBe('w-login')
+    expect(r.resolve('/password').name).toBe('w-password')
+    expect(r.resolve('/password').meta.roles).toContain('CITY_HALL')
   })
 
   it('keep the panels with their roles', () => {

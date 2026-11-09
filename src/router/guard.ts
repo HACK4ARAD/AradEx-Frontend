@@ -4,7 +4,7 @@ import { i18n } from '@/shared/i18n'
 import type { Role } from '@/shared/types/common'
 import type { Ui } from '@/shared/composables/useAuthForm'
 import { useAuthStore } from '@/shared/stores/auth'
-import { landingFor } from '@/shared/composables/useAuthForm'
+import { homeFor, landingFor } from '@/shared/composables/useAuthForm'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -41,10 +41,14 @@ function setDocumentTitle(r: Pick<RouteLocationNormalizedLoaded, 'name' | 'meta'
   if (title) document.title = `${title} · AradExperience`
 }
 
-/** Paginile de login ale unei aplicații: numele rutelor și, doar în aplicația mobilă, login-ul voluntarilor. */
+/**
+ * Paginile de login ale unei aplicații: numele rutelor și, doar în aplicația mobilă, login-ul voluntarilor; plus calea
+ * ecranului „Parolă nouă”, unde ajunge oricine a intrat cu o parolă temporară (`user.mustChangePassword`).
+ */
 export interface Logins {
   names: string[]
   volunteer?: string
+  passwordChange: string
 }
 
 /** Guard-ul comun celor două aplicații: login, roluri, titlul paginii. Fiecare aplicație își dă paginile de login. */
@@ -52,6 +56,11 @@ export function installGuard(router: Router, ui: Ui, logins: Logins): void {
   router.beforeEach(async (to) => {
     const auth = useAuthStore()
     await auth.init()
+    // parolă temporară (de la Admin): până își alege una nouă, orice pagină duce la „Parolă nouă” (deconectarea e pe ecran);
+    // fără obligația asta ecranul n-are rost, deci duce acasă
+    if (auth.user?.mustChangePassword) {
+      if (to.path !== logins.passwordChange) return { path: logins.passwordChange }
+    } else if (auth.user && to.path === logins.passwordChange) return homeFor(auth.user.role, ui)
     // deja conectat → login-ul nu mai are rost: mergi unde voiai (?next=) sau acasă la rolul tău (pentru alt cont: Deconectare)
     if (auth.user && logins.names.includes(String(to.name))) {
       return landingFor(auth.user.role, ui, to.query.next, (p) => routeRoles(router, p))

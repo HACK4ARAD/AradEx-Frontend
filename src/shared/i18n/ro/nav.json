@@ -31,6 +31,7 @@
   "menu": "Meniu",
   "routes": {
     "w-login": "Conectare",
+    "w-password": "Parolă nouă",
     "w-landing": "Acasă",
     "w-community": "Comunitate",
     "w-privacy": "Confidențialitate",

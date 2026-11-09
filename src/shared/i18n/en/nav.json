@@ -31,6 +31,7 @@
   "menu": "Menu",
   "routes": {
     "w-login": "Log in",
+    "w-password": "New password",
     "w-landing": "Home",
     "w-community": "Community",
     "w-privacy": "Privacy",

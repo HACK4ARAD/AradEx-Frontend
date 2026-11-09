@@ -11,6 +11,7 @@
   "routes": {
     "m-home": "Kezdőlap",
     "m-login": "Bejelentkezés",
+    "m-password": "Új jelszó",
     "m-search": "Keresés",
     "m-event": "Esemény",
     "m-event-tickets": "Jegyek kiválasztása",
