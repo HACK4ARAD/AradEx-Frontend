@@ -187,7 +187,23 @@
       "errPoints": "Scrie un număr întreg diferit de 0 (ex. +25 sau -10).",
       "noChange": "Nu ai schimbat nimic.",
       "tickets": "{n} bilete",
-      "since": "din {date}"
+      "since": "din {date}",
+      "temp": {
+        "label": "Parolă temporară",
+        "hint": "Pentru cine și-a pierdut și parola, și codul de recuperare. La prima intrare își alege o parolă nouă.",
+        "confirm": "Generezi o parolă temporară pentru {name}? Parola de acum și codul de recuperare nu vor mai merge.",
+        "generate": "Generează",
+        "cancel": "Renunță",
+        "note": "Trimite-o personal persoanei; la prima intrare își alege o parolă nouă.",
+        "copied": "Parola e copiată.",
+        "noAdmin": "Nu se poate pentru conturile de administrator.",
+        "noVolunteer": "Voluntarii intră cu codul de la Primărie, nu cu parolă.",
+        "noEmail": "Contul nu are adresă de e-mail.",
+        "noDemo": "Parola conturilor demo nu se schimbă.",
+        "notAllowed": "Contul acesta nu poate primi o parolă temporară (voluntar, fără e-mail sau cont demo).",
+        "notFound": "Contul nu mai există.",
+        "failed": "Nu am putut genera parola. Încearcă din nou."
+      }
     }
   },
   "settings": {

@@ -187,7 +187,23 @@
       "errPoints": "Enter a whole number other than 0 (e.g. +25 or -10).",
       "noChange": "You didn't change anything.",
       "tickets": "{n} tickets",
-      "since": "since {date}"
+      "since": "since {date}",
+      "temp": {
+        "label": "Temporary password",
+        "hint": "For someone who lost both the password and the recovery code. They choose a new password at the first sign-in.",
+        "confirm": "Generate a temporary password for {name}? Their current password and recovery code will stop working.",
+        "generate": "Generate",
+        "cancel": "Cancel",
+        "note": "Send it to the person yourself; at the first sign-in they choose a new password.",
+        "copied": "Password copied.",
+        "noAdmin": "Not available for administrator accounts.",
+        "noVolunteer": "Volunteers sign in with the code from City Hall, not with a password.",
+        "noEmail": "The account has no email address.",
+        "noDemo": "Demo account passwords don't change.",
+        "notAllowed": "This account can't get a temporary password (volunteer, no email, or demo account).",
+        "notFound": "The account no longer exists.",
+        "failed": "Couldn't generate the password. Try again."
+      }
     }
   },
   "settings": {

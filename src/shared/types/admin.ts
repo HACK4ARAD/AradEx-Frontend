@@ -58,6 +58,13 @@ export interface AdminUserDto {
 
 export interface AdminUserUpdate { role?: Role; pointsAdjust?: number; note?: string; disabled?: boolean }
 
+/**
+ * POST /admin/users/{id}/temporary-password → parola temporară (`XXXX-XXXX-XXXX`, se tastează exact, cu cratime); contul trebuie
+ * să-și aleagă alta la prima intrare, iar codul lui de recuperare nu mai merge. 400 voluntar / fără e-mail / cont demo,
+ * 403 alt administrator, 404 contul nu există.
+ */
+export interface TemporaryPasswordResponse { temporaryPassword: string }
+
 export interface CityBusinessDto {
   id: number
   name: string
