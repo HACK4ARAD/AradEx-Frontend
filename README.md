@@ -30,3 +30,9 @@ adb reverse tcp:8081 tcp:8081   # emulator/telefon prin USB: localhost:8081 din 
 - iOS: `npx cap add ios` + build doar pe macOS cu Xcode.
 
 Mod de lucru: `CLAUDE.md` de aici + `../AradEx-Plan/CLAUDE.md`; skill-urile (`fe-feature`, `task-workflow`, `review-pr`) sunt în `../AradEx-Plan/.claude/skills/`. Următorii pași: T05/T06 și apoi restul story-urilor — fiecare completează doar fișierele lui (tabelul din `CLAUDE.md` §Culoare).
+
+## Drepturi de autor
+
+© 2026 Echipa AradExperience (Hack4Arad 2026): ZOCZELI, LukasL2004, vaidaoctav, DamAndrei04. **Toate drepturile rezervate.** Codul e public doar ca să poată fi văzut; copierea, modificarea sau folosirea lui în alt proiect cer acordul nostru scris. Detalii în [LICENSE](LICENSE). Pozele (Wikimedia Commons), datele de transport (CTP Arad) și bibliotecile open source rămân sub licențele lor.
+
+*Copyright © 2026 the AradExperience team. All rights reserved — see [LICENSE](LICENSE).*
