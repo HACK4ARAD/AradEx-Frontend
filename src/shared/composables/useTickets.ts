@@ -100,10 +100,10 @@ export function useTicketErrors() {
   return (err: unknown): string => {
     if (err instanceof ApiError) {
       const d = err.problem?.detail ?? ''
-      if (/Payment already used/i.test(d)) return t('tickets.errors.paymentUsed')
-      if (/does not match/i.test(d)) return t('tickets.errors.paymentMismatch')
-      if (err.status === 402 || /Payment (required|not completed)/i.test(d)) return t('tickets.errors.paymentIncomplete')
-      if (err.status === 502) return t('tickets.errors.paymentUnavailable')
+      if (/Payment already used/i.test(d)) return t('tickets.pick.paymentUsed')
+      if (/does not match/i.test(d)) return t('tickets.pick.paymentMismatch')
+      if (err.status === 402 || /Payment (required|not completed)/i.test(d)) return t('tickets.pick.paymentIncomplete')
+      if (err.status === 502) return t('tickets.pick.paymentUnavailable')
       if (err.status === 409 && /already registered/i.test(d)) return t('tickets.errors.already')
       if (err.status === 409) return t('tickets.errors.soldOut')
       if (err.status === 400 && /ended/i.test(d)) return t('tickets.errors.ended')

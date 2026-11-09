@@ -14,7 +14,7 @@ function errorKey(e: unknown, wrongPassword: string): string {
   if (!(e instanceof ApiError)) return 'auth.errors.generic'
   if (e.status === 0) return 'auth.errors.network'
   if (e.status === 400) return e.problem?.errors?.length ? 'auth.errors.validation' : wrongPassword
-  if (e.status === 403) return 'auth.password.errors.demo'
+  if (e.status === 403) return 'auth.passwordChange.errors.demo'
   return 'auth.errors.generic'
 }
 
@@ -37,7 +37,7 @@ export function useChangePassword() {
   /** `{ recoveryCode }` (null dacă n-a venit unul nou) sau null cu eroarea în `error`. */
   async function submit(): Promise<{ recoveryCode: string | null } | null> {
     if (busy.value) return null
-    if (!currentPassword.value) { error.value = 'auth.password.errors.currentRequired'; return null }
+    if (!currentPassword.value) { error.value = 'auth.passwordChange.errors.currentRequired'; return null }
     const pw = newPasswordError(newPassword.value)
     if (pw) { error.value = pw; return null }
     error.value = ''
@@ -50,7 +50,7 @@ export function useChangePassword() {
       newPassword.value = ''
       return { recoveryCode }
     } catch (e) {
-      error.value = errorKey(e, 'auth.password.errors.wrongCurrent')
+      error.value = errorKey(e, 'auth.passwordChange.errors.wrongCurrent')
       return null
     } finally {
       busy.value = false
@@ -78,7 +78,7 @@ export function useNewRecoveryCode() {
       password.value = ''
       return recoveryCode
     } catch (e) {
-      error.value = errorKey(e, 'auth.password.errors.wrongPassword')
+      error.value = errorKey(e, 'auth.passwordChange.errors.wrongPassword')
       return null
     } finally {
       busy.value = false

@@ -129,10 +129,10 @@ export function useCheckout() {
       if (mode.value === 'STRIPE') {
         if (!stripe || !elements) return
         const submitted = await elements.submit()
-        if (submitted.error) { ui.toast(submitted.error.message ?? t('tickets.errors.paymentIncomplete'), 'error'); return }
+        if (submitted.error) { ui.toast(submitted.error.message ?? t('tickets.pick.paymentIncomplete'), 'error'); return }
         const res = await stripe.confirmPayment({ elements, redirect: 'if_required', confirmParams: { return_url: window.location.href } })
-        if (res.error) { ui.toast(res.error.message ?? t('tickets.errors.paymentIncomplete'), 'error'); return }
-        if (res.paymentIntent?.status !== 'succeeded') { ui.toast(t('tickets.errors.paymentIncomplete'), 'error'); return }
+        if (res.error) { ui.toast(res.error.message ?? t('tickets.pick.paymentIncomplete'), 'error'); return }
+        if (res.paymentIntent?.status !== 'succeeded') { ui.toast(t('tickets.pick.paymentIncomplete'), 'error'); return }
         await issue(o, res.paymentIntent.id)
       } else {
         await issue(o)

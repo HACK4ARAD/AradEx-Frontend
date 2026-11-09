@@ -37,7 +37,7 @@ function close() {
   newCode.value = null
 }
 function passwordDone() {
-  toasts.toast(t('auth.password.changed'), 'success')
+  toasts.toast(t('auth.passwordChange.changed'), 'success')
   close()
 }
 async function generate() {
@@ -78,7 +78,7 @@ async function generate() {
         <RecoveryCodeNotice v-if="newCode" :code="newCode" :ui="ui" @continue="close" />
         <form v-else class="flex flex-col gap-3.5" novalidate data-test="recovery-form" @submit.prevent="generate">
           <p class="text-muted text-[14px] leading-relaxed m-0">{{ t('auth.security.newCodeSub') }}</p>
-          <AppInput v-model="rc.password.value" :label="t('auth.password.current')" type="password" icon="lock" autocomplete="current-password" />
+          <AppInput v-model="rc.password.value" :label="t('auth.passwordChange.current')" type="password" icon="lock" autocomplete="current-password" />
           <div v-if="rcError" role="alert" class="flex gap-2.5 items-start px-3.5 py-3 rounded-[14px] bg-[#FCE8E6] text-[#B3261E] text-[13.5px] leading-snug">
             <AppIcon name="error" :size="18" /><span>{{ rcError }}</span>
           </div>
