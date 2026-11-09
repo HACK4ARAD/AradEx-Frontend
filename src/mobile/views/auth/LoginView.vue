@@ -1,22 +1,17 @@
 <script setup lang="ts">
-// S12 — Conectare pe mobil. T21: conturile personale (Vizitator, Localnic) intră doar cu telefon + cod OTP; firmele și
-// Primăria (care au „Panou” în aplicație) intră cu e-mail + parolă, din linkul de sub formular.
-import { ref } from 'vue'
+// S12 — Conectare pe mobil: un singur formular e-mail + parolă pentru toate conturile (Vizitator, Localnic, firme, Primărie,
+// Admin), cu „Cont nou” (Vizitator / Localnic) și „Am uitat parola” (cod pe e-mail). Voluntarii au login-ul lor (/vol/login).
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import LoginForm from '@/shared/components/auth/LoginForm.vue'
-import PhoneLogin from '@/shared/components/auth/PhoneLogin.vue'
 import { useBack } from '@/shared/composables/useBack'
 
 const { t } = useI18n()
 const back = useBack('/')
-const mode = ref<'phone' | 'firm'>('phone')
 
-const demoPhones = [
-  { label: t('auth.role.VISITOR'), phone: '0799 000 001' },
-  { label: t('auth.role.LOCAL'), phone: '0799 000 002' },
-]
-const firmDemo = [
+const demo = [
+  { label: t('auth.role.VISITOR'), email: 'visitor@demo.ro' },
+  { label: t('auth.role.LOCAL'), email: 'local@demo.ro' },
   { label: t('auth.role.BUSINESS'), email: 'firma@demo.ro' },
   { label: t('auth.role.CITY_HALL'), email: 'primaria@demo.ro' },
   { label: t('auth.role.ADMIN'), email: 'admin@demo.ro' },
@@ -32,13 +27,9 @@ const firmDemo = [
       <img src="@/shared/assets/logo-ax.png" alt="AradExperience" class="h-[18px] w-auto shrink-0" /> {{ t('app.name') }}
     </div>
 
-    <PhoneLogin v-if="mode === 'phone'" :demo-phones="demoPhones" />
-    <LoginForm v-else ui="m" login-only :demo-accounts="firmDemo" />
+    <LoginForm ui="m" :demo-accounts="demo" />
 
-    <button type="button" class="block mx-auto mt-5 text-[14px] font-semibold underline underline-offset-[3px] py-1"
-      @click="mode = mode === 'phone' ? 'firm' : 'phone'">
-      {{ mode === 'phone' ? t('auth.phone.firmLink') : t('auth.phone.personalLink') }}
-    </button>
+    <p class="text-muted text-[12.5px] text-center mt-5 mb-0">{{ t('auth.firmNote') }}</p>
     <p class="text-muted text-[12.5px] text-center mt-4 mb-0">
       {{ t('auth.volunteerNote') }}
       <router-link to="/vol/login" class="block mt-1 text-ink font-semibold underline underline-offset-[3px]" data-test="vol-login-link">{{ t('auth.volunteerLink') }}</router-link>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// GDPR · bifa de la crearea contului (cont personal cu telefon și cont de firmă): „Am citit și accept Termenii și condițiile și
+// GDPR · bifa de la crearea contului (cont personal și cont de firmă): „Am citit și accept Termenii și condițiile și
 // Politica de confidențialitate”. Linkurile deschid textul într-o fereastră peste formular (nu pleci de pe pagină și nu pierzi
 // ce ai completat). Fără bifă contul nu se creează: formularul arată `auth.consent.required`, BE refuză cu 400.
 import { ref } from 'vue'

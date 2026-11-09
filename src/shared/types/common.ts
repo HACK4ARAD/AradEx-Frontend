@@ -18,7 +18,7 @@ export interface ProblemDetail {
   detail?: string
   instance?: string
   errors?: { field: string; message: string }[]
-  /** 429 (T21, coduri OTP): peste câte secunde se poate încerca din nou */
+  /** 429 (limite de cereri, de ex. codurile pe e-mail): peste câte secunde se poate încerca din nou, dacă BE îl trimite */
   retryAfterSeconds?: number
 }
 
