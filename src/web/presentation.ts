@@ -12,6 +12,18 @@ export const DOWNLOAD_LINKS: DownloadLinks = { android: null, ios: null }
 
 export const CONTACT_EMAIL = ''
 
+/**
+ * Linkurile din subsolul site-ului: codul proiectului, hackathonul și sursele oficiale ale datelor (Primăria Arad, Visit
+ * Arad, CTP Arad). Ajută și la SEO: site-ul e legat de surse reale și de codul public. Cheile din i18n `site.footer.*`.
+ */
+export const CODE_URL = 'https://github.com/HACK4ARAD'
+export const HACKATHON_URL = 'https://hack4arad.uav.ro/'
+export const SOURCE_LINKS = [
+  { key: 'cityHall', href: 'https://www.primariaarad.ro/' },
+  { key: 'visitArad', href: 'https://www.visitarad.ro/' },
+  { key: 'ctp', href: 'https://ctparad.ro/' },
+] as const
+
 /** Cele 6 funcții din „Ce poți face” (cheile din i18n `site.features.*`). */
 export const FEATURES = [
   { key: 'events', icon: 'confirmation_number' },

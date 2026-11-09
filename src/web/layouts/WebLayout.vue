@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { AppIcon, AppButton } from '@/shared/components'
 import LocaleSwitch from '@/shared/components/profile/LocaleSwitch.vue'
 import { useAuthStore } from '@/shared/stores/auth'
-import { CONTACT_EMAIL } from '@/web/presentation'
+import { CODE_URL, CONTACT_EMAIL, HACKATHON_URL, SOURCE_LINKS } from '@/web/presentation'
 import { routeTitle } from '@/router/guard'
 
 const route = useRoute()
@@ -175,7 +175,12 @@ function logout() { auth.logout(); router.push('/') }
         <router-link to="/privacy" class="no-underline text-muted hover:text-ink">{{ t('site.footer.privacy') }}</router-link>
         <router-link to="/terms" class="no-underline text-muted hover:text-ink">{{ t('site.footer.terms') }}</router-link>
         <a v-if="CONTACT_EMAIL" :href="`mailto:${CONTACT_EMAIL}`" class="no-underline text-muted hover:text-ink">{{ t('site.footer.contact') }}: {{ CONTACT_EMAIL }}</a>
-        <span class="ml-auto">{{ t('site.footer.made') }}</span>
+        <a :href="CODE_URL" target="_blank" rel="noopener" class="no-underline text-muted hover:text-ink">{{ t('site.footer.code') }}</a>
+        <a :href="HACKATHON_URL" target="_blank" rel="noopener" class="ml-auto no-underline text-muted hover:text-ink">{{ t('site.footer.made') }}</a>
+      </div>
+      <div class="max-w-[1280px] mx-auto px-4 md:px-8 pb-6 -mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted">
+        <span>{{ t('site.footer.sources') }}:</span>
+        <a v-for="s in SOURCE_LINKS" :key="s.key" :href="s.href" target="_blank" rel="noopener" class="no-underline text-muted hover:text-ink underline-offset-2 hover:underline">{{ t(`site.footer.${s.key}`) }}</a>
       </div>
     </footer>
   </div>
