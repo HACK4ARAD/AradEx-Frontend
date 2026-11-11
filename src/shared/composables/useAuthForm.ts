@@ -1,4 +1,5 @@
 import { ApiError } from '@/shared/api/client'
+import { isNotLiveError } from '@/shared/composables/useAuthMode'
 import type { Role } from '@/shared/types/common'
 import type { PersonalRole, RegisterRequest } from '@/shared/types/auth'
 import type { BusinessCategory } from '@/shared/types/business'
@@ -106,6 +107,8 @@ export function authErrorMessage(err: unknown, mode: AuthMode): { key: string } 
   if (err instanceof ApiError) {
     if (err.status === 401 && mode === 'login') return { key: 'auth.errors.invalid' }
     if (err.status === 409) return { key: 'auth.errors.emailTaken' }
+    // încă nu e live: doar conturile demo pot intra (mesajul notei de pe ecran, nu o eroare generică)
+    if (isNotLiveError(err)) return { key: 'auth.demoOnly.text' }
     if (err.status === 403 && mode === 'login') return { key: 'auth.errors.disabled' }
     if (err.status === 0) return { key: 'auth.errors.network' }
     if (err.status === 400 && err.problem?.errors?.length) return { key: 'auth.errors.validation' }

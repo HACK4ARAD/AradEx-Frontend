@@ -4,6 +4,7 @@ import { useMyTickets } from '@/shared/composables/useTickets'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
+import DemoAccountBanner from '@/shared/components/auth/DemoAccountBanner.vue'
 import { useAuthStore } from '@/shared/stores/auth'
 import { refreshVolunteerUnread, volunteerUnread } from '@/shared/composables/useVolunteer'
 
@@ -42,6 +43,8 @@ const hasUpcomingTickets = computed(() => !!auth.user && myTickets.upcoming.valu
 <template>
   <div class="min-h-dvh bg-bg flex flex-col mx-auto w-full max-w-[480px]">
     <main class="flex-1 px-5 pt-[max(12px,env(safe-area-inset-top))]" :class="hideTabs ? 'pb-10' : 'pb-[120px]'">
+      <!-- cont demo public: fără date personale reale (se închide pentru sesiune) -->
+      <DemoAccountBanner class="rounded-xl border mb-3" />
       <router-view />
     </main>
 

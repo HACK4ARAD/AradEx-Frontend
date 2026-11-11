@@ -67,4 +67,10 @@ export interface ChangePasswordResponse { recoveryCode: string | null }
 /** POST /me/recovery-code `{ password }` → codul nou (cel vechi nu mai merge); 400 parolă greșită, 403 cont demo */
 export interface RecoveryCodeResponse { recoveryCode: string }
 
+/**
+ * GET /auth/config (public): `demoOnly` = aplicația nu e încă live; doar conturile demo (`@demo.ro`) și voluntarii pot intra.
+ * Atunci /auth/register, /auth/password/recover și /auth/login cu alt e-mail răspund 403 „Not live yet: …”.
+ */
+export interface AuthConfig { demoOnly: boolean }
+
 export interface UpdateMeRequest { displayName?: string; locale?: 'ro' | 'en' | 'hu' }

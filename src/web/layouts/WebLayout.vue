@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon, AppButton } from '@/shared/components'
 import LocaleSwitch from '@/shared/components/profile/LocaleSwitch.vue'
+import DemoAccountBanner from '@/shared/components/auth/DemoAccountBanner.vue'
 import { useAuthStore } from '@/shared/stores/auth'
 import { CODE_URL, CONTACT_EMAIL, DOWNLOAD_LINKS, HACKATHON_URL, SOURCE_LINKS } from '@/web/presentation'
 import AppSheet from '@/shared/components/ui/AppSheet.vue'
@@ -134,6 +135,8 @@ function logout() { auth.logout(); router.push('/') }
         <span class="truncate flex-1">{{ pageTitle }}</span>
         <LocaleSwitch compact />
       </header>
+      <!-- cont demo public: fără date personale reale (se închide pentru sesiune) -->
+      <DemoAccountBanner />
       <main class="flex-1 min-w-0 px-4 py-5 lg:px-8 lg:py-7 max-w-[1280px] w-full">
         <router-view />
       </main>
@@ -170,6 +173,7 @@ function logout() { auth.logout(); router.push('/') }
         </button>
       </div>
     </header>
+    <DemoAccountBanner />
     <!-- T23: pe telefon, navigația contului personal e un rând care se derulează sub bară -->
     <nav v-if="personal" class="lg:hidden flex gap-1 overflow-x-auto px-3 py-2 bg-white border-b border-line sticky top-16 z-10 [scrollbar-width:none] text-[14px] font-medium">
       <router-link v-for="n in topNav" :key="n.to" :to="n.to" class="no-underline h-9 px-3 rounded-[10px] inline-flex items-center whitespace-nowrap"
