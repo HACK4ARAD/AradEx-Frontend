@@ -2,16 +2,20 @@
 // T12 · S8 — Chat (design/final mobile.html `/chat`): antet cu „Chat nou” + avatar, salutul cu întrebările de început,
 // baloanele (eu în dreapta, asistentul în stânga), chips de răspuns rapid, evenimentele recomandate, „…” cât așteaptă
 // și câmpul fix de jos deasupra tab bar-ului. Logica: shared/composables/useChat.
+// Modul demo (`demoOnly`): istoricul rămâne vizibil, dar în locul câmpului e nota „se deschide la lansare” și nu se trimite nimic.
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import ChatEventRow from '@/shared/components/chat/ChatEventRow.vue'
+import DemoPausedNotice from '@/shared/components/ui/DemoPausedNotice.vue'
+import { useAuthMode } from '@/shared/composables/useAuthMode'
 import { useChat, type ChatItem } from '@/shared/composables/useChat'
 import { useAuthStore } from '@/shared/stores/auth'
 
 const { t } = useI18n()
 const auth = useAuthStore()
 const chat = useChat()
+const { demoOnly } = useAuthMode()
 const text = ref('')
 const initials = computed(() => (auth.user?.displayName ?? '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase())
 const started = computed(() => chat.items.value.length > 1)
@@ -22,7 +26,7 @@ function label(i: ChatItem) {
 
 async function submit() {
   const q = text.value
-  if (!q.trim()) return
+  if (!q.trim() || demoOnly.value) return
   text.value = ''
   await chat.send(q)
 }
@@ -61,15 +65,15 @@ onMounted(() => { if (started.value) void nextTick(() => window.scrollTo({ top: 
           <AppIcon name="cloud_off" :size="15" />{{ t('chat.offline') }}
         </div>
         <button v-if="m.error" type="button" class="self-start min-h-9 px-3 rounded-full border border-line bg-white text-[13px] font-medium inline-flex items-center gap-1.5"
-          :disabled="chat.typing.value" @click="chat.retry(m)"><AppIcon name="refresh" :size="16" />{{ t('chat.retry') }}</button>
+          :disabled="chat.typing.value || demoOnly" @click="chat.retry(m)"><AppIcon name="refresh" :size="16" />{{ t('chat.retry') }}</button>
         <template v-if="m.eventIds?.length">
           <template v-for="id in m.eventIds" :key="id">
             <ChatEventRow v-if="chat.event(id)" :event="chat.event(id)!" />
           </template>
         </template>
         <div v-if="m.chips?.length && idx === chat.items.value.length - 1" class="flex flex-wrap gap-2 max-w-[88%]">
-          <button v-for="c in m.chips" :key="c" type="button" :disabled="chat.typing.value"
-            class="min-h-9 px-3 py-1.5 rounded-full border border-line bg-white text-[13px] font-medium inline-flex items-center gap-1.5 text-left"
+          <button v-for="c in m.chips" :key="c" type="button" :disabled="chat.typing.value || demoOnly"
+            class="min-h-9 px-3 py-1.5 rounded-full border border-line bg-white text-[13px] font-medium inline-flex items-center gap-1.5 text-left disabled:opacity-50"
             @click="chat.send(c)"><AppIcon v-if="m.starter" name="north_east" :size="16" />{{ c }}</button>
         </div>
       </template>
@@ -79,7 +83,10 @@ onMounted(() => { if (started.value) void nextTick(() => window.scrollTo({ top: 
     </div>
 
     <!-- design/final `.composer`: deasupra tab bar-ului, cu fundal care se estompează în sus -->
-    <form class="fixed left-1/2 -translate-x-1/2 w-full max-w-[480px] bottom-[calc(max(22px,env(safe-area-inset-bottom))+78px)] z-[34] px-5 py-2.5 flex gap-2.5 items-center bg-gradient-to-t from-bg from-70% to-transparent"
+    <div v-if="demoOnly" class="fixed left-1/2 -translate-x-1/2 w-full max-w-[480px] bottom-[calc(max(22px,env(safe-area-inset-bottom))+78px)] z-[34] px-5 py-2.5 bg-gradient-to-t from-bg from-70% to-transparent">
+      <DemoPausedNotice />
+    </div>
+    <form v-else class="fixed left-1/2 -translate-x-1/2 w-full max-w-[480px] bottom-[calc(max(22px,env(safe-area-inset-bottom))+78px)] z-[34] px-5 py-2.5 flex gap-2.5 items-center bg-gradient-to-t from-bg from-70% to-transparent"
       @submit.prevent="submit">
       <input id="chat-input" v-model="text" type="text" enterkeyhint="send" autocomplete="off" maxlength="1000" :placeholder="t('chat.placeholder')"
         class="flex-1 min-w-0 h-[52px] px-4 rounded-full border border-line bg-white outline-none text-[16px] focus:border-ink" />

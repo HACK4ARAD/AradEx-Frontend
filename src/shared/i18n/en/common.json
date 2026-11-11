@@ -17,5 +17,7 @@
   "pagination": "Pagination",
   "pageRange": "{from}–{to} of {total}",
   "prevPage": "Previous page",
-  "nextPage": "Next page"
+  "nextPage": "Next page",
+  "demoReadOnly": "Demo mode: the app is not live yet, so you can’t make changes.",
+  "demoAiPaused": "The AI assistant and the planner open at launch. Until then, the app is view-only."
 }

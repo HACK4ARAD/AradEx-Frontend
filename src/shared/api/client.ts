@@ -14,6 +14,34 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Modul demo (GET /auth/config → `demoOnly`): până la lansare orice cerere care modifică ceva (POST/PUT/PATCH/DELETE, în afară
+ * de /auth/**) primește 403 cu exact acest `detail`. Mesajul arătat oamenilor e textul tradus `common.demoReadOnly`.
+ */
+export const DEMO_READ_ONLY_DETAIL = 'Demo mode: changes are disabled until launch'
+
+function isDemoReadOnly(status: number, problem?: ProblemDetail): boolean {
+  return status === 403 && problem?.detail === DEMO_READ_ONLY_DETAIL
+}
+
+/** 403 „Demo mode: changes are disabled until launch”: aplicația e doar de vizualizare până la lansare. */
+export function isDemoReadOnlyError(e: unknown): boolean {
+  return e instanceof ApiError && isDemoReadOnly(e.status, e.problem)
+}
+
+/** Traducerea textelor (o înregistrează `shared/i18n` la pornire; clientul nu importă i18n, ca testele să-l poată folosi singur). */
+let translate: ((key: string) => string) | null = null
+export function setErrorTranslator(fn: (key: string) => string) { translate = fn }
+
+/**
+ * Textul unei erori de API (`ApiError.message`, arătat în toast-uri prin `ui.error` și în ecrane): `detail` din ProblemDetail,
+ * altfel `title`, altfel „Eroare <status>”; pentru modul demo, textul tradus în limba curentă (niciodată engleza din BE).
+ */
+export function apiErrorMessage(status: number, problem?: ProblemDetail): string {
+  if (isDemoReadOnly(status, problem) && translate) return translate('common.demoReadOnly')
+  return problem?.detail || problem?.title || `Eroare ${status}`
+}
+
 export const tokenStore = {
   get(): string | null {
     try { return localStorage.getItem(TOKEN_KEY) } catch { return null }
@@ -65,7 +93,7 @@ async function request<T>(method: string, path: string, opts: Options = {}): Pro
     const problem = data as ProblemDetail | undefined
     // doar pentru cereri trimise cu token (un login greșit nu deloghează sesiunea curentă)
     if (res.status === 401 && headers.Authorization) onUnauthorized?.()
-    throw new ApiError(res.status, problem?.detail || problem?.title || `Eroare ${res.status}`, problem)
+    throw new ApiError(res.status, apiErrorMessage(res.status, problem), problem)
   }
   return data as T
 }

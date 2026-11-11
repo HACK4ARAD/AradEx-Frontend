@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { authApi } from '@/shared/api/auth'
-import { ApiError } from '@/shared/api/client'
+import { ApiError, isDemoReadOnlyError } from '@/shared/api/client'
 import { useAuthStore } from '@/shared/stores/auth'
 import { newPasswordError } from '@/shared/composables/useAuthForm'
 
@@ -14,6 +14,7 @@ function errorKey(e: unknown, wrongPassword: string): string {
   if (!(e instanceof ApiError)) return 'auth.errors.generic'
   if (e.status === 0) return 'auth.errors.network'
   if (e.status === 400) return e.problem?.errors?.length ? 'auth.errors.validation' : wrongPassword
+  if (isDemoReadOnlyError(e)) return 'common.demoReadOnly'
   if (e.status === 403) return 'auth.passwordChange.errors.demo'
   return 'auth.errors.generic'
 }

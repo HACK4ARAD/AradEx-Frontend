@@ -14,6 +14,7 @@ import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 import { DOWNLOAD_LINKS } from '@/web/presentation'
 import type { ItineraryStop } from '@/shared/types/plan'
+import { isDemoReadOnlyError } from '@/shared/api/client'
 
 const route = useRoute()
 const router = useRouter()
@@ -52,8 +53,9 @@ async function save() {
     const mine = await itinerariesApi.saveToMine(it.value.shareCode)
     ui.toast(t('plan.web.saved'), 'success', undefined, 6000)
     if (mine.shareCode && mine.shareCode !== it.value.shareCode) await router.replace(`/itinerary/${mine.shareCode}`)
-  } catch {
-    ui.toast(t('plan.detail.saveError'), 'error')
+  } catch (e) {
+    // modul demo: doar vizualizare până la lansare
+    ui.toast(isDemoReadOnlyError(e) ? t('common.demoReadOnly') : t('plan.detail.saveError'), 'error')
   } finally {
     saving.value = false
   }

@@ -2,17 +2,21 @@
 // T13 · E1 — Planifică-ți vizita (design/final mobile `/plan`): cât timp, când + de la ce oră, cum te deplasezi, interese,
 // „Altceva?”, „Generează programul”. Cât lucrează AradBot: ecranul de așteptare pe tot ecranul (fără tab bar), apoi
 // itinerariul salvat (`/itinerary/:shareCode`, cu replace). Logica: shared/composables/usePlanner.
+// Modul demo (`demoOnly`): formularul se vede, dar nota „se deschide la lansare” stă sus și „Generează” e dezactivat.
 import { onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AppIcon } from '@/shared/components'
 import { INTERESTS, TIME_OPTIONS, TRANSPORTS, usePlanner } from '@/shared/composables/usePlanner'
 import { useBack } from '@/shared/composables/useBack'
+import { useAuthMode } from '@/shared/composables/useAuthMode'
+import DemoPausedNotice from '@/shared/components/ui/DemoPausedNotice.vue'
 
 const { t } = useI18n()
 const router = useRouter()
 const back = useBack('/itineraries')
 const { form, generating, dayOptions, toggleInterest, cycleStart, generate } = usePlanner()
+const { demoOnly } = useAuthMode()
 
 const CHIP = 'min-h-11 px-4 rounded-full inline-flex items-center gap-1.5 text-[14px] border whitespace-nowrap transition-colors'
 const chipCls = (on: boolean) => (on ? 'bg-ink text-white border-ink font-semibold' : 'bg-white text-ink border-line font-medium')
@@ -23,6 +27,7 @@ const leaving = ref(false)
 let gone = false
 onBeforeUnmount(() => { gone = true })
 async function go() {
+  if (demoOnly.value) return
   leaving.value = true
   const saved = await generate()
   if (gone) return
@@ -46,6 +51,7 @@ async function go() {
       <h1 class="flex-1 m-0 text-[28px] font-semibold tracking-[-0.025em] leading-tight">{{ t('plan.form.title') }}</h1>
     </div>
     <p class="text-muted text-[14.5px] -mt-1 mb-[18px]">{{ t('plan.form.intro') }}</p>
+    <DemoPausedNotice v-if="demoOnly" class="mb-[18px]" />
 
     <label class="block text-[14px] font-semibold mb-2">{{ t('plan.form.timeLabel') }}</label>
     <div class="flex flex-wrap gap-2 mb-[18px]">
@@ -83,7 +89,7 @@ async function go() {
       class="w-full min-h-24 px-4 py-3.5 rounded-[16px] border border-line bg-white outline-none text-[16px] leading-[1.45] resize-none focus:border-ink focus:shadow-[0_0_0_3px_rgba(17,17,17,.08)]" />
 
     <button type="button" class="w-full mt-[18px] min-h-[52px] px-5 rounded-[16px] bg-ink text-white text-[16px] font-semibold flex items-center justify-center gap-2 disabled:opacity-45"
-      :disabled="generating || leaving" @click="go"><AppIcon name="auto_awesome" :size="18" />{{ t('plan.form.generate') }}</button>
+      :disabled="generating || leaving || demoOnly" data-test="plan-generate" @click="go"><AppIcon name="auto_awesome" :size="18" />{{ t('plan.form.generate') }}</button>
     <p class="text-muted text-[12.5px] mt-2.5 text-center">{{ t('plan.form.note') }}</p>
   </div>
 </template>

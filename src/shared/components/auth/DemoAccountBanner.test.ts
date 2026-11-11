@@ -21,7 +21,7 @@ describe('DemoAccountBanner', () => {
   beforeEach(() => sessionStorage.clear())
 
   it('shows only for @demo.ro accounts', () => {
-    expect(render(user('local@demo.ro')).find('[data-test=demo-banner]').text()).toContain('Cont demo public')
+    expect(render(user('local@demo.ro')).find('[data-test=demo-banner]').text()).toContain('Cont demo: doar vizualizare până la lansare. Poți explora tot, dar nu poți salva modificări.')
     expect(render(user('Admin@Demo.RO')).find('[data-test=demo-banner]').exists()).toBe(true)
     expect(render(user('ana@exemplu.ro')).find('[data-test=demo-banner]').exists()).toBe(false)
     expect(render(null).find('[data-test=demo-banner]').exists()).toBe(false)

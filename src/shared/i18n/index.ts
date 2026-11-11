@@ -1,4 +1,5 @@
 import { createI18n } from 'vue-i18n'
+import { setErrorTranslator } from '@/shared/api/client'
 
 export type Locale = 'ro' | 'en' | 'hu'
 /** Limbile aplicației, în ordinea din meniu, cu numele în limba lor (nu se traduc). */
@@ -44,6 +45,9 @@ export const i18n = createI18n({
   fallbackLocale: 'ro',
   messages: { ro: loadMessages('ro'), en: loadMessages('en'), hu: loadMessages('hu') },
 })
+
+// erorile de API cu text propriu (modul demo: „doar vizualizare”) se arată în limba curentă, nu în engleza din BE
+setErrorTranslator((key) => i18n.global.t(key))
 
 export function setLocale(locale: Locale) {
   i18n.global.locale.value = locale
