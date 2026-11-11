@@ -2,7 +2,7 @@ import { ref, shallowReactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { aiApi } from '@/shared/api/ai'
 import { eventsApi } from '@/shared/api/events'
-import { ApiError } from '@/shared/api/client'
+import { ApiError, isDemoReadOnlyError } from '@/shared/api/client'
 import type { ChatMessage } from '@/shared/types/chat'
 import type { EventDto } from '@/shared/types/events'
 
@@ -67,7 +67,7 @@ export function useChat() {
       items.value.push({ from: 'bot', text: r.reply, chips: r.quickReplies, eventIds: r.suggestedEventIds.filter((id) => events.has(id)), offline: r.offline })
     } catch (e) {
       if (mine !== conversation) return
-      const key = e instanceof ApiError && e.status === 429 ? 'chat.errors.tooMany' : e instanceof ApiError && e.status === 0 ? 'chat.errors.network' : 'chat.errors.generic'
+      const key = isDemoReadOnlyError(e) ? 'common.demoReadOnly' : e instanceof ApiError && e.status === 429 ? 'chat.errors.tooMany' : e instanceof ApiError && e.status === 0 ? 'chat.errors.network' : 'chat.errors.generic'
       items.value.push({ from: 'bot', text: key, error: true, retry: question })
     } finally {
       if (mine === conversation) {

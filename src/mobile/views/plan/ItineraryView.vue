@@ -12,6 +12,7 @@ import { useBack } from '@/shared/composables/useBack'
 import { useShare } from '@/shared/composables/useShare'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
+import { isDemoReadOnlyError } from '@/shared/api/client'
 
 const route = useRoute()
 const router = useRouter()
@@ -57,8 +58,9 @@ async function bookmark() {
     const mine = await itinerariesApi.saveToMine(v.shareCode)
     ui.toast(t('plan.detail.saved'), 'success')
     if (mine.shareCode && mine.shareCode !== v.shareCode) await router.replace({ path: `/itinerary/${mine.shareCode}`, query: route.query })
-  } catch {
-    ui.toast(t('plan.detail.saveError'), 'error')
+  } catch (e) {
+    // modul demo: doar vizualizare până la lansare
+    ui.toast(isDemoReadOnlyError(e) ? t('common.demoReadOnly') : t('plan.detail.saveError'), 'error')
   } finally {
     saving.value = false
   }

@@ -17,5 +17,7 @@
   "pagination": "Lapozás",
   "pageRange": "{from}–{to} / {total}",
   "prevPage": "Előző oldal",
-  "nextPage": "Következő oldal"
+  "nextPage": "Következő oldal",
+  "demoReadOnly": "Demó mód: az alkalmazás még nem indult el, ezért nem módosíthatsz semmit.",
+  "demoAiPaused": "Az AI-asszisztens és a tervező az induláskor nyílik meg. Addig az alkalmazás csak megtekintésre szolgál."
 }

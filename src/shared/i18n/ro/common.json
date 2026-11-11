@@ -17,5 +17,7 @@
   "pagination": "Paginare",
   "pageRange": "{from}–{to} din {total}",
   "prevPage": "Pagina anterioară",
-  "nextPage": "Pagina următoare"
+  "nextPage": "Pagina următoare",
+  "demoReadOnly": "Mod demo: aplicația nu e încă live, așa că nu poți face modificări.",
+  "demoAiPaused": "Asistentul AI și planificatorul se deschid la lansare. Până atunci, aplicația e doar de vizualizare."
 }
