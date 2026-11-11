@@ -106,6 +106,8 @@
     "cta": "Intră în panou"
   },
   "footer": {
+    "events": "Evenimente în Arad",
+    "sights": "Obiective turistice",
     "privacy": "Confidențialitate",
     "terms": "Termeni și condiții",
     "contact": "Contact",
@@ -116,5 +118,58 @@
     "visitArad": "Visit Arad",
     "ctp": "CTP Arad (transport)",
     "copyright": "© {year} AradExperience · Toate drepturile rezervate"
+  },
+  "public": {
+    "events": {
+      "title": "Evenimente în Arad",
+      "intro": "Concerte, teatru, expoziții, târguri și evenimente pentru familie: tot ce urmează în Arad, cu data, locul și prețul. Biletele și indicațiile pas cu pas sunt în aplicația AradExperience.",
+      "empty": "Momentan nu e niciun eveniment anunțat. Revino curând: evenimentele apar aici imediat ce sunt publicate.",
+      "loadError": "Nu am putut încărca evenimentele.",
+      "all": "Vezi toate evenimentele",
+      "back": "Toate evenimentele"
+    },
+    "event": {
+      "when": "Când",
+      "where": "Unde",
+      "price": "Preț",
+      "free": "Intrare liberă",
+      "from": "de la {price}",
+      "organizer": "Organizator",
+      "directions": "Indicații pe Google Maps",
+      "website": "Site-ul organizatorului",
+      "about": "Despre eveniment",
+      "ended": "Evenimentul s-a încheiat. Vezi ce mai urmează în Arad.",
+      "loadError": "Nu am putut încărca evenimentul.",
+      "notFoundTitle": "Evenimentul nu mai e aici",
+      "notFoundText": "Poate a fost mutat sau s-a încheiat. Vezi celelalte evenimente din Arad."
+    },
+    "sights": {
+      "title": "Obiective turistice în Arad",
+      "intro": "Cetatea Aradului, Palatul Cultural, bisericile, muzeele, parcurile și locurile în natură din jurul orașului. Multe au ghid audio în aplicația AradExperience.",
+      "all": "Toate",
+      "empty": "Niciun obiectiv de acest tip deocamdată.",
+      "loadError": "Nu am putut încărca obiectivele.",
+      "guide": "Ghid audio · {n} punct | Ghid audio · {n} puncte",
+      "visit": "Vizită ~{time}",
+      "back": "Toate obiectivele"
+    },
+    "sight": {
+      "address": "Adresă",
+      "visit": "Durata vizitei",
+      "hours": "Program",
+      "exterior": "Se vizitează doar din exterior.",
+      "directions": "Indicații pe Google Maps",
+      "about": "Despre obiectiv",
+      "guideTitle": "Ghid audio în aplicație: {n} punct | Ghid audio în aplicație: {n} puncte",
+      "guideText": "Ascultă povestea locului pas cu pas, cu harta punctelor, în aplicația AradExperience.",
+      "loadError": "Nu am putut încărca obiectivul.",
+      "notFoundTitle": "Obiectivul nu e aici",
+      "notFoundText": "Adresa nu mai e valabilă. Vezi celelalte obiective turistice din Arad."
+    },
+    "cta": {
+      "title": "Biletele și indicațiile sunt în aplicația AradExperience",
+      "text": "Intră ca vizitator, fără cont și fără parolă: evenimente, hartă, oferte și ghiduri audio.",
+      "button": "Încearcă aplicația pe web"
+    }
   }
 }

@@ -106,6 +106,8 @@
     "cta": "Open the dashboard"
   },
   "footer": {
+    "events": "Events in Arad",
+    "sights": "Sights in Arad",
     "privacy": "Privacy",
     "terms": "Terms",
     "contact": "Contact",
@@ -116,5 +118,58 @@
     "visitArad": "Visit Arad",
     "ctp": "CTP Arad (public transport)",
     "copyright": "© {year} AradExperience · All rights reserved"
+  },
+  "public": {
+    "events": {
+      "title": "Events in Arad",
+      "intro": "Concerts, theatre, exhibitions, fairs and family events: everything coming up in Arad, with the date, the venue and the price. Tickets and step-by-step directions are in the AradExperience app.",
+      "empty": "No events announced right now. Check back soon: events show up here as soon as they are published.",
+      "loadError": "We couldn’t load the events.",
+      "all": "See all events",
+      "back": "All events"
+    },
+    "event": {
+      "when": "When",
+      "where": "Where",
+      "price": "Price",
+      "free": "Free entry",
+      "from": "from {price}",
+      "organizer": "Organizer",
+      "directions": "Directions on Google Maps",
+      "website": "Organizer’s website",
+      "about": "About the event",
+      "ended": "This event has ended. See what’s next in Arad.",
+      "loadError": "We couldn’t load the event.",
+      "notFoundTitle": "This event is no longer here",
+      "notFoundText": "It may have moved or ended. See the other events in Arad."
+    },
+    "sights": {
+      "title": "Sights in Arad",
+      "intro": "Arad Fortress, the Cultural Palace, the churches, museums, parks and nature spots around the city. Many have an audio guide in the AradExperience app.",
+      "all": "All",
+      "empty": "No sights of this type yet.",
+      "loadError": "We couldn’t load the sights.",
+      "guide": "Audio guide · {n} stop | Audio guide · {n} stops",
+      "visit": "Visit ~{time}",
+      "back": "All sights"
+    },
+    "sight": {
+      "address": "Address",
+      "visit": "Visit time",
+      "hours": "Opening hours",
+      "exterior": "Can be visited from the outside only.",
+      "directions": "Directions on Google Maps",
+      "about": "About this sight",
+      "guideTitle": "Audio guide in the app: {n} stop | Audio guide in the app: {n} stops",
+      "guideText": "Listen to the story of the place stop by stop, with a map of the stops, in the AradExperience app.",
+      "loadError": "We couldn’t load the sight.",
+      "notFoundTitle": "This sight isn’t here",
+      "notFoundText": "The address is no longer valid. See the other sights in Arad."
+    },
+    "cta": {
+      "title": "Tickets and directions are in the AradExperience app",
+      "text": "Continue as a visitor, no account and no password: events, map, offers and audio guides.",
+      "button": "Try the app on the web"
+    }
   }
 }

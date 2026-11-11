@@ -30,6 +30,10 @@
   "myOffers": "Ajánlataim",
   "menu": "Menü",
   "routes": {
+    "w-pub-events": "Események Aradon",
+    "w-pub-event": "Esemény",
+    "w-pub-sights": "Látnivalók",
+    "w-pub-sight": "Látnivaló",
     "w-login": "Bejelentkezés",
     "w-password": "Új jelszó",
     "w-landing": "Kezdőlap",

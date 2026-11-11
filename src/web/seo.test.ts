@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { SEO_PAGES, SITE, applySeo } from './seo'
+import { SEO_PAGES, SITE, applySeo, setJsonLd, setNoindex, setPageSeo } from './seo'
 
 const head = (sel: string) => document.head.querySelector(sel)
 
@@ -23,6 +23,34 @@ describe('applySeo', () => {
     expect(document.head.querySelectorAll('meta[name="description"]')).toHaveLength(1)
 
     applySeo({ name: 'w-login' })
+    expect(head('meta[name="robots"]')?.getAttribute('content')).toBe('noindex')
+    expect(head('link[rel="canonical"]')).toBeNull()
+  })
+
+  it('the events and sights lists have titles with "Arad"', () => {
+    applySeo({ name: 'w-pub-events' })
+    expect(document.title).toBe('Evenimente în Arad · Arad Experience')
+    expect(head('link[rel="canonical"]')?.getAttribute('href')).toBe(`${SITE}/evenimente`)
+    applySeo({ name: 'w-pub-sights' })
+    expect(document.title).toBe('Obiective turistice în Arad · Arad Experience')
+  })
+
+  it('a detail page sets its own SEO and JSON-LD after loading; the JSON-LD is replaced on navigation', () => {
+    applySeo({ name: 'w-pub-event' })
+    expect(head('meta[name="robots"]')?.getAttribute('content')).toBe('index, follow')
+    setPageSeo({ title: 'Concert · Evenimente în Arad', description: 'D', path: '/evenimente/2/concert', image: `${SITE}/img/a.jpg`, jsonLd: { '@type': 'Event' } })
+    expect(document.title).toBe('Concert · Evenimente în Arad')
+    expect(head('link[rel="canonical"]')?.getAttribute('href')).toBe(`${SITE}/evenimente/2/concert`)
+    expect(head('meta[property="og:image"]')?.getAttribute('content')).toBe(`${SITE}/img/a.jpg`)
+    setJsonLd({ '@type': 'Event', name: '</script><b>' })
+    expect(document.head.querySelectorAll('script[type="application/ld+json"][data-seo]')).toHaveLength(1)
+    expect(head('script[data-seo]')?.textContent).not.toContain('</script>')
+
+    applySeo({ name: 'w-community' })                                                     // navigare: JSON-LD-ul paginii pleacă
+    expect(head('script[data-seo]')).toBeNull()
+    expect(head('meta[property="og:image"]')?.getAttribute('content')).toBe(`${SITE}/og-image.png`)
+
+    setNoindex()
     expect(head('meta[name="robots"]')?.getAttribute('content')).toBe('noindex')
     expect(head('link[rel="canonical"]')).toBeNull()
   })

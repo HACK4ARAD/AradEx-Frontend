@@ -30,6 +30,10 @@
   "myOffers": "Ofertele mele",
   "menu": "Meniu",
   "routes": {
+    "w-pub-events": "Evenimente în Arad",
+    "w-pub-event": "Eveniment",
+    "w-pub-sights": "Obiective turistice",
+    "w-pub-sight": "Obiectiv turistic",
     "w-login": "Conectare",
     "w-password": "Parolă nouă",
     "w-landing": "Acasă",
