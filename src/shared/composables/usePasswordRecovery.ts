@@ -4,6 +4,7 @@ import { ApiError } from '@/shared/api/client'
 import { useAuthStore } from '@/shared/stores/auth'
 import { useUiStore } from '@/shared/stores/ui'
 import { isEmail, newPasswordError, normalizeRecoveryCode } from '@/shared/composables/useAuthForm'
+import { isNotLiveError } from '@/shared/composables/useAuthMode'
 import type { UserDto } from '@/shared/types/auth'
 
 /**
@@ -36,6 +37,7 @@ export function usePasswordRecovery(initialEmail = '') {
       if (!(e instanceof ApiError)) error.value = 'auth.errors.generic'
       else if (e.status === 0) error.value = 'auth.errors.network'
       else if (e.status === 401) error.value = 'auth.recover.errors.invalid'
+      else if (isNotLiveError(e)) error.value = 'auth.demoOnly.text'
       else if (e.status === 403) error.value = 'auth.errors.disabled'
       else if (e.status === 429) ui.toast(e.message, 'error') // prea multe încercări: textul serverului
       else if (e.status === 400) error.value = 'auth.errors.validation'

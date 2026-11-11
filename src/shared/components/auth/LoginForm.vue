@@ -3,11 +3,13 @@
 // conectarea, „Cont nou” (cont personal: Vizitator / Localnic), „Am uitat parola” (RecoverForm: e-mail + cod de recuperare) și,
 // pe web, în tab-ul de panouri, înregistrarea unei firme (contul rămâne neverificat până la Primărie/Admin). După un cont nou
 // sau o recuperare, codul de recuperare (nou) se arată o dată (RecoveryCodeNotice) înainte de salut și de pagina rolului.
+// Cât timp aplicația nu e live (`demoOnly`, useAuthMode) rămâne doar conectarea: fără „Cont nou”, firmă nouă și „Am uitat parola”.
 // View-urile adaugă doar rama.
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import RecoverForm from '@/shared/components/auth/RecoverForm.vue'
+import { useAuthMode } from '@/shared/composables/useAuthMode'
 import RecoveryCodeNotice from '@/shared/components/auth/RecoveryCodeNotice.vue'
 import TermsConsent from '@/shared/components/auth/TermsConsent.vue'
 import { AppButton, AppIcon, AppInput } from '@/shared/components'
@@ -43,6 +45,9 @@ const busy = ref(false)
 const pending = ref<{ user: UserDto; code: string; toastKey: string } | null>(null)
 const isWeb = props.ui === 'w'
 const showDemo = DEMO_ENABLED
+const { demoOnly } = useAuthMode()
+// modul „doar demo” poate sosi după ce omul a deschis „Cont nou” / „Am uitat parola”: înapoi la conectare
+watch(demoOnly, (v) => { if (v && mode.value !== 'login') setMode('login') })
 
 const title = computed(() => t(mode.value === 'business' ? 'auth.businessTitle' : mode.value === 'register' ? 'auth.registerTitle' : 'auth.loginTitle'))
 const subtitle = computed(() => {
@@ -150,17 +155,17 @@ defineExpose({ useDemo })
         <TermsConsent v-if="mode !== 'login'" v-model="form.acceptTerms" :invalid="error === t('auth.consent.required')" />
         <AppButton type="submit" block :loading="busy" class="mt-1" :icon="mode === 'business' ? 'add_business' : undefined">{{ submitLabel }}</AppButton>
 
-        <div v-if="mode === 'login'" class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[14px]">
+        <div v-if="mode === 'login' && !demoOnly" class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[14px]">
           <button type="button" class="font-semibold underline underline-offset-[3px] py-1" data-test="to-forgot" @click="setMode('forgot')">{{ t('auth.recover.link') }}</button>
           <button v-if="audience === 'personal'" type="button" class="font-semibold underline underline-offset-[3px] py-1" data-test="to-register"
             @click="setMode('register')">{{ t('auth.newAccount') }}</button>
         </div>
-        <button v-else type="button" class="self-center text-[14px] font-semibold underline underline-offset-[3px] py-1" @click="setMode('login')">
+        <button v-else-if="mode !== 'login'" type="button" class="self-center text-[14px] font-semibold underline underline-offset-[3px] py-1" @click="setMode('login')">
           {{ t('auth.toLogin') }}
         </button>
       </form>
 
-      <div v-if="isWeb && audience === 'panels' && mode === 'login'" class="flex gap-2.5 items-start px-3.5 py-3 rounded-xl bg-[#F1F1EC] text-muted text-[12.5px] leading-normal mt-3.5">
+      <div v-if="isWeb && audience === 'panels' && mode === 'login' && !demoOnly" class="flex gap-2.5 items-start px-3.5 py-3 rounded-xl bg-[#F1F1EC] text-muted text-[12.5px] leading-normal mt-3.5">
         <AppIcon name="storefront" :size="18" />
         <span>{{ t('auth.businessPrompt') }}
           <button type="button" class="font-semibold text-ink underline underline-offset-2" @click="setMode('business')">{{ t('auth.businessCta') }}</button>
