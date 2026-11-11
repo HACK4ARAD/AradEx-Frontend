@@ -19,6 +19,12 @@
     "getOn": "Download for",
     "soon": "Coming soon"
   },
+  "downloadSoon": {
+    "title": "The app is coming soon",
+    "text": "We are publishing AradExperience on Google Play and the App Store. Until then you can use everything right here on the website: events and tickets, the map, offers and the community.",
+    "tryWeb": "Try it on the website",
+    "close": "Close"
+  },
   "features": {
     "title": "What you can do with the app",
     "events": {

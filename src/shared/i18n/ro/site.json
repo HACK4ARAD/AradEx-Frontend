@@ -19,6 +19,12 @@
     "getOn": "Descarcă pentru",
     "soon": "În curând"
   },
+  "downloadSoon": {
+    "title": "Aplicația vine în curând",
+    "text": "Lucrăm la publicarea AradExperience în Google Play și App Store. Până atunci, poți folosi totul direct pe site: evenimente și bilete, hartă, oferte și comunitate.",
+    "tryWeb": "Încearcă pe site",
+    "close": "Închide"
+  },
   "features": {
     "title": "Ce poți face cu aplicația",
     "events": {

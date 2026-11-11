@@ -5,7 +5,9 @@ import { useI18n } from 'vue-i18n'
 import { AppIcon, AppButton } from '@/shared/components'
 import LocaleSwitch from '@/shared/components/profile/LocaleSwitch.vue'
 import { useAuthStore } from '@/shared/stores/auth'
-import { CODE_URL, CONTACT_EMAIL, HACKATHON_URL, SOURCE_LINKS } from '@/web/presentation'
+import { CODE_URL, CONTACT_EMAIL, DOWNLOAD_LINKS, HACKATHON_URL, SOURCE_LINKS } from '@/web/presentation'
+import AppSheet from '@/shared/components/ui/AppSheet.vue'
+import DownloadButtons from '@/web/components/site/DownloadButtons.vue'
 import { routeTitle } from '@/router/guard'
 
 const route = useRoute()
@@ -27,9 +29,12 @@ const topNav = computed(() => personal.value
     ]
   : [
       { to: '/#features', label: t('site.nav.features') },
-      { to: '/community', label: t('site.nav.community') },
       { to: '/#panels', label: t('site.nav.panels') },
+      { to: '/community', label: t('site.nav.community') },
     ])
+/** „Descarcă aplicația”: cât timp aplicația nu e în magazine, butonul deschide fereastra „În curând” în loc să ducă la #download. */
+const appPublished = computed(() => Boolean(DOWNLOAD_LINKS.android || DOWNLOAD_LINKS.ios))
+const downloadSoon = ref(false)
 /** Titlul paginii din bara panoului, în limba curentă (se recalculează și când se schimbă limba). */
 const pageTitle = computed(() => { void locale.value; return routeTitle(route) })
 const navActive = (to: string) => !to.includes('#') && (to === '/' ? route.path === '/' : route.path.startsWith(to))
@@ -156,9 +161,13 @@ function logout() { auth.logout(); router.push('/') }
           <span class="text-[14px] font-semibold hidden xl:inline whitespace-nowrap">{{ auth.user?.displayName }}</span>
           <span class="text-[12px] text-muted hidden xl:inline whitespace-nowrap">· {{ t(`auth.role.${auth.user?.role}`) }}</span>
         </router-link>
-        <router-link v-if="!personal" to="/#download" class="hidden sm:inline-flex h-10 px-4 rounded-[12px] bg-ink text-white text-[14px] font-semibold items-center gap-1.5 no-underline shrink-0">
+        <router-link v-if="!personal && appPublished" to="/#download" class="hidden sm:inline-flex h-10 px-4 rounded-[12px] bg-ink text-white text-[14px] font-semibold items-center gap-1.5 no-underline shrink-0">
           <AppIcon name="download" :size="18" /> {{ t('site.nav.download') }}
         </router-link>
+        <button v-else-if="!personal" type="button" data-test="download-soon" class="hidden sm:inline-flex h-10 px-4 rounded-[12px] bg-ink text-white text-[14px] font-semibold items-center gap-1.5 shrink-0"
+          @click="downloadSoon = true">
+          <AppIcon name="download" :size="18" /> {{ t('site.nav.download') }}
+        </button>
       </div>
     </header>
     <!-- T23: pe telefon, navigația contului personal e un rând care se derulează sub bară -->
@@ -184,5 +193,16 @@ function logout() { auth.logout(); router.push('/') }
         <a v-for="s in SOURCE_LINKS" :key="s.key" :href="s.href" target="_blank" rel="noopener" class="no-underline text-muted hover:text-ink underline-offset-2 hover:underline">{{ t(`site.footer.${s.key}`) }}</a>
       </div>
     </footer>
+    <!-- aplicația nu e încă în magazine: „Descarcă aplicația” arată asta în loc să ducă la #download -->
+    <AppSheet v-model:open="downloadSoon" :title="t('site.downloadSoon.title')">
+      <p class="text-[15px] text-muted leading-relaxed m-0 mb-4">{{ t('site.downloadSoon.text') }}</p>
+      <DownloadButtons />
+      <template #footer>
+        <div class="flex flex-col sm:flex-row gap-2.5 w-full">
+          <AppButton block data-test="download-soon-web" @click="downloadSoon = false; router.push('/login')">{{ t('site.downloadSoon.tryWeb') }}</AppButton>
+          <AppButton block variant="ghost" @click="downloadSoon = false">{{ t('site.downloadSoon.close') }}</AppButton>
+        </div>
+      </template>
+    </AppSheet>
   </div>
 </template>

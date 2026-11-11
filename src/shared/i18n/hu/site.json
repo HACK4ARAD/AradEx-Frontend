@@ -19,6 +19,12 @@
     "getOn": "Letöltés:",
     "soon": "Hamarosan"
   },
+  "downloadSoon": {
+    "title": "Az alkalmazás hamarosan érkezik",
+    "text": "Az AradExperience hamarosan elérhető lesz a Google Playen és az App Store-ban. Addig mindent használhatsz itt a weboldalon: eseményeket és jegyeket, térképet, ajánlatokat és a közösséget.",
+    "tryWeb": "Próbáld ki a weboldalon",
+    "close": "Bezárás"
+  },
   "features": {
     "title": "Mit tudsz csinálni az alkalmazással",
     "events": {
