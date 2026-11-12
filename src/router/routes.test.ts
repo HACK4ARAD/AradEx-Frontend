@@ -56,6 +56,17 @@ describe('web routes', () => {
     expect(r.resolve('/password').meta.roles).toContain('CITY_HALL')
   })
 
+  it('the public SEO pages (events, sights) need no account', () => {
+    expect(r.resolve('/evenimente').name).toBe('w-pub-events')
+    expect(r.resolve('/evenimente/2').name).toBe('w-pub-event')
+    expect(r.resolve('/evenimente/2/concert-simfonic').params).toMatchObject({ id: '2', slug: 'concert-simfonic' })
+    expect(r.resolve('/obiective').name).toBe('w-pub-sights')
+    expect(r.resolve('/obiective/1/cetatea-aradului').name).toBe('w-pub-sight')
+    for (const p of ['/evenimente', '/evenimente/2/x', '/obiective', '/obiective/1/x']) expect(r.resolve(p).meta.roles).toBeUndefined()
+    expect(r.resolve('/evenimente/abc').name).not.toBe('w-pub-event')                  // id-ul e numeric
+    expect(r.resolve('/events/2').meta.roles).toEqual(['VISITOR', 'LOCAL'])               // paginile cu cont rămân la fel
+  })
+
   it('keep the panels with their roles', () => {
     expect(r.resolve('/business').name).toBe('w-business')
     expect(r.resolve('/business').meta.roles).toEqual(['BUSINESS'])

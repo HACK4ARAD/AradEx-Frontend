@@ -30,6 +30,10 @@
   "myOffers": "My offers",
   "menu": "Menu",
   "routes": {
+    "w-pub-events": "Events in Arad",
+    "w-pub-event": "Event",
+    "w-pub-sights": "Sights",
+    "w-pub-sight": "Sight",
     "w-login": "Log in",
     "w-password": "New password",
     "w-landing": "Home",

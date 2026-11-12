@@ -106,6 +106,8 @@
     "cta": "Irányítópult megnyitása"
   },
   "footer": {
+    "events": "Események Aradon",
+    "sights": "Látnivalók",
     "privacy": "Adatvédelem",
     "terms": "Feltételek",
     "contact": "Kapcsolat",
@@ -116,5 +118,58 @@
     "visitArad": "Visit Arad",
     "ctp": "CTP Arad (tömegközlekedés)",
     "copyright": "© {year} AradExperience · Minden jog fenntartva"
+  },
+  "public": {
+    "events": {
+      "title": "Események Aradon",
+      "intro": "Koncertek, színház, kiállítások, vásárok és családi programok: minden, ami Aradon következik, dátummal, helyszínnel és árral. A jegyek és a lépésről lépésre útvonal az AradExperience alkalmazásban vannak.",
+      "empty": "Jelenleg nincs meghirdetett esemény. Nézz vissza hamarosan: az események azonnal megjelennek itt, amint közzéteszik őket.",
+      "loadError": "Nem sikerült betölteni az eseményeket.",
+      "all": "Összes esemény",
+      "back": "Minden esemény"
+    },
+    "event": {
+      "when": "Mikor",
+      "where": "Hol",
+      "price": "Ár",
+      "free": "Ingyenes belépés",
+      "from": "{price}-tól",
+      "organizer": "Szervező",
+      "directions": "Útvonal a Google Térképen",
+      "website": "A szervező honlapja",
+      "about": "Az eseményről",
+      "ended": "Az esemény véget ért. Nézd meg, mi következik még Aradon.",
+      "loadError": "Nem sikerült betölteni az eseményt.",
+      "notFoundTitle": "Ez az esemény már nincs itt",
+      "notFoundText": "Lehet, hogy áthelyezték vagy véget ért. Nézd meg a többi aradi eseményt."
+    },
+    "sights": {
+      "title": "Látnivalók Aradon",
+      "intro": "Az aradi vár, a Kultúrpalota, a templomok, múzeumok, parkok és a város környéki természeti helyek. Sokhoz hangos idegenvezetés tartozik az AradExperience alkalmazásban.",
+      "all": "Mind",
+      "empty": "Ilyen típusú látnivaló még nincs.",
+      "loadError": "Nem sikerült betölteni a látnivalókat.",
+      "guide": "Hangos idegenvezetés · {n} pont | Hangos idegenvezetés · {n} pont",
+      "visit": "Látogatás ~{time}",
+      "back": "Minden látnivaló"
+    },
+    "sight": {
+      "address": "Cím",
+      "visit": "Látogatási idő",
+      "hours": "Nyitvatartás",
+      "exterior": "Csak kívülről látogatható.",
+      "directions": "Útvonal a Google Térképen",
+      "about": "A látnivalóról",
+      "guideTitle": "Hangos idegenvezetés az alkalmazásban: {n} pont | Hangos idegenvezetés az alkalmazásban: {n} pont",
+      "guideText": "Hallgasd meg a hely történetét pontról pontra, a pontok térképével, az AradExperience alkalmazásban.",
+      "loadError": "Nem sikerült betölteni a látnivalót.",
+      "notFoundTitle": "Ez a látnivaló nincs itt",
+      "notFoundText": "A cím már nem érvényes. Nézd meg a többi aradi látnivalót."
+    },
+    "cta": {
+      "title": "A jegyek és az útvonalak az AradExperience alkalmazásban vannak",
+      "text": "Lépj be látogatóként, fiók és jelszó nélkül: események, térkép, ajánlatok és hangos idegenvezetések.",
+      "button": "Próbáld ki az alkalmazást a weben"
+    }
   }
 }

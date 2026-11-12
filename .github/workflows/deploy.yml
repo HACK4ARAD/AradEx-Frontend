@@ -55,7 +55,8 @@ jobs:
           VITE_GOOGLE_MAPS_MAP_ID: ${{ vars.GOOGLE_MAPS_MAP_ID }}
       # web-ul nu are voie să conțină nimic din aplicația mobilă (build separat, `npm run build:mobile`)
       - run: npm run check:web
-      # SEO: paginile publice (/, /community, /privacy, /terms) ca HTML complet, cu Chrome-ul de pe runner
+      # SEO: paginile publice (/, /evenimente, /obiective + fiecare eveniment și obiectiv, /community, /privacy, /terms) ca HTML
+      # complet, cu Chrome-ul de pe runner, plus dist/sitemap.xml generat
       - run: npm run prerender
 
       - id: ecr
